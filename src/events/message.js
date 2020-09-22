@@ -1,13 +1,23 @@
-const { client, creds, cooldowns, Discord } = require('../bot.js');
+const mongoose = require('mongoose');
+const { client, cache, cooldowns, Discord } = require('../bot.js');
+const { crud } = require('../library/Database/crud.js');
+const { serverSettingsSchema } = require('../library/Database/schema.js');
+
+const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // event on message
-client.on('message', message => {
-  if (!message.content.startsWith(creds.Prefix)) {
+client.on('message', async message => {
+  let prefix = '!';
+  const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`);
+
+  console.log(cache);
+
+  if (!message.content.startsWith(prefix) && !prefixRegex.test(message.content)) {
     console.log(`${message.author.username}#${message.author.discriminator} | ${message.content}`);
     return;
   }
-
-  const args = message.content.slice(creds.Prefix.length).trim().split(/ +/);
+  if (prefixRegex.test(message.content)) [, prefix] = message.content.match(prefixRegex);;
+  const args = message.content.slice(prefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
 
   // check whenever command is exist
