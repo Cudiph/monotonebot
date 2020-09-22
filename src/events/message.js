@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const { client, cache, cooldowns, Discord } = require('../bot.js');
+const { client, cooldowns, Discord } = require('../bot.js');
 const { crud } = require('../library/Database/crud.js');
 const { serverSettingsSchema } = require('../library/Database/schema.js');
 
@@ -7,10 +6,33 @@ const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // event on message
 client.on('message', async message => {
-  let prefix = '!';
-  const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`);
+  let prefix = '';
 
-  console.log(cache);
+    let db = await new crud('mongodb://localhost:27017/romono').connect();
+    try {
+      const check = await serverSettingsSchema.findById(message.guild.id);
+        if (!check) {
+          const result = await serverSettingsSchema.findOneAndUpdate({
+            _id: message.guild.id
+          }, {
+            _id: message.guild.id,
+            prefix: '..',
+          },
+            {
+              upsert: true
+            });
+          prefix = result.prefix;
+        } else {
+          prefix = check.prefix;
+        }
+
+    } catch (err) {
+      console.error(err);
+    }
+
+
+
+  const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`);
 
   if (!message.content.startsWith(prefix) && !prefixRegex.test(message.content)) {
     console.log(`${message.author.username}#${message.author.discriminator} | ${message.content}`);
