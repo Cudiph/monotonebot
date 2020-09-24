@@ -1,7 +1,18 @@
 // importing some required modules / files
 const fs = require('fs');
 const Discord = require('discord.js');
-const creds = require('./data/credentials.json');
+require('dotenv').config();
+const winston = require('winston');
+global.creds = require('./data/credentials.json');
+
+// winston logger
+global.logger = winston.createLogger({
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: './src/data/logs' }),
+  ],
+  format: winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`),
+});
 
 // declaring some discord.js function
 const client = new Discord.Client();
@@ -16,22 +27,20 @@ for (const subfolder of modsFolder) {
   for (const file of files) {
     const command = require(`${__dirname}/Modules/${subfolder}/${file}`);
     client.commands.set(command.name, command);
-    console.log(`${file} Modules Loaded`)
+    logger.log('info', `${file} Modules Loaded`)
   }
 }
 
 fs.readdir(`./src/events`, (err, files) => {
-  if (err) console.error(err);
+  if (err) logger.error('error', err);
   let file = files.filter(file => file.endsWith('.js'));
   file.forEach(file => {
     require(`./events/${file}`);
-    console.log(`${file} events loaded`);
+    logger.log('info', `${file} events loaded`);
   })
 });
 
 module.exports = {
   client,
   cooldowns,
-  creds,
-  Discord,
 }
