@@ -1,8 +1,8 @@
-const { client, creds } = require('../bot.js');
+const { client } = require('../bot.js');
 
 // logging to the console if the bot is ready
 client.once('ready', () => {
-  console.log('Ready!');
+  logger.log('info', 'Ready!');
 });
 
-client.login(creds.Token);
+client.login(process.env.TOKEN);
