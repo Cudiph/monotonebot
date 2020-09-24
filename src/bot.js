@@ -3,7 +3,12 @@ const fs = require('fs');
 const Discord = require('discord.js');
 require('dotenv').config();
 const winston = require('winston');
+
+// global vars
+// too lazy to use redis
 global.creds = require('./data/credentials.json');
+global.prefixCache = {}; // the format is {7123894304: '..' or guild.id : prefix}
+
 
 // winston logger
 global.logger = winston.createLogger({
