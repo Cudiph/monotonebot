@@ -2,6 +2,13 @@
 node_modules/
 jspm_packages/
 
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
 # IDE CONFIG
 .estlintrc.json
 .vscode
@@ -26,3 +33,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+
+# dotenv environment file
+.env
+.env.test
+
