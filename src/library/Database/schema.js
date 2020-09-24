@@ -5,7 +5,7 @@ let reqNumber = {
   required: true
 }
 
-const serverSettings = new mongoose.Schema({
+const guildSettings = new mongoose.Schema({
   _id: reqNumber, // guild id
   AutoAssignRoleId: Number,
   LogChannelId: Number,
@@ -34,14 +34,14 @@ const musicPlaylists = new mongoose.Schema({
 })
 
 
-const serverSettingsSchema = mongoose.model('serverSettings', serverSettings);
+const guildSettingsSchema = mongoose.model('guildSettings', guildSettings);
 const userDataSchema = mongoose.model('userData', userData);
 const musicQueueSchema = mongoose.model('musicQueue', musicQueue);
 const musicPlaylistsSchema = mongoose.model('musicPlaylists', musicPlaylists);
 
 
 module.exports = {
-  serverSettingsSchema,
+  guildSettingsSchema,
   userDataSchema,
   musicQueueSchema,
   musicPlaylistsSchema
