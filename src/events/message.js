@@ -35,7 +35,7 @@ client.on('message', async message => {
       }
 
     } catch (err) {
-      logger.log('error', err)
+      logger.log('error', err);
     }
   } else {
     prefix = prefixCache[message.guild.id];

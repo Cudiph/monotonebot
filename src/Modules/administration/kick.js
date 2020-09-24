@@ -17,7 +17,7 @@ module.exports = {
     if (!message.guild.me.hasPermission("KICK_MEMBERS")) {
       return message.channel.send(`**${message.author.username}**, I do not have permission to kick !`);
     }
-    
+
     const member = getUserMention(args[0], message);
     const kickedName = `${member.user.username}#${member.user.discriminator} <${member.user.id}>`;
     const kickedimage = `${member.user.displayAvatarURL()}`;
@@ -43,7 +43,7 @@ module.exports = {
           // due to missing permissions or role hierarchy
           message.reply('I was unable to kick the member');
           // Log the error
-          console.error(err);
+          logger.log('error', err);
         });
     }
     // Otherwise, if no user was mentioned

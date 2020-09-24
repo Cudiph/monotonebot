@@ -17,13 +17,13 @@ module.exports = {
     let id = getUserIdMention(args[0], message);
     if (id) {
       message.guild.members.unban(id, args.slice(1).join(' '))
-        .then(user => message.channel.send(`Unbanned **${user.username}#${user.discriminator}** from **${message.guild.name}**`) && console.log(user))
+        .then(user => message.channel.send(`Unbanned **${user.username}#${user.discriminator}** from **${message.guild.name}**`))
         .catch(err => {
           // due to missing permissions or role hierarchy
           message.reply('I was unable to unban the member\n' +
             '**Error name** : ' + err.toString().split(':').slice(1).join());
           // Log the error
-          console.error(err);
+          logger.log('error', err);
         });
 
     } else {

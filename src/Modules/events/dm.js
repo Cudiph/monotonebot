@@ -20,9 +20,9 @@ module.exports = {
       .addField('Subject: ' + title, content)
     users.send(EmbedMsg).then(() => {
       message.channel.send('Message sent successfully');
-    }).catch(error => {
+    }).catch(err => {
       message.channel.send('There was a problem during the delivery');
-      console.log(error);
+      logger.log('error', err);
     })
   }
 }

@@ -152,7 +152,7 @@ module.exports = {
 
           msg.edit({ embed: embed2 });
         })
-      }).catch(error => console.error(error))
+      }).catch(err => logger.log('error', err));
 
   }
 }

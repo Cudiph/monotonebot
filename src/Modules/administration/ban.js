@@ -43,7 +43,7 @@ module.exports = {
           // due to missing permissions or role hierarchy
           message.reply('I was unable to ban the member');
           // Log the error
-          console.error(err);
+          logger.log('error', err);
         });
     }
     // Otherwise, if no user was mentioned
