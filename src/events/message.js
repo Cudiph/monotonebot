@@ -1,43 +1,55 @@
-const { client, cooldowns, Discord } = require('../bot.js');
+const Discord = require('discord.js')
+const { client, cooldowns } = require('../bot.js');
 const { crud } = require('../library/Database/crud.js');
-const { serverSettingsSchema } = require('../library/Database/schema.js');
+const { guildSettingsSchema } = require('../library/Database/schema.js');
 
 const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // event on message
 client.on('message', async message => {
-  let prefix = '';
+  let prefix;
 
-    let db = await new crud('mongodb://localhost:27017/romono').connect();
+  if (!prefixCache[message.guild.id]) {
+    // fetch prefix from database
+    // closing the connection make an error when calling prefix command
+    // idk why but it'll boost performance
+    await new crud('mongodb://localhost:27017/romono').connect();
     try {
-      const check = await serverSettingsSchema.findById(message.guild.id);
-        if (!check) {
-          const result = await serverSettingsSchema.findOneAndUpdate({
-            _id: message.guild.id
-          }, {
-            _id: message.guild.id,
-            prefix: '..',
-          },
-            {
-              upsert: true
-            });
-          prefix = result.prefix;
-        } else {
-          prefix = check.prefix;
-        }
+      const check = await guildSettingsSchema.findById(message.guild.id);
+      if (!check) {
+        // if data from database is null then create default prefix
+        // it'll be used when the bot is invited and the bot is offline
+        // then console will show error but that's normal
+        const result = await guildSettingsSchema.findOneAndUpdate({
+          _id: message.guild.id
+        }, {
+          _id: message.guild.id,
+          prefix: '..',
+        },
+          {
+            upsert: true
+          });
+        prefix = prefixCache[message.guild.id] = result.prefix;
+      } else {
+        prefix = prefixCache[message.guild.id] = check.prefix;
+      }
 
     } catch (err) {
-      console.error(err);
+      logger.log('error', err)
     }
-
-
+  } else {
+    prefix = prefixCache[message.guild.id];
+  }
 
   const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`);
 
+  // if message is start with not the prefix and not the mention then return
   if (!message.content.startsWith(prefix) && !prefixRegex.test(message.content)) {
-    console.log(`${message.author.username}#${message.author.discriminator} | ${message.content}`);
+    logger.log('info', `${message.author.username}#${message.author.discriminator} | ${message.content}`);
     return;
   }
+
+  // if client mentioned then set prefix to client id or mention
   if (prefixRegex.test(message.content)) [, prefix] = message.content.match(prefixRegex);;
   const args = message.content.slice(prefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
@@ -52,6 +64,7 @@ client.on('message', async message => {
     cooldowns.set(command.name, new Discord.Collection());
   }
 
+  // cooldown variable
   const now = Date.now();
   const timestamps = cooldowns.get(command.name);
   const cooldownAmount = (command.cooldown || 3) * 1000;
@@ -79,7 +92,7 @@ client.on('message', async message => {
   try {
     command.execute(message, args);
   } catch (error) {
-    console.error(error);
+    logger.log('error', error);
     message.reply('there was an error trying to execute that command!')
       .then(async msg => {
         // delete both author and bot message if there was any error

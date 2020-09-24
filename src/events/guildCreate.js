@@ -1,21 +1,12 @@
-const mongoose = require('mongoose');
-const { client, cache } = require('../bot.js');
+const { client } = require('../bot.js');
 const { crud } = require('../library/Database/crud.js');
-const { serverSettingsSchema } = require('../library/Database/schema.js');
+const { guildSettingsSchema } = require('../library/Database/schema.js');
 
 // event on message
 client.on('guildCreate', async guild => {
-  let guildData = cache.guildSettings[guild.id];
-  console.log(guildData);
-
-  if (guildData) {
-    console.log('pass');
-    return;
-  }
-
-  let db = await new crud('mongodb://localhost:27017/romono').connect();
+   let db = await new crud('mongodb://localhost:27017/romono').connect();
   try {
-    await serverSettingsSchema.findOneAndUpdate({
+    await guildSettingsSchema.findOneAndUpdate({
       _id: guild.id
     },{
       _id: guild.id,
@@ -25,7 +16,7 @@ client.on('guildCreate', async guild => {
       upsert: true
     });
   } catch (err) {
-    console.error(err);
+    logger.log('error', err);
   } finally {
     db.connection.close();
   }
