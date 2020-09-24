@@ -1,6 +1,4 @@
-const {
-  getUserMention
-} = require('../../library/users/getUser.js')
+const { getUserMention } = require('../../library/users/get-cache.js')
 
 module.exports = {
   name: 'avatar',

@@ -1,4 +1,4 @@
-const { getUserIdMention } = require('../../library/users/getUser.js');
+const { getUserIdMention } = require('../../library/users/get-cache.js');
 module.exports = {
   name: 'unban',
   description: 'Unban a user from the server.',
