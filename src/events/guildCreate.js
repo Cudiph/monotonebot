@@ -4,7 +4,7 @@ const { guildSettingsSchema } = require('../library/Database/schema.js');
 
 // event on message
 client.on('guildCreate', async guild => {
-   let db = await new crud('mongodb://localhost:27017/romono').connect();
+   let db = await new crud(process.env.MONGO_URL).connect();
   try {
     await guildSettingsSchema.findOneAndUpdate({
       _id: guild.id

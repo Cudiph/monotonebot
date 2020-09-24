@@ -13,7 +13,7 @@ client.on('message', async message => {
     // fetch prefix from database
     // closing the connection make an error when calling prefix command
     // idk why but it'll boost performance
-    await new crud('mongodb://localhost:27017/romono').connect();
+    await new crud(process.env.MONGO_URL).connect();
     try {
       const check = await guildSettingsSchema.findById(message.guild.id);
       if (!check) {

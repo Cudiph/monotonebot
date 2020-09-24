@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 class crud {
-  constructor(url = 'mongodb://localhost:27017/romono') {
+  constructor(url = process.env.MONGO_URL) {
     this.url = url;
   }
 

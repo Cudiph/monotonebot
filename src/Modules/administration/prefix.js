@@ -10,7 +10,7 @@ module.exports = {
   async execute(message, args) {
     // define old prefix and mongo url
     let oldPrefix = '';
-    let url = 'mongodb://localhost:27017/romono'
+    let url = process.env.MONGO_URL;
     if (!args.length) {
       // if no arg defines then send current guild prefix
       let db = await new crud(url).connect();
