@@ -8,7 +8,7 @@ const winston = require('winston');
 // too lazy to use redis
 global.creds = require('./data/credentials.json');
 global.prefixCache = {}; // the format is {7123894304: '..' or guild.id : prefix}
-global.guildQueue = {} // guildId: [{title, link, uploader}]
+global.guildQueue = {} // guildId: [{title, link, uploader, channel, connection}]
 
 
 // winston logger

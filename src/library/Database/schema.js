@@ -9,28 +9,43 @@ const guildSettings = new mongoose.Schema({
   _id: reqNumber, // guild id
   AutoAssignRoleId: Number,
   LogChannelId: Number,
-  WelcomeMessage: String,
-  GoodbyeMessage: String,
-  prefix: String
+  WelcomeMessage: {
+    Channel: Number,
+    Message: String
+  },
+  GoodbyeMessage: {
+    Channel: Number,
+    Message: String
+  },
+  prefix: {
+    type: String,
+    default: '..'
+  }
 })
 
 const userData = new mongoose.Schema({
   _id: reqNumber, // member id
-  money: Number
+  Money: Number
 })
 
 const musicQueue = new mongoose.Schema({
-  _id: reqNumber, // guild id
-  Title: String,
-  Uploader: String,
-  Url: String
+  GuildId: reqNumber, // guild id
+  Queue: [{
+    Title: String,
+    Uploader: String,
+    Url: String
+  }],
+  Date: { type: Date, default: Date.now, index: true }
 })
 
 const musicPlaylists = new mongoose.Schema({
-  _id: reqNumber, // member id
-  Title: String,
-  Uploader: String,
-  Url: String,
+  UserId: reqNumber, // member id
+  Playlists:[{
+    Title: String,
+    Uploader: String,
+    Url: String
+  }],
+  Date: { type: Date, default: Date.now, index: true }
 })
 
 
