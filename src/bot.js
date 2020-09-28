@@ -8,9 +8,6 @@ const winston = require('winston');
 // global vars
 // too lazy to use redis
 global.creds = require('./data/credentials.json');
-global.prefixCache = {}; // the format is {7123894304: '..' or guild.id : prefix}
-global.guildQueue = {} // guildId: [{title, link, uploader, channel, connection}]
-
 
 // winston logger
 global.logger = winston.createLogger({
@@ -23,6 +20,7 @@ global.logger = winston.createLogger({
 
 // declaring some discord.js function
 const client = new CommandoClient({
+  commandPrefix: '..',
   owner: '400240052761788427',
   unknownCommandResponse: false,
 });
@@ -32,17 +30,19 @@ client.registry
   .registerDefaultTypes()
   .registerGroups([
     ['administration', 'Administration action'],
-    ['events', 'interacting with the bot'],
     ['gambling', 'Gambling games'],
     ['games', 'Some minigames'],
     ['search', 'Searching through the internet'],
     ['undefined', 'Testing new commands'],
+    ['util', 'Utility'],
     ['voice', 'Music or playing audio in voice channel'],
   ])
   .registerDefaultGroups()
   .registerDefaultCommands({
+    prefix: false,
     help: false,
     ping: false,
+    unknownCommand: false,
   })
   .registerCommandsIn(path.join(__dirname, 'Modules'));
 
