@@ -1,20 +1,44 @@
 const { getUserMention } = require('../../library/users/get-cache.js')
+const { Command } = require('discord.js-commando');
 
-module.exports = {
-  name: 'avatar',
-  description: 'Show your avatar or someone avatar',
-  guildOnly: true,
-  execute(message, args) {
-    const users = getUserMention(args[0], message);
-    if (!args[0]) {
-      message.channel.send(message.author.displayAvatarURL());
+module.exports = class pingCommand extends Command {
+  constructor(client) {
+    super(client, {
+      name: 'avatar',
+      aliases: ['icon'],
+      group: 'search',
+      memberName: 'avatar',
+      description: 'Return your avatar or someone else\'s avatar if any mention',
+      examples: ['avatar', 'avatar @someone'],
+      guildOnly: true,
+      throttling: {
+        usages: 1,
+        duration: 10,
+      },
+      args: [
+        {
+          key: 'user',
+          prompt: 'Which user u want to show?',
+          type: 'string',
+          default: ''
+        }
+      ],
+      defaultHandling: false,
+    });
+  }
+
+  async run(msg, args) {
+    let argList = args.user.split(/ +/);
+    // get user in guild
+    const users = getUserMention(argList[0], msg);
+    if (!argList[0]) {
+      msg.channel.send(msg.author.displayAvatarURL());
       return;
-    } else if (users) {
-      message.channel.send(users.user.displayAvatarURL());
+    } else if (users && msg.guild) {
+      msg.channel.send(users.user.displayAvatarURL());
       return;
     } else {
-      message.channel.send('Invalid Arguments')
+      msg.channel.send('Invalid Arguments');
     }
-
   }
-}
+};
