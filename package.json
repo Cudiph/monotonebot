@@ -18,6 +18,7 @@
   "homepage": "https://gitlab.com/Cudiph/romonorev#readme",
   "dependencies": {
     "@discordjs/opus": "^0.3.2",
+    "common-tags": "^1.8.0",
     "discord.js": "^12.3.1",
     "discord.js-commando": "github:discordjs/Commando",
     "dotenv": "^8.2.0",
