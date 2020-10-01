@@ -5,10 +5,6 @@ const path = require('path');
 require('dotenv').config();
 const winston = require('winston');
 
-// global vars
-// too lazy to use redis
-global.creds = require('./data/credentials.json');
-
 // winston logger
 global.logger = winston.createLogger({
   transports: [
@@ -29,13 +25,13 @@ const client = new CommandoClient({
 client.registry
   .registerDefaultTypes()
   .registerGroups([
-    ['administration', 'Administration action'],
-    ['gambling', 'Gambling games'],
-    ['games', 'Some minigames'],
-    ['search', 'Searching through the internet'],
-    ['undefined', 'Testing new commands'],
+    ['administration', 'Administration'],
+    ['gambling', 'Gambling'],
+    ['games', 'Minigames'],
+    ['search', 'Search'],
+    ['undefined', 'undefined'],
     ['util', 'Utility'],
-    ['voice', 'Music or playing audio in voice channel'],
+    ['voice', 'Voice'],
   ])
   .registerDefaultGroups()
   .registerDefaultCommands({
@@ -46,6 +42,7 @@ client.registry
   })
   .registerCommandsIn(path.join(__dirname, 'Modules'));
 
+// including events folder
 fs.readdir(`./src/events`, (err, files) => {
   if (err) logger.error('error', err);
   let file = files.filter(file => file.endsWith('.js'));
