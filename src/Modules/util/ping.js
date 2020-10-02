@@ -13,14 +13,6 @@ module.exports = class PingCommand extends Command {
         usages: 5,
         duration: 10,
       },
-      args: [
-        {
-          key: 'command',
-          prompt: 'Which command would you like to view the help for?',
-          type: 'string',
-          default: ''
-        }
-      ],
     });
   }
 

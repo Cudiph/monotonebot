@@ -12,7 +12,7 @@ module.exports = class PurgeCommand extends Command {
       description: 'Bulk delete',
       examples: ['purge', 'purge 100'],
       throttling: {
-        usages: 1,
+        usages: 3,
         duration: 10,
       },
       args: [
@@ -20,7 +20,7 @@ module.exports = class PurgeCommand extends Command {
           key: 'total',
           prompt: 'Which user u want to show?',
           type: 'string',
-          default: 1
+          default: 2
         },
         {
           key: 'old',
