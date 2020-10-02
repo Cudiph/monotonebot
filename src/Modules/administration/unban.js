@@ -1,7 +1,7 @@
 const { getUserIdMention, isUserId } = require('../../library/users/get-cache.js')
 const { Command } = require('discord.js-commando')
 
-module.exports = class HelpCommand extends Command {
+module.exports = class UnbanCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'unban',
@@ -18,8 +18,9 @@ module.exports = class HelpCommand extends Command {
   }
 
   async run(msg, args) {
-    let bannedUser = await msg.guild.fetchBan(args[0]);
+    let bannedUser;
     let isMember = args[0].match(/^<@!?\d+>$/);
+    if (!isMember) bannedUser = await msg.guild.fetchBan(args[0]);
     // check whether the id is valid
     if (bannedUser) {
       bannedUser = args[0];
