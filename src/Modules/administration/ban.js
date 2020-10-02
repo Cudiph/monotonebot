@@ -3,7 +3,7 @@ const { getUserMention, isUserId } = require('../../library/users/get-cache.js')
 const { Command } = require('discord.js-commando')
 const Discord = require('discord.js');
 
-module.exports = class HelpCommand extends Command {
+module.exports = class BanCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'ban',
@@ -31,7 +31,6 @@ module.exports = class HelpCommand extends Command {
       return msg.say('Invalid Id or Argument');
     }
     // get the banned data
-    console.log(member);
     const bannedName = `${member.user.username}#${member.user.discriminator} <${member.user.id}>`;
     const bannedimage = `${member.user.displayAvatarURL()}`;
     if (member) {
@@ -39,7 +38,7 @@ module.exports = class HelpCommand extends Command {
         .ban({ reason: args.slice(1).join(' ') })
         .then(() => {
           const EmbedMsg = new Discord.MessageEmbed()
-            .setColor('#fc6b03')
+            .setColor('#ff0000')
             .setAuthor(bannedName, bannedimage)
             .setTitle(`Banned Successfully`)
             .setDescription(`**Member** : ${bannedName}\n` + `**Reason** : ${args.slice(1).join(' ') || '-'}\n` +
