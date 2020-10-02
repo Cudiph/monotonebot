@@ -1,22 +1,48 @@
 const Discord = require('discord.js');
+const { Command } = require('discord.js-commando');
 
-module.exports = {
-  name: '8ball',
-  description: 'Ask anything to 8ball',
-  usage: '<question>',
-  args: true,
-  execute(message, args) {
-    if (!args.length) {
-      return message.reply(`You didn't provide any arguments`);
+module.exports = class _8BallCommand extends Command {
+  constructor(client) {
+    super(client, {
+      name: '8ball',
+      group: 'games',
+      memberName: '8ball',
+      description: 'Answer your question',
+      examples: ['8ball Are Ya Winning Son?'],
+      args: [{
+        key: 'quest',
+        prompt: 'What\'s your question?',
+        type: 'string',
+      }],
+      throttling: {
+        usages: 5,
+        duration: 10,
+      },
+    })
+  }
+
+  async run(msg, {quest}) {
+    if (!quest.length) {
+      return msg.reply(`You didn't provide any arguments`);
     }
     const answers = require('../../data/gamesdata/8ball.json');
     const answer = answers.response[Math.floor(Math.random() * Math.floor(answers.response.length))]
     const embedMsg = new Discord.MessageEmbed()
       .setColor('#f0568a')
-      .addField(`:question: Question`, args.join(' '))
+      .addField(`:question: Question`, quest)
       .addField(':speech_balloon: Answer', answer)
-      .setFooter(`${message.author.username}#${message.author.discriminator}`)
+      .setFooter(`${msg.author.username}#${msg.author.discriminator}`)
 
-    message.channel.send(embedMsg);
+    msg.channel.send(embedMsg);
+  }
+
+  async onBlock(msg, reason, data) {
+    let parent = await super.onBlock(msg, reason, data);
+    parent.delete({ timeout: 9000 })
+  }
+
+  onError(err, message, args, fromPattern, result) {
+    super.onError(err, message, args, fromPattern, result)
+      .then(msgParent => msgParent.delete({ timeout: 9000 }));
   }
 }
