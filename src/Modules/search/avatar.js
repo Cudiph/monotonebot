@@ -10,35 +10,36 @@ module.exports = class pingCommand extends Command {
       memberName: 'avatar',
       description: 'Return your avatar or someone else\'s avatar if any mention',
       examples: ['avatar', 'avatar @someone'],
-      guildOnly: true,
       throttling: {
         usages: 1,
         duration: 10,
       },
-      args: [
-        {
-          key: 'user',
-          prompt: 'Which user u want to show?',
-          type: 'string',
-          default: ''
-        }
-      ],
-      defaultHandling: false,
+      argsType: 'multiple',
     });
   }
 
   async run(msg, args) {
-    let argList = args.user.split(/ +/);
+    let user = args[0].match(/^<@!?\d+>$/);
     // get user in guild
-    const users = getUserMention(argList[0], msg);
-    if (!argList[0]) {
+    if (!user) {
       msg.channel.send(msg.author.displayAvatarURL());
       return;
-    } else if (users && msg.guild) {
+    } else if (user && msg.guild) {
+      const users = getUserMention(args[0], msg);
       msg.channel.send(users.user.displayAvatarURL());
       return;
     } else {
-      msg.channel.send('Invalid Arguments');
+      msg.channel.send('requesting avatar with mentioning in dm channel is not supported yet');
     }
+  }
+
+  async onBlock(msg, reason, data) {
+    let parent = await super.onBlock(msg, reason, data);
+    parent.delete({ timeout: 9000 })
+  }
+
+  onError(err, message, args, fromPattern, result) {
+    super.onError(err, message, args, fromPattern, result)
+      .then(msgParent => msgParent.delete({ timeout: 9000 }));
   }
 };
