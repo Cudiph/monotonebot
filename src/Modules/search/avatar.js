@@ -1,7 +1,7 @@
 const { getUserMention } = require('../../library/users/get-cache.js')
 const { Command } = require('discord.js-commando');
 
-module.exports = class pingCommand extends Command {
+module.exports = class AvatarCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'avatar',

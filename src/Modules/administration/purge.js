@@ -2,7 +2,7 @@ const { Command } = require('discord.js-commando');
 const emoji = require('../../library/helper/emoji.js');
 const { stripIndents } = require('common-tags');
 
-module.exports = class pingCommand extends Command {
+module.exports = class PurgeCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'purge',
