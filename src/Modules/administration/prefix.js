@@ -8,22 +8,19 @@ const { client } = require('../../bot.js');
 const writePrefix = async (newPrefix, msg) => {
   // set new prefix for guild
   let url = process.env.MONGO_URL;
-  let db = await new crud(url).connect();
+  let db = await new crud(url);
+  db.connect();
   try {
-    let result = await guildSettingsSchema.findOneAndUpdate({
-      _id: msg.guild.id
-    }, {
+    let result = await db.writeOneUpdate(guildSettingsSchema, { _id: msg.guild.id }, {
       _id: msg.guild.id,
       prefix: newPrefix,
-    }, {
-      upsert: true
     });
     if (result) return result.prefix; else return client.commandPrefix;
   } catch (err) {
     logger.log('error', err);
     return msg.channel.send(`Can't update the prefix.`);
   } finally {
-    db.connection.close();
+    db.close();
   }
 }
 
@@ -96,8 +93,10 @@ module.exports = class PrefixCommand extends Command {
       // send embed
       msg.channel.send(embed);
     }
-
-
     return null;
+  }
+
+  onBlock(msg, reason, data) {
+    super.onBlock(msg, reason, data).then(parent => parent.delete({ timeout: 1000 }));
   }
 };
