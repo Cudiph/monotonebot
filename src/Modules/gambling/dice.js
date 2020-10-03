@@ -1,11 +1,9 @@
 const fs = require('fs');
 const mergeImg = require('merge-img')
 const { Command } = require('discord.js-commando');
-const { crud } = require('../../library/Database/crud.js');
-const { userDataSchema } = require('../../library/Database/schema.js');
 const { oneLine } = require('common-tags');
 
-module.exports = class _8BallCommand extends Command {
+module.exports = class DiceCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'dice',
@@ -39,7 +37,7 @@ module.exports = class _8BallCommand extends Command {
     var intArg2 = parseInt(args[2]);
 
     // set maximum size of dice throws
-    if (intArg2 > 9) {
+    if (intArg2 > 8) {
       msg.channel.send(`i'm sorry I don't have enough dice`);
       return;
     }
