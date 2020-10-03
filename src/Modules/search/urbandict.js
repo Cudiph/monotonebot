@@ -1,19 +1,37 @@
 const fetch = require('node-fetch');
 const querystring = require('querystring');
+const { Command } = require('discord.js-commando');
 
-module.exports = {
-  name: 'urbandictionary',
-  cooldown: 10,
-  usage: '<query>',
-  args: true,
-  aliases: ['ud', 'urbandict'],
-  description: 'Send definition of slang or cultural words from urbandictionary.com',
-  async execute(message, args) {
+module.exports = class UrbandictCommand extends Command {
+  constructor (client) {
+    super(client, {
+      name: 'urbandict',
+      group: 'search',
+      memberName: 'urbandict',
+      aliases:  ['ud', 'urbandictionary'],
+      description: 'Search for slang words and phrases',
+      examples: ['ud Hello World', 'urbandict bruh'],
+      argsType: 'multiple',
+      throttling: {
+        usages: 2,
+        duration: 10,
+      },
+      args: [
+        {
+          key: 'query',
+          prompt: 'What word you want to find?',
+          type: 'string',
+        }
+      ]
+    })
+  }
+
+  async run(message, args) {
     if (!args) {
       return message.channel.send('You need to supply a search term!');
     }
     // define the query
-    const query = querystring.stringify({ term: args.join(' ') });
+    const query = querystring.stringify({ term: args.query });
     // fetching request
     const { list } = await fetch(`https://api.urbandictionary.com/v0/define?${query}`).then(response => response.json());
     // trim words if too long
@@ -101,7 +119,7 @@ module.exports = {
               }
             ],
             footer: {
-              text: `${counter +1}/${list.length}`
+              text: `${counter + 1}/${list.length}`
             }
           }
 
@@ -116,7 +134,7 @@ module.exports = {
           } else if (collected.emoji.name === '➡') {
             // increment index for list
             counter++;
-            if (counter >= list.length) counter = list.length - 1 ;
+            if (counter >= list.length) counter = list.length - 1;
           }
           var embed2 = {
             color: 0xff548e,
@@ -154,5 +172,15 @@ module.exports = {
         })
       }).catch(err => logger.log('error', err));
 
+  }
+
+  async onBlock(msg, reason, data) {
+    let parent = await super.onBlock(msg, reason, data);
+    parent.delete({ timeout: 9000 })
+  }
+
+  onError(err, message, args, fromPattern, result) {
+    super.onError(err, message, args, fromPattern, result)
+      .then(msgParent => msgParent.delete({ timeout: 9000 }));
   }
 }
