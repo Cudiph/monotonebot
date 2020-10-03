@@ -1,25 +1,25 @@
 const ytdl = require('ytdl-core-discord');
-const fetch = require('node-fetch');
+const yts = require('yt-search');
 const Discord = require('discord.js');
 const emoji = require('../../library/helper/emoji.js');
+const { Command } = require('discord.js-commando');
+const { oneLine } = require('common-tags');
+
 
 async function play(message) {
-  const guildId = message.guild.id;
+  let queue = message.guild.queue;
 
   // if queue is null then delete the object property in cache variable
-  if (!guildQueue[guildId]) {
+  if (!queue) {
     message.channel.send(`Stopped Playing...`);
     return delete guildQueue[guildId];
   }
-  console.log('halt 1');
 
   const connection = await message.member.voice.channel.join();
   // make a stream dispatcher
   let dispatcher = await connection.play(await ytdl(guildQueue[guildId][0].link), { type: 'opus', filter: 'audioonly', volume: 0.5 });
 
   guildQueue[guildId][0].dispatcher = dispatcher;
-
-  console.log('halt 2');
 
   connection.on('disconnect', () => {
     delete guildQueue[guildId];
@@ -63,30 +63,75 @@ async function player(data, message) {
     guildQueue[guildId].push(construction);
     return message.channel.send(`${data.title} has been added to the queue.`)
   }
-
-
 }
 
-module.exports = {
-  name: 'play',
-  description: 'Play music',
-  usage: '<query|link>',
-  guildOnly: true,
-  args: true,
-  async execute(message, args) {
+function setEmbed(dataList, indexPage, page, msg, itemsPerPage) {
+  let listLength = dataList.length;
+  let embed = {
+    color: 0x53bcfc,
+    author: {
+      name: `@${msg.author.username}#${msg.author.discriminator}`,
+      icon_url: msg.author.displayAvatarURL(),
+    },
+    description: `React with emoji to select audio`,
+    fields: [],
+    footer: {
+      text: `${page + 1}/${Math.ceil(listLength / itemsPerPage)}`,
+    },
+  }
+
+  if ((page + 1) === Math.ceil(listLength / itemsPerPage)) {
+    for (let i = 0; i < (listLength - indexPage); i++) {
+      embed.fields.push({
+        name: `[${i + 1}] ${dataList[indexPage + i].title}`,
+        value: `Uploaded by ${dataList[indexPage + i].author.name} | ${dataList[indexPage + i].timestamp}`,
+      })
+    }
+  } else {
+    for (let i = 0; i < itemsPerPage; i++) {
+      embed.fields.push({
+        name: `[${i + 1}] ${dataList[indexPage + i].title}`,
+        value: `Uploaded by ${dataList[indexPage + i].author.name} | ${dataList[indexPage + i].timestamp}`,
+      })
+    }
+  }
+
+  return embed;
+}
+
+module.exports = class PlayCommand extends Command {
+  constructor(client) {
+    super(client, {
+      name: 'play',
+      group: 'voice',
+      memberName: 'play',
+      description: 'Play audio from youtube',
+      examples: ['play Despacito 2', 'play https://www.youtube.com/watch?v=D3dB3eflo1'],
+      argsType: 'multiple',
+      guildOnly: true,
+      details: oneLine`
+      Play audio from youtube. You can play with query or with a link in
+      argument.
+      `,
+      throttling: {
+        usages: 3,
+        duration: 10,
+      },
+      clientPermissions: ['CONNECT', 'SPEAK'],
+    })
+  }
+
+  async run(message, args) {
     // if not in voice channel
     if (!message.member.voice.channel) {
       // send message if author not connected to voice channel
       return message.channel.send("You're not connected to any voice channel");
     }
-    // if the bot doesn't have required permission
-    if (!message.guild.me.hasPermission(["CONNECT", "SPEAK"])) {
-      return message.channel.send("I don't have permissions to use voice channel");
-    }
-    // if member in voice channel
-    // I think this is useless
+
     if (message.member.voice.channel) {
       const link = args[0].match(/https?:\/\/www.youtube.com\/watch\?v=\w+/)
+
+      // check if author send a youtube link
       if (link) {
         let data = ytdl.getInfo(args[0])
         let dataConstructor = {
@@ -97,37 +142,24 @@ module.exports = {
         }
         return player(dataConstructor, message);
       }
-      // emoji database and google api key
-      // make  a query
 
-      const { result } = await fetch(`https://ytapi.cf/search/${args.join('+')}}`)
-        .then(response => response.json());
+      let { videos } = await yts(args.join(' '))
 
       let page = 0; // for page
       let music = 0; // for choosing music index
+      let itemsPerPage = 5; // set items showed per page
 
-      let Embed = new Discord.MessageEmbed()
-        .setColor('#53bcfc')
-        .setAuthor(`${message.author.username}#${message.author.discriminator}`, message.author.displayAvatarURL())
-        .setDescription(`React with emoji to select audio`)
-        .addFields(
-          { name: `[1] ${result[music].title}`, value: `Uploaded by ${result[music].author.name}` },
-          { name: `[2] ${result[music + 1].title}`, value: `Uploaded by ${result[music + 1].author.name}` },
-          { name: `[3] ${result[music + 2].title}`, value: `Uploaded by ${result[music + 2].author.name}` },
-          { name: `[4] ${result[music + 3].title}`, value: `Uploaded by ${result[music + 3].author.name}` },
-          { name: `[5] ${result[music + 4].title}`, value: `Uploaded by ${result[music + 4].author.name}` },
-        )
-        .setFooter(`${page + 1}/${Math.floor(result.length / 5)}`);
+      let Embed = setEmbed(videos, music, page, message, itemsPerPage);
 
-      message.channel.send(Embed).then(async msg => {
-          msg.react(emoji[1]);
-          msg.react(emoji[2]);
-          msg.react(emoji[3]);
-          msg.react(emoji[4]);
-          msg.react(emoji[5]);
-          msg.react(emoji.leftA);
-          msg.react(emoji.rightA);
-          msg.react(emoji.x);
+      message.channel.send({embed: Embed}).then(async msg => {
+        msg.react(emoji[1]);
+        msg.react(emoji[2]);
+        msg.react(emoji[3]);
+        msg.react(emoji[4]);
+        msg.react(emoji[5]);
+        msg.react(emoji.leftA);
+        msg.react(emoji.rightA);
+        msg.react(emoji.x);
 
         const filter = (reaction, user) => {
           return [emoji[1], emoji[2], emoji[3], emoji[4], emoji[5], emoji.leftA, emoji.rightA, emoji.x]
@@ -141,7 +173,7 @@ module.exports = {
           } else if (collected.emoji.name === '⬅') {
             // decrement index for list
             page--;
-            music -= 5;
+            music -= itemsPerPage;
             if (page < 0) {
               page = 0;
               music = 0;
@@ -150,56 +182,46 @@ module.exports = {
           } else if (collected.emoji.name === '➡') {
             // increment index for list
             page++;
-            music += 5;
-            if (page + 1 > result.length / 5) {
-              page = (Math.floor(result.length / 5)) - 1;
-              music = (Math.floor(result.length / 5) * 5) - 5;
+            music += itemsPerPage;
+            // when page exceed the max of video length
+            if (page + 1 > Math.ceil(videos.length / itemsPerPage)) {
+              page = (Math.ceil(videos.length / itemsPerPage)) - 1;
+              music -= itemsPerPage;
               return;
             }
           }
           if (collected.emoji.name === '➡' || collected.emoji.name === '⬅') {
-            var embed2 = new Discord.MessageEmbed()
-              .setColor('#53bcfc')
-              .setAuthor(`${message.author.username}#${message.author.discriminator}`, message.author.displayAvatarURL())
-              .setDescription(`React with emoji to select audio`)
-              .addFields(
-                { name: `[1] ${result[music].title}`, value: `Uploaded by ${result[music].author.name}` },
-                { name: `[2] ${result[music + 1].title}`, value: `Uploaded by ${result[music + 1].author.name}` },
-                { name: `[3] ${result[music + 2].title}`, value: `Uploaded by ${result[music + 2].author.name}` },
-                { name: `[4] ${result[music + 3].title}`, value: `Uploaded by ${result[music + 3].author.name}` },
-                { name: `[5] ${result[music + 4].title}`, value: `Uploaded by ${result[music + 4].author.name}` },
-              )
-              .setFooter(`${page + 1}/${Math.floor(result.length / 5)}`);
+            let embed2 = setEmbed(videos, music, page, message, itemsPerPage);
 
-            return msg.edit(embed2);
+            return msg.edit({embed: embed2});
           }
 
           if (collected.emoji.name === emoji[1]) {
-            let data = result[music];
+            let data = videos[music];
             msg.edit(`${data.title} has been added to the queue.`).then(msg => {
               msg.delete();
             })
             return player(data, message);
           } else if (collected.emoji.name === emoji[2]) {
-            let data = result[music + 1];
+            let data = videos[music + 1];
             msg.edit(`${data.title} has been added to the queue.`).then(msg => {
               msg.delete();
             })
             return player(data, message);
           } else if (collected.emoji.name === emoji[3]) {
-            let data = result[music + 2];
+            let data = videos[music + 2];
             msg.edit(`${data.title} has been added to the queue.`).then(msg => {
               msg.delete();
             })
             return player(data, message);
           } else if (collected.emoji.name === emoji[4]) {
-            let data = result[music + 3];
+            let data = videos[music + 3];
             msg.edit(`${data.title} has been added to the queue.`).then(msg => {
               msg.delete();
             })
             return player(data, message);
           } else if (collected.emoji.name === emoji[5]) {
-            let data = result[music + 4];
+            let data = videos[music + 4];
             msg.edit(`${data.title} has been added to the queue.`).then(msg => {
               msg.delete();
             })
@@ -212,4 +234,14 @@ module.exports = {
 
   }
 
+  async onBlock(msg, reason, data) {
+    let parent = await super.onBlock(msg, reason, data);
+    parent.delete({ timeout: 9000 })
+  }
+
+  onError(err, message, args, fromPattern, result) {
+    super.onError(err, message, args, fromPattern, result)
+      .then(msgParent => msgParent.delete({ timeout: 9000 }));
+  }
 }
+
