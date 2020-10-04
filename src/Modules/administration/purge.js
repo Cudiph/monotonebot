@@ -1,5 +1,5 @@
 const { Command } = require('discord.js-commando');
-const emoji = require('../../library/helper/emoji.js');
+const { emoji } = require('../../library/helper/discord-item.js');
 const { stripIndents } = require('common-tags');
 
 module.exports = class PurgeCommand extends Command {
@@ -39,7 +39,7 @@ module.exports = class PurgeCommand extends Command {
     if (parseInt(args.total)) {
       totalMsg = parseInt(args.total);
     } else {
-      return msg.reply('Value must be a number').then(msg => msg.delete({timeout: 6000}));
+      return msg.reply('Value must be a number').then(msg => msg.delete({ timeout: 6000 }));
     }
 
     if (totalMsg > 100) totalMsg = 100;
@@ -53,7 +53,7 @@ module.exports = class PurgeCommand extends Command {
         msg.channel.send(stripIndents`
         Unable to delete messages
         It's likely because you are trying to delete messages that are under 14 days old.
-      `).then(msg => msg.delete({timeout: 7000}))
+      `).then(msg => msg.delete({ timeout: 7000 }))
       });
     } catch (err) {
       logger.log('error', err);
@@ -63,6 +63,6 @@ module.exports = class PurgeCommand extends Command {
   }
 
   onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data).then(parent => parent.delete({timeout: 9000}));
+    super.onBlock(msg, reason, data).then(parent => parent.delete({ timeout: 9000 }));
   }
 };
