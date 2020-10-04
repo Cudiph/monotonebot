@@ -53,6 +53,11 @@ module.exports = class PlayCommand extends Command {
       message.channel.startTyping(); // start type indicator cuz it'll be long
       let { videos } = await yts(args.join(' ')) // fetch yt vid using yt-search module
 
+      if(!videos.length) {
+        message.channel.stopTyping(true); // stop typing indicator
+        return message.say('No song found');
+      }
+
       let page = 0; // for page
       let music = 0; // for choosing music index
       let itemsPerPage = 5; // set items showed per page
