@@ -1,4 +1,4 @@
-module.exports = {
+const emoji = {
   a: '🇦', b: '🇧', c: '🇨', d: '🇩',
   e: '🇪', f: '🇫', g: '🇬', h: '🇭',
   i: '🇮', j: '🇯', k: '🇰', l: '🇱',
@@ -11,8 +11,21 @@ module.exports = {
   10: '🔟', '#': '#️⃣', '*': '*️⃣',
   '!': '❗', '?': '❓', 100: '💯',
   exit: '❌', circle: '⭕', check: '☑',
-  rightA: '➡', leftA:'⬅', downUp:'⬇⬆',
-  like:'👍', dislike:'👎', cloud:'☁',
-  rainbow:'🌈', umbrella:'☂', heart: '❤',
+  rightA: '➡', leftA: '⬅', downUp: '⬇⬆',
+  like: '👍', dislike: '👎', cloud: '☁',
+  rainbow: '🌈', umbrella: '☂', heart: '❤',
   blackHeart: '🖤', ok: '🆗', squaredX: '❎'
+}
+
+function randomHex() {
+  return Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
+}
+
+function toTimestamp(second) {
+  return new Date(second * 1000).toISOString().substr(11, 8);
+}
+module.exports = {
+  emoji,
+  randomHex,
+  toTimestamp,
 };
