@@ -1,19 +1,35 @@
-module.exports = {
-  name: 'leave',
-  description: 'leave the voice channel',
-  guildOnly: true,
-  args: true,
-  async execute(message, args) {
-    if (!message.guild.me.voice.channel) {
-      // if not connected then reply
-      return message.reply(`I'm already disconnected from the voice channel`);
-    }
+const { Command } = require('discord.js-commando');
 
-    if (!message.member.voice.channel || message.member.voice.channel.id !== message.guild.me.voice.channel.id) {
-      // send message if author not connected to the same voice channel
-      return message.channel.send("You must join to my voice channel");
+module.exports = class LeaveCommand extends Command {
+  constructor(client) {
+    super(client, {
+      name: 'leave',
+      group: 'voice',
+      memberName: 'leave',
+      description: 'leave voice channel',
+      examples: ['leave'],
+      guildOnly: true,
+    })
+  }
+
+  async run(msg) {
+    if (!msg.member.voice.channel || msg.member.voice.channel.id !== msg.guild.me.voice.channel.id) {
+      // send msg if author not connected to the same voice channel
+      return msg.channel.send("You must join to my voice channel");
     }
+    delete msg.guild.queue;
+    delete msg.guild.playedQueue;
     // leave the channel
-    return await message.member.voice.channel.leave();
+    return await msg.member.voice.channel.leave();
+  }
+
+  async onBlock(msg, reason, data) {
+    let parent = await super.onBlock(msg, reason, data);
+    parent.delete({ timeout: 9000 })
+  }
+
+  onError(err, message, args, fromPattern, result) {
+    super.onError(err, message, args, fromPattern, result)
+      .then(msgParent => msgParent.delete({ timeout: 9000 }));
   }
 }
