@@ -4,7 +4,7 @@ const { guildSettingsSchema } = require('../library/Database/schema.js');
 
 // event on message
 client.on('message', async message => {
-    // fetch prefix from database
+  // fetch prefix from database
   if (message.guild) {
     if (!message.guild.isCached) {
       // fetch prefix from database
@@ -13,13 +13,16 @@ client.on('message', async message => {
       try {
         const check = await db.findById(guildSettingsSchema, message.guild.id);
         if (!check) {
-          let result = db.writeOneUpdate(guildSettingsSchema, { _id: message.guild.id }, {
+          await db.writeOneUpdate(guildSettingsSchema, message.guild.id, {
             _id: message.guild.id,
             prefix: client.commandPrefix,
+            volume: 1
           });
-          message.guild.commandPrefix = result.prefix;
+          message.guild.commandPrefix = client.commandPrefix;
+          message.guild.volume = 1;
         } else {
           message.guild.commandPrefix = check.prefix;
+          message.guild.volume = check.volume;
         }
       } catch (err) {
         logger.log('error', err);

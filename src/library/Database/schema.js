@@ -20,7 +20,8 @@ const guildSettings = new mongoose.Schema({
   prefix: {
     type: String,
     default: '..'
-  }
+  },
+  volume: Number,
 })
 
 const userData = new mongoose.Schema({

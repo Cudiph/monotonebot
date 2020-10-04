@@ -19,8 +19,8 @@ class crud {
     return mongoose.connection.close();
   }
 
-  async writeOneUpdate(schema, Identifier = {}, update = {}) {
-    return await schema.findOneAndUpdate(Identifier, update, {
+  async writeOneUpdate(schema, identifier, update = {}) {
+    return await schema.findOneAndUpdate({ _id: identifier }, update, {
       upsert: true
     });
   }

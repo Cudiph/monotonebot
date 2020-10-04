@@ -7,16 +7,16 @@ client.on('guildCreate', async guild => {
   let db = await new crud(process.env.MONGO_URL);
   db.connect();
   try {
-    await db.writeOneUpdate(guildSettingsSchema, { _id: guild.id }, {
+    await db.writeOneUpdate(guildSettingsSchema, guild.id, {
       _id: guild.id,
-      prefix: '..'
+      prefix: '..',
+      volume: 1,
     });
   } catch (err) {
     logger.log('error', err);
   } finally {
     db.close();
   }
-
 });
 
 client.on('guildDelete', async guild => {
@@ -29,5 +29,4 @@ client.on('guildDelete', async guild => {
   } finally {
     db.close();
   }
-
 })
