@@ -7,50 +7,57 @@ const ytdl = require('ytdl-core-discord');
  */
 async function play(msg) {
   let queue = msg.guild.queue;
+  let index = msg.guild.indexQueue;
+
+  // if someone use jump -100 for example, so it'll reset to zero
+  if (index < 0) {
+    index = msg.guild.indexQueue = 0;
+  }
 
   // if queue is null then delete the queue
-  if (!queue || !queue.length) {
+  if (index === queue.length) {
     return msg.channel.send(`Stopped Playing...`);
   }
 
-  const connection = await msg.member.voice.channel.join();
-  // make a stream dispatcher
-  let dispatcher = await connection.play(await ytdl(queue[0].link, { filter: 'audioonly' }), { type: 'opus', volume: msg.guild.volume || 0.5 });
+  let connection; // make a connection
+  if (msg.guild.me.voice.connection) {
+    connection = msg.guild.me.voice.connection;
+  } else {
+    connection = await msg.member.voice.channel.join();
+  }
 
+  let dispatcher = await connection.play(await ytdl(queue[index].link, { filter: 'audioonly' }), { type: 'opus', volume: msg.guild.volume || 0.5 });
+
+  // delete queue cache when disconnected
   connection.on('disconnect', () => {
     delete msg.guild.queue;
-    delete msg.guild.playedQueue;
+    delete msg.guild.indexQueue;
   })
 
+  // give data when dispatcher start
   dispatcher.on('start', async () => {
-    msg.channel.send('now playing\n' + queue[0].title + ` by ${queue[0].uploader}`).then(msg => {
-      msg.delete({ timeout: queue[0].seconds * 1000 });
+    msg.channel.send('now playing\n' + queue[index].title + ` by ${queue[index].uploader}`).then(msg => {
+      msg.delete({ timeout: queue[index].seconds * 1000 });
     });
   });
 
+  // play next song when current song is finished
   dispatcher.on('finish', () => {
-    let played = queue.shift();
-    if (msg.guild.playedQueue) {
-      msg.guild.playedQueue.push(played);
-    }
+    msg.guild.indexQueue++;
     play(msg);
   });
 
+  // skip current track if error occured
   dispatcher.on('error', err => {
     logger.log('error', err);
-    if (queue.length > 1) {
-      msg.channel.send('An error occured. The current track will be skipped');
-    }
-    let played = queue.shift();
-    if (msg.guild.playedQueue) {
-      msg.guild.playedQueue.push(played);
-    }
+    msg.channel.send('An error occured. The current track will be skipped');
+    msg.guild.indexQueue++;
     play(msg);
   });
 }
 
 /**
- * Push to the queue and play if not playing a music
+ * Push to the queue and play if not playing any music
  * @param {Object} data data of music fetched from yt-search
  * @param {CommandoMessage} message message from textchannel
  */
@@ -62,22 +69,24 @@ async function player(data, message) {
     seconds: parseInt(data.seconds),
     channel: message.channel
   }
-  if (!message.guild.playedQueue) {
-    message.guild.playedQueue = [];
-  }
-  if (!message.guild.queue || !message.guild.queue.length) {
+  if (!message.guild.queue) {
     try {
       message.guild.queue = [];
+      message.guild.indexQueue = 0;
       await message.guild.queue.push(construction);
       return play(message);
     } catch (err) {
+      message.channel.send('Something went wrong');
       delete message.guild.queue;
       logger.log('error', err);
     }
   } else {
     message.guild.queue.push(construction);
-    return message.channel.send(`${data.title} has been added to the queue.`)
-      .then(msg => msg.delete({ timeout: 6000 }));
+    message.channel.send(`${data.title} has been added to the queue.`)
+      .then(msg => msg.delete({ timeout: 8000 }));
+    if (!message.guild.me.voice.connection.dispatcher || message.guild.me.voice.connection.dispatcher.paused) {
+      return play(message);
+    }
   }
 }
 
@@ -124,14 +133,14 @@ function setEmbedPlayCmd(dataList, indexPage, page, msg, itemsPerPage) {
 
 /**
  * Set embed for ..queue
- * @param {Array} dataList array of music queue from message.guild.queue + message.guild.playedQueue
+ * @param {Array} dataList array of music queue from message.guild.queue
  * @param {Number} indexPage number for indexing queue items
  * @param {Number} page for showing current page in embed
  * @param {CommandoMessage} msg message from user
  * @param {Number} itemsPerPage number of items showed in embed
  * @param {Array} played list of music queue for marking the current playing in embed
  */
-function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage, played) {
+function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
   let listLength = dataList.length;
   let embed = {
     color: parseInt(randomHex(), 16),
@@ -146,14 +155,14 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage, played) 
 
   if (page === Math.floor(listLength / itemsPerPage)) {
     for (let i = 0; i < (listLength - indexPage); i++) {
-      if ((indexPage + i) !== played.length) {
+      if ((indexPage + i) !== msg.guild.indexQueue) {
         embed.fields.push({
-          name: `[${indexPage + i + 1}] ${dataList[indexPage + i].title}`,
+          name: `[${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} | ${toTimestamp(dataList[indexPage + i].seconds).substr(3)}`,
         })
       } else {
         embed.fields.push({
-          name: `=> [${indexPage + i + 1}] ${dataList[indexPage + i].title}`,
+          name: `=> [${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} | ${toTimestamp(dataList[indexPage + i].seconds).substr(3)}`,
         })
       }
@@ -161,14 +170,14 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage, played) 
     }
   } else {
     for (let i = 0; i < itemsPerPage; i++) {
-      if ((indexPage + i) !== played.length) {
+      if ((indexPage + i) !== msg.guild.indexQueue) {
         embed.fields.push({
-          name: `[${indexPage + i + 1}] ${dataList[indexPage + i].title}`,
+          name: `[${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} | ${toTimestamp(dataList[indexPage + i].seconds).substr(3)}`,
         })
       } else {
         embed.fields.push({
-          name: `=> [${indexPage + i + 1}] ${dataList[indexPage + i].title}`,
+          name: `=> [${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} | ${toTimestamp(dataList[indexPage + i].seconds).substr(3)}`,
         })
       }

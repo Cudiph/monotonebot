@@ -115,7 +115,7 @@ module.exports = class PlayCommand extends Command {
             await msg.react(emojiNeeded[i]);
           }
         }
-      }).catch(err => null); // cuz error is normal in this case
+      }).catch(err => message.channel.stopTyping(true)); // cuz error is normal in this case
 
     }
 

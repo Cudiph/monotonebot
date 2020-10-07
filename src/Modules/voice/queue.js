@@ -20,18 +20,19 @@ module.exports = class QueueCommand extends Command {
   }
 
   async run(msg) {
-    if (!msg.guild.playedQueue && !msg.guild.queue) {
+    if (!msg.guild.queue) {
       return msg.say(`There is no queue.`);
     }
-    // merge all queue that played and waiting
-    let allQueue = msg.guild.playedQueue.concat(msg.guild.queue);
 
+    // variabel to store data :)
+    console.log(msg.guild.indexQueue);
+    let queue = msg.guild.queue;
     let page = 0;
     let index = 0;
     let itemsPerPage = 9;
 
     // send embed
-    msg.channel.send({ embed: setEmbedQueueCmd(allQueue, index, page, msg, itemsPerPage, msg.guild.playedQueue) })
+    msg.channel.send({ embed: setEmbedQueueCmd(queue, index, page, msg, itemsPerPage) })
       .then(async embedMsg => {
         let emojiNeeded = ['⬅', '➡', '🇽'];
 
@@ -58,20 +59,20 @@ module.exports = class QueueCommand extends Command {
             page++;
             index += itemsPerPage;
             // when page exceed the max of video length
-            if (page + 1 > Math.ceil(allQueue.length / itemsPerPage)) {
-              page = (Math.ceil(allQueue.length / itemsPerPage)) - 1;
+            if (page + 1 > Math.ceil(queue.length / itemsPerPage)) {
+              page = (Math.ceil(queue.length / itemsPerPage)) - 1;
               index -= itemsPerPage;
               return;
             }
           }
           if (collected.emoji.name === '➡' || collected.emoji.name === '⬅') {
-            return embedMsg.edit({ embed: setEmbedQueueCmd(allQueue, index, page, msg, itemsPerPage, msg.guild.playedQueue) });
+            return embedMsg.edit({ embed: setEmbedQueueCmd(queue, index, page, msg, itemsPerPage) });
           }
 
         })
 
         // reacting the message
-        if ((page + 1) !== Math.ceil(allQueue.length / itemsPerPage)) {
+        if ((page + 1) !== Math.ceil(queue.length / itemsPerPage)) {
           for (let i = 0; i < emojiNeeded.length; i++) {
             await embedMsg.react(emojiNeeded[i]);
           }
