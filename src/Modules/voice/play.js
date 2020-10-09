@@ -3,7 +3,8 @@ const yts = require('yt-search');
 const { emoji } = require('../../library/helper/discord-item.js');
 const { Command } = require('discord.js-commando');
 const { oneLine } = require('common-tags');
-const { setEmbedPlayCmd, player } = require('../../library/helper/player.js');
+const { player, play } = require('../../library/helper/player.js');
+const { setEmbedPlayCmd } = require('../../library/helper/embed.js');
 
 module.exports = class PlayCommand extends Command {
   constructor(client) {
@@ -17,7 +18,9 @@ module.exports = class PlayCommand extends Command {
       guildOnly: true,
       details: oneLine`
       Play audio from youtube. You can play with query or with a link in
-      argument.
+      argument. If you want to resume your track please use resume instead
+      because if you use play then it'll start over again so use it to restart
+      the player with no argument.
       `,
       throttling: {
         usages: 3,
@@ -35,15 +38,21 @@ module.exports = class PlayCommand extends Command {
     }
 
     if (message.member.voice.channel) {
+      if (!args.length && !message.guild.queue) {
+        return message.say('There is nothing to play');
+      }
+      if (!args.length && message.guild.me.voice.connection.dispatcher.paused) {
+        return play(message);
+      }
       const link = args[0].match(/https?:\/\/(www.)?youtube.com\/watch\?v=\w+/)
 
       // check if author send a youtube link
       if (link) {
         let data = await ytdl.getInfo(args[0]);
         let dataConstructor = {
-          title: data.title,
+          title: data.videoDetails.title,
           url: data.url,
-          author: data.author,
+          author: data.videoDetails.author,
           seconds: data.videoDetails.lengthSeconds,
           channel: message.channel
         }
@@ -53,7 +62,7 @@ module.exports = class PlayCommand extends Command {
       message.channel.startTyping(); // start type indicator cuz it'll be long
       let { videos } = await yts(args.join(' ')) // fetch yt vid using yt-search module
 
-      if(!videos.length) {
+      if (!videos.length) {
         message.channel.stopTyping(true); // stop typing indicator
         return message.say('No song found');
       }
