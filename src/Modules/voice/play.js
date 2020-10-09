@@ -48,13 +48,12 @@ module.exports = class PlayCommand extends Command {
 
       // check if author send a youtube link
       if (link) {
-        let data = await ytdl.getInfo(args[0]);
+        let data = await ytdl.getBasicInfo(args[0]);
         let dataConstructor = {
           title: data.videoDetails.title,
           url: data.url,
           author: data.videoDetails.author,
           seconds: data.videoDetails.lengthSeconds,
-          channel: message.channel
         }
         return player(dataConstructor, message);
       }

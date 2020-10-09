@@ -54,7 +54,7 @@ async function play(msg) {
   // give data when dispatcher start
   dispatcher.on('start', async () => {
     msg.channel.send({ embed: await setEmbedPlaying(msg) }).then(msg => {
-      msg.delete({ timeout: queue[index].seconds * 1000 });
+      msg.delete({ timeout: queue[index].seconds ? queue[index].seconds * 1000 : 60000});
     });
   });
 
@@ -78,7 +78,7 @@ async function play(msg) {
  * @param {Object} data data of music fetched from yt-search
  * @param {CommandoMessage} message message from textchannel
  */
-async function player(data, message) {
+async function player(data, message, fromPlaylist=false) {
   const construction = {
     title: data.title,
     link: data.url,
@@ -91,7 +91,7 @@ async function player(data, message) {
       message.guild.queue = [];
       message.guild.indexQueue = 0;
       await message.guild.queue.push(construction);
-      return play(message);
+      return await play(message);
     } catch (err) {
       message.channel.send('Something went wrong');
       delete message.guild.queue;
@@ -99,10 +99,12 @@ async function player(data, message) {
     }
   } else {
     message.guild.queue.push(construction);
-    message.channel.send(`${data.title} has been added to the queue.`)
-      .then(msg => msg.delete({ timeout: 8000 }));
-    if (!message.guild.me.voice.connection.dispatcher || message.guild.me.voice.connection.dispatcher.paused) {
-      return play(message);
+    if (!fromPlaylist) {
+      message.channel.send(`${data.title} has been added to the queue.`)
+        .then(msg => msg.delete({ timeout: 8000 }));
+    }
+    if (message.guild.me.voice.connection.dispatcher && message.guild.me.voice.connection.dispatcher.paused) {
+      return await play(message);
     }
   }
 }
