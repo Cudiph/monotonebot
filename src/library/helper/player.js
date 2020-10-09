@@ -1,4 +1,4 @@
-const { randomHex, toTimestamp } = require('./discord-item.js');
+const { setEmbedPlaying } = require('./embed.js');
 const ytdl = require('ytdl-core-discord');
 
 /**
@@ -14,8 +14,25 @@ async function play(msg) {
     index = msg.guild.indexQueue = 0;
   }
 
+  // check if the queue is empty
+  if (!queue || !queue.length) {
+    return msg.channel.send('No song to be played')
+  }
   // if queue is null then delete the queue
   if (index === queue.length) {
+    if (msg.guild.autoplay) {
+      let info = await ytdl.getBasicInfo(queue[index - 1].link);
+      let related = info.related_videos[0];
+      const construction = {
+        title: related.title,
+        link: `https://youtube.com/watch?v=${related.id}`,
+        uploader: related.author,
+        seconds: parseInt(related.length_seconds),
+        author: `Autoplay`
+      }
+      msg.guild.queue.push(construction);
+      return play(msg);
+    }
     return msg.channel.send(`Stopped Playing...`);
   }
 
@@ -25,9 +42,9 @@ async function play(msg) {
   } else {
     connection = await msg.member.voice.channel.join();
   }
-
+  msg.channel.startTyping();
   let dispatcher = await connection.play(await ytdl(queue[index].link, { filter: 'audioonly' }), { type: 'opus', volume: msg.guild.volume || 0.5 });
-
+  msg.channel.stopTyping(true);
   // delete queue cache when disconnected
   connection.on('disconnect', () => {
     delete msg.guild.queue;
@@ -36,7 +53,7 @@ async function play(msg) {
 
   // give data when dispatcher start
   dispatcher.on('start', async () => {
-    msg.channel.send('now playing\n' + queue[index].title + ` by ${queue[index].uploader}`).then(msg => {
+    msg.channel.send({ embed: await setEmbedPlaying(msg) }).then(msg => {
       msg.delete({ timeout: queue[index].seconds * 1000 });
     });
   });
@@ -44,7 +61,7 @@ async function play(msg) {
   // play next song when current song is finished
   dispatcher.on('finish', () => {
     msg.guild.indexQueue++;
-    play(msg);
+    return play(msg);
   });
 
   // skip current track if error occured
@@ -52,7 +69,7 @@ async function play(msg) {
     logger.log('error', err);
     msg.channel.send('An error occured. The current track will be skipped');
     msg.guild.indexQueue++;
-    play(msg);
+    return play(msg);
   });
 }
 
@@ -67,7 +84,7 @@ async function player(data, message) {
     link: data.url,
     uploader: data.author.name,
     seconds: parseInt(data.seconds),
-    channel: message.channel
+    author: `${message.author.username}#${message.author.discriminator}`
   }
   if (!message.guild.queue) {
     try {
@@ -90,105 +107,7 @@ async function player(data, message) {
   }
 }
 
-/**
- * Setting up embed so you won't repeat it
- * @param {object} dataList data of music fetched from yt-search
- * @param {number} indexPage A number from indexes to choose between list of object
- * @param {number} page number of page now
- * @param {CommandoMessage} msg message from textchannel
- * @param {number} itemsPerPage number of items showed in one embed
- */
-function setEmbedPlayCmd(dataList, indexPage, page, msg, itemsPerPage) {
-  let listLength = dataList.length;
-  let embed = {
-    color: 0x53bcfc,
-    author: {
-      name: `@${msg.author.username}#${msg.author.discriminator}`,
-      icon_url: msg.author.displayAvatarURL(),
-    },
-    description: `React with emoji to select audio`,
-    fields: [],
-    footer: {
-      text: `${page + 1}/${Math.ceil(listLength / itemsPerPage)}`,
-    },
-  }
-
-  if ((page + 1) === Math.ceil(listLength / itemsPerPage)) {
-    for (let i = 0; i < (listLength - indexPage); i++) {
-      embed.fields.push({
-        name: `[${i + 1}] ${dataList[indexPage + i].title}`,
-        value: `Uploaded by ${dataList[indexPage + i].author.name} | ${dataList[indexPage + i].timestamp}`,
-      })
-    }
-  } else {
-    for (let i = 0; i < itemsPerPage; i++) {
-      embed.fields.push({
-        name: `[${i + 1}] ${dataList[indexPage + i].title}`,
-        value: `Uploaded by ${dataList[indexPage + i].author.name} | ${dataList[indexPage + i].timestamp}`,
-      })
-    }
-  }
-  return embed;
-}
-
-/**
- * Set embed for ..queue
- * @param {Array} dataList array of music queue from message.guild.queue
- * @param {Number} indexPage number for indexing queue items
- * @param {Number} page for showing current page in embed
- * @param {CommandoMessage} msg message from user
- * @param {Number} itemsPerPage number of items showed in embed
- * @param {Array} played list of music queue for marking the current playing in embed
- */
-function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
-  let listLength = dataList.length;
-  let embed = {
-    color: parseInt(randomHex(), 16),
-    title: `Queue of ${msg.guild.name}`,
-    description: `Use react to switch between page`,
-    fields: [],
-    timestamp: new Date(),
-    footer: {
-      text: `${page + 1}/${Math.ceil(listLength / itemsPerPage)}`,
-    },
-  }
-
-  if (page === Math.floor(listLength / itemsPerPage)) {
-    for (let i = 0; i < (listLength - indexPage); i++) {
-      if ((indexPage + i) !== msg.guild.indexQueue) {
-        embed.fields.push({
-          name: `[${indexPage + i}] ${dataList[indexPage + i].title}`,
-          value: `${dataList[indexPage + i].uploader} | ${toTimestamp(dataList[indexPage + i].seconds).substr(3)}`,
-        })
-      } else {
-        embed.fields.push({
-          name: `=> [${indexPage + i}] ${dataList[indexPage + i].title}`,
-          value: `${dataList[indexPage + i].uploader} | ${toTimestamp(dataList[indexPage + i].seconds).substr(3)}`,
-        })
-      }
-
-    }
-  } else {
-    for (let i = 0; i < itemsPerPage; i++) {
-      if ((indexPage + i) !== msg.guild.indexQueue) {
-        embed.fields.push({
-          name: `[${indexPage + i}] ${dataList[indexPage + i].title}`,
-          value: `${dataList[indexPage + i].uploader} | ${toTimestamp(dataList[indexPage + i].seconds).substr(3)}`,
-        })
-      } else {
-        embed.fields.push({
-          name: `=> [${indexPage + i}] ${dataList[indexPage + i].title}`,
-          value: `${dataList[indexPage + i].uploader} | ${toTimestamp(dataList[indexPage + i].seconds).substr(3)}`,
-        })
-      }
-    }
-  }
-  return embed;
-}
-
 module.exports = {
   play,
   player,
-  setEmbedPlayCmd,
-  setEmbedQueueCmd,
 }
