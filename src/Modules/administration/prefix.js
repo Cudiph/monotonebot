@@ -50,6 +50,7 @@ module.exports = class PrefixCommand extends Command {
         }
       ],
       guildOnly: true,
+      userPermissions: ['ADMINISTRATOR']
     });
   }
 
@@ -97,6 +98,6 @@ module.exports = class PrefixCommand extends Command {
   }
 
   onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data).then(parent => parent.delete({ timeout: 1000 }));
+    super.onBlock(msg, reason, data).then(parent => parent.delete({ timeout: 10000 }));
   }
 };
