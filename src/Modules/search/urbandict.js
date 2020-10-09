@@ -13,7 +13,7 @@ module.exports = class UrbandictCommand extends Command {
       examples: ['ud Hello World', 'urbandict bruh'],
       argsType: 'multiple',
       throttling: {
-        usages: 2,
+        usages: 1,
         duration: 10,
       },
       args: [
@@ -34,6 +34,11 @@ module.exports = class UrbandictCommand extends Command {
     const query = querystring.stringify({ term: args.query });
     // fetching request
     const { list } = await fetch(`https://api.urbandictionary.com/v0/define?${query}`).then(response => response.json());
+    // return if no result
+    if (!list || !list.length) {
+      return message.say('No words found');
+    }
+
     // trim words if too long
     const trim = (str, max) => ((str.length > max) ? `${str.slice(0, max - 3)}...` : str);
     let counter = 0
