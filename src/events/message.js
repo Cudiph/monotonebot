@@ -4,10 +4,11 @@ const { guildSettingsSchema } = require('../library/Database/schema.js');
 
 // event on message
 client.on('message', async message => {
+  // let now = Date.now(); // performance test
   // fetch prefix from database
   if (message.guild) {
     if (!message.guild.isCached) {
-      // fetch prefix from database
+      // fetch data from database
       let db = await new crud(process.env.MONGO_URL);
       db.connect();
       try {
@@ -20,14 +21,20 @@ client.on('message', async message => {
           });
           message.guild.commandPrefix = client.commandPrefix;
           message.guild.volume = 1;
+          message.guild.isCached = true;
+          // make a sign
         } else {
           message.guild.commandPrefix = check.prefix;
           message.guild.volume = check.volume;
+        }
+
+        if (check) {
+          message.guild.isCached = true;
         }
       } catch (err) {
         logger.log('error', err);
       }
     }
-    message.guild.isCached = true;
+    // console.log(Date.now() - now); // performance test
   }
 });
