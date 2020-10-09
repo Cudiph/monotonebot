@@ -24,9 +24,6 @@ module.exports = class VolumeCommand extends Command {
     if (!msg.guild.me.voice.connection) {
       return msg.say(`I'm not connected to the voice channel`);
     }
-    if (isNaN(args[0])) {
-      return msg.say('argument must be a number');
-    }
     let db = await new crud(process.env.MONGO_URL);
     db.connect();
 
@@ -34,6 +31,11 @@ module.exports = class VolumeCommand extends Command {
       let vol = await db.findById(guildSettingsSchema, msg.guild.id);
       return msg.say(`Current volume level is ${vol.volume * 100}`)
     }
+
+    if (isNaN(args[0])) {
+      return msg.say('argument must be a number');
+    }
+
     let intArg = parseInt(args[0]);
 
     if (intArg < 1 || intArg > 100) {
