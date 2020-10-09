@@ -19,7 +19,7 @@ module.exports = class PlayCommand extends Command {
       details: oneLine`
       Play audio from youtube. You can play with query or with a link in
       argument. If you want to resume your track please use resume instead
-      because if you use play then it'll start over again so use it to restart
+      because if you use play then it'll start over again when paused so use it to restart
       the player with no argument.
       `,
       throttling: {
