@@ -22,8 +22,13 @@ function randomHex() {
 }
 
 function toTimestamp(second) {
-  return new Date(second * 1000).toISOString().substr(11, 8);
+  if (second > 3599) {
+    return new Date(second * 1000).toISOString().substr(11, 8);
+  } else {
+    return new Date(second * 1000).toISOString().substr(14, 5);
+  }
 }
+
 module.exports = {
   emoji,
   randomHex,
