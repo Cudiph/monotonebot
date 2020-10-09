@@ -8,9 +8,9 @@ module.exports = class PingCommand extends Command {
       aliases: ['p'],
       group: 'util',
       memberName: 'ping',
-      description: 'Checks the bot\'s latency to the Discord server.',
+      description: 'Show HeartBeat and Round-Trip Time latency',
       throttling: {
-        usages: 5,
+        usages: 3,
         duration: 10,
       },
     });
@@ -19,18 +19,28 @@ module.exports = class PingCommand extends Command {
   async run(msg) {
     msg.channel.send("Pinging...").then(pingMsg => {
       // Basic embed
+      let rtt = (pingMsg.editedTimestamp || pingMsg.createdTimestamp) - (msg.editedTimestamp || msg.createdTimestamp);
+      let hb = Math.round(this.client.ws.ping);
       const embed = new Discord.MessageEmbed()
-        .setColor("#11ff00")
         .setDescription(`Pong! 🏓`)
         .addFields(
-          { name: `RTT Ping`, value: `${(pingMsg.editedTimestamp || pingMsg.createdTimestamp) - (msg.editedTimestamp || msg.createdTimestamp)}ms.`, inline: true},
-          { name: `HB Ping`, value: `${Math.round(this.client.ws.ping)}ms.`, inline: true},
+          { name: `RTT Ping`, value: `**${rtt}**ms.`, inline: true },
+          { name: `HB Ping`, value: `**${hb}**ms.`, inline: true },
         )
-        if (msg.guild) {
-          embed.setFooter(`Region: ${msg.guild.region}`, msg.guild.iconURL());
-        } else if (msg.channel.type === 'dm') {
-          embed.setFooter(`${msg.author.username}#${msg.author.discriminator}`, msg.author.displayAvatarURL())
-        }
+      if (msg.guild) {
+        embed.setFooter(`Region: ${msg.guild.region}`, msg.guild.iconURL());
+      } else if (msg.channel.type === 'dm') {
+        embed.setFooter(`${msg.author.username}#${msg.author.discriminator}`, msg.author.displayAvatarURL())
+      }
+
+      // set embed color based on average of ping
+      if (rtt + hb / 2 < 250) {
+        embed.setColor('#11ff00');
+      } else if (rtt + hb / 2 < 500) {
+        embed.setColor('#ff9900');
+      } else {
+        embed.setColor('#ff0000')
+      }
 
       // Then It Edits the msg with the ping variable embed that you created
       pingMsg.delete();
