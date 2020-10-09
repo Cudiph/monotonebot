@@ -31,28 +31,41 @@ module.exports = class HelpCommand extends Command {
     const groups = this.client.registry.groups;
     const commands = this.client.registry.findCommands(args.command, false, msg);
     const showAll = args.command && args.command.toLowerCase() === 'all';
+    let embed = {
+      color: 0xff548e,
+      fields : [
+        {
+          name: `**Format:**`,
+          value: `${msg.anyUsage(`${commands[0].name}${commands[0].format ? ` ${commands[0].format}` : ''}`)}`
+        }
+      ]
+    }
     if (args.command && !showAll) {
       if (commands.length === 1) {
-        let help = stripIndents`
+        embed.description = stripIndents`
 					${oneLine`
-						__Command **${commands[0].name}**:__ ${commands[0].description}
+						Command **${commands[0].name}**: ${commands[0].description}
 						${commands[0].guildOnly ? ' (Usable only in servers)' : ''}
 						${commands[0].nsfw ? ' (NSFW)' : ''}
 					`}
+        `;
 
-					**Format:** ${msg.anyUsage(`${commands[0].name}${commands[0].format ? ` ${commands[0].format}` : ''}`)}
-				`;
-        if (commands[0].aliases.length > 0) help += `\n**Aliases:** ${commands[0].aliases.join(', ')}`;
-        help += `\n${oneLine`
-					**Group:** ${commands[0].group.name}
+        if (commands[0].aliases.length > 0) embed.fields.push({ name: `**Aliases:** `, value: `${commands[0].aliases.join(', ')}`, inline: true});
+        embed.fields.push({
+          name: `**Group:**`,
+          value: oneLine`
+					 ${commands[0].group.name}
 					(\`${commands[0].groupID}:${commands[0].memberName}\`)
-				`}`;
-        if (commands[0].details) help += `\n**Details:** ${commands[0].details}`;
-        if (commands[0].examples) help += `\n**Examples:**\n${'- ..' + commands[0].examples.join('\n- ..')}`;
+        `,
+        inline: true,
+      })
+
+        if (commands[0].details) embed.fields.push({ name: `**Details:**`, value: commands[0].details});
+        if (commands[0].examples) embed.fields.push({ name: `**Examples:**`, value: '- ..' + commands[0].examples.join('\n- ..')});
 
         const messages = [];
         try {
-          messages.push(await msg.direct(help));
+          messages.push(await msg.direct({embed}));
           if (msg.channel.type !== 'dm') messages.push(await msg.reply('Sent you a DM with information.'));
         } catch (err) {
           messages.push(await msg.reply('Unable to send you the help DM. You probably have DMs disabled.'));
@@ -97,7 +110,7 @@ module.exports = class HelpCommand extends Command {
                 .map(cmd => {
                   let cmdIndent = longest + 1 - cmd.name.length;
                   if (cmdIndent < 0 ) cmdIndent = 0;
-                  return `**\`${cmd.name + ' '.repeat(cmdIndent)}:\`** ${cmd.description}${cmd.nsfw ? ' (NSFW)' : ''}`
+                  return `**\`- ${cmd.name + ' '.repeat(cmdIndent)}:\`** ${cmd.description}${cmd.nsfw ? ' (NSFW)' : ''}`
                 }).join('\n')
               }
 						`}).join('\n\n')
