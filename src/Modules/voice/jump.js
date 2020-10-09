@@ -3,7 +3,7 @@ const { Command } = require('discord.js-commando');
 const { play } = require('../../library/helper/player.js');
 
 
-module.exports = class SkipCommand extends Command {
+module.exports = class JumpCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'jump',
@@ -28,6 +28,10 @@ module.exports = class SkipCommand extends Command {
     if (!msg.guild.me.voice.connection) {
       return;
     }
+    // check if args is number or nah
+    if (args.length && isNaN(args[0])) {
+      return msg.say('argument must be a number');
+    }
     let intArg;
     let rangeIndex = msg.guild.queue.length - msg.guild.indexQueue; //
 
@@ -36,11 +40,6 @@ module.exports = class SkipCommand extends Command {
       intArg = 1;
     } else {
       intArg = parseInt(args[0]);
-    }
-
-    // check if args is number or nah
-    if (isNaN(intArg)) {
-      return msg.say('argument must be a number');
     }
 
     // check if arg exceed the queue length and set to 1 if true
