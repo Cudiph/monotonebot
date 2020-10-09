@@ -1,5 +1,5 @@
 const { Command } = require('discord.js-commando');
-const { setEmbedQueueCmd } = require('../../library/helper/player.js');
+const { setEmbedQueueCmd } = require('../../library/helper/embed.js');
 const { emoji } = require('../../library/helper/discord-item.js');
 
 module.exports = class QueueCommand extends Command {
@@ -9,7 +9,7 @@ module.exports = class QueueCommand extends Command {
       group: 'voice',
       aliases: ['q'],
       memberName: 'queue',
-      description: 'Show music/voice queue',
+      description: 'Show queue',
       examples: ['queue', 'q'],
       guildOnly: true,
       throttling: {
@@ -25,7 +25,6 @@ module.exports = class QueueCommand extends Command {
     }
 
     // variabel to store data :)
-    console.log(msg.guild.indexQueue);
     let queue = msg.guild.queue;
     let page = 0;
     let index = 0;
