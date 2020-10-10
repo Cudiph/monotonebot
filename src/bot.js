@@ -28,7 +28,7 @@ client.registry
     ['gambling', 'Gambling'],
     ['games', 'Minigames'],
     ['search', 'Search'],
-    ['self', 'Self configuration']
+    ['self', 'Self configuration'],
     ['undefined', 'undefined'],
     ['util', 'Utility'],
     ['voice', 'Voice'],
