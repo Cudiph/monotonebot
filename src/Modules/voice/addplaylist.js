@@ -10,7 +10,7 @@ module.exports = class AddPlaylistCommand extends Command {
       group: 'voice',
       memberName: 'addplaylist',
       aliases: ['addpl'],
-      description: 'Play audio from youtube',
+      description: 'Take a list from youtube an push all vids to the queue',
       examples: ['addplaylist PLtByeX9ycvplxbyVX7fiUA4f_OxiyNOxk',
         'addplaylist https://www.youtube.com/watch?v=q6EoRBvdVPQ&list=PLFsQleAWXsj_4yDeebiIADdH5FMayBiJo'],
       argsType: 'multiple',
@@ -53,7 +53,7 @@ module.exports = class AddPlaylistCommand extends Command {
               title: video.title,
               url: `https://youtube.com/watch?v=${video.videoId}`,
               author: video.author,
-              seconds: '',
+              seconds: 0,
             }, msg, true);
           })
           return msg.say(`Added playlist ${playlist.title} by ${playlist.author.name}`);
