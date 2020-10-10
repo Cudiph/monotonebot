@@ -2,7 +2,6 @@
 const fs = require('fs');
 const { CommandoClient } = require('discord.js-commando');
 const path = require('path');
-require('dotenv').config();
 const winston = require('winston');
 
 // winston logger
@@ -29,6 +28,7 @@ client.registry
     ['gambling', 'Gambling'],
     ['games', 'Minigames'],
     ['search', 'Search'],
+    ['self', 'Self configuration']
     ['undefined', 'undefined'],
     ['util', 'Utility'],
     ['voice', 'Voice'],
