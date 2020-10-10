@@ -1,25 +1,29 @@
 const { Command } = require('discord.js-commando')
 
-module.exports = class SetActivityCommand extends Command {
+module.exports = class SetUsernameCommand extends Command {
   constructor(client) {
     super(client, {
-      name: 'setavatar',
-      group: 'administration',
-      memberName: 'setavatar',
-      description: 'set avatar from given url',
-      examples: ['setavatar C:\\Users\\ASUS\\Pictures\\minecraft\\creeper.png',
-        'setavatar https://upload.wikimedia.org/wikipedia/fr/thumb/0/05/Discord.svg/1200px-Discord.svg.png'],
+      name: 'setusername',
+      group: 'self',
+      memberName: 'username',
+      description: 'Set bot username',
+      examples: ['setusername mylovelybot'],
       guarded: true,
       ownerOnly: true,
       argsType: 'multiple',
+      throttling: {
+        usages: 2,
+        duration: 3600,
+      },
     });
   }
 
   async run(msg, args) {
-    msg.client.user.setAvatar(args.join(' '))
-      .then(msg.say(`Avatar has been updated`))
+    // Set username
+    msg.client.user.setUsername(args.join(' '))
+      .then(user => msg.say(`My new username is ${user.username}`))
       .catch(err => {
-        msg.say('Please check your url');
+        msg.say('Something went wrong');
         logger.log('error', err);
       });
   }

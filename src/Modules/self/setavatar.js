@@ -3,12 +3,12 @@ const { Command } = require('discord.js-commando')
 module.exports = class SetActivityCommand extends Command {
   constructor(client) {
     super(client, {
-      name: 'setactivity',
-      group: 'administration',
-      memberName: 'activity',
-      description: 'Set bot activity',
-      examples: ['setactivity Playing ..help to display help command'],
-      details: 'available activity are PLAYING, STREAMING, LISTENING, WATCHING.',
+      name: 'setavatar',
+      group: 'self',
+      memberName: 'setavatar',
+      description: 'set avatar from given url',
+      examples: ['setavatar C:\\Users\\ASUS\\Pictures\\minecraft\\creeper.png',
+        'setavatar https://upload.wikimedia.org/wikipedia/fr/thumb/0/05/Discord.svg/1200px-Discord.svg.png'],
       guarded: true,
       ownerOnly: true,
       argsType: 'multiple',
@@ -16,10 +16,14 @@ module.exports = class SetActivityCommand extends Command {
   }
 
   async run(msg, args) {
-    msg.client.user.setActivity(args.slice(1).join(' '), { type: args[0].toUpperCase() })
-      .then(presence => msg.say(`Activity set to ${presence.activities[0].name}`))
+    isLink = args.join(' ').match(/(?:https?|\.\/|\w\:(\\|\/)).*(?:png|jpg|jpeg)/);
+    if (!isLink) {
+      return msg.say('Please check the path or link');
+    }
+    msg.client.user.setAvatar(args.join(' '))
+      .then(msg.say(`Avatar will be updated`))
       .catch(err => {
-        msg.say('Please check your syntax');
+        msg.say('Please check your url');
         logger.log('error', err);
       });
   }

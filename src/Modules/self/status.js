@@ -3,11 +3,12 @@ const { Command } = require('discord.js-commando')
 module.exports = class SetUsernameCommand extends Command {
   constructor(client) {
     super(client, {
-      name: 'setusername',
-      group: 'administration',
-      memberName: 'username',
+      name: 'setstatus',
+      group: 'self',
+      memberName: 'status',
       description: 'Set bot username',
-      examples: ['setusername mylovelybot'],
+      examples: ['setstatus idle'],
+      details: 'available status are online, idle, invisible, dnd(do not disturb)',
       guarded: true,
       ownerOnly: true,
       argsType: 'multiple',
@@ -20,8 +21,8 @@ module.exports = class SetUsernameCommand extends Command {
 
   async run(msg, args) {
     // Set username
-    msg.client.user.setUsername(args.join(' '))
-      .then(user => msg.say(`My new username is ${user.username}`))
+    msg.client.user.setStatus(args[0])
+      .then(msg.say(`Change status to \`${args[0]}\``))
       .catch(err => {
         msg.say('Something went wrong');
         logger.log('error', err);

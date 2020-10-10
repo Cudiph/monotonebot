@@ -1,30 +1,25 @@
 const { Command } = require('discord.js-commando')
 
-module.exports = class SetUsernameCommand extends Command {
+module.exports = class SetActivityCommand extends Command {
   constructor(client) {
     super(client, {
-      name: 'setstatus',
-      group: 'administration',
-      memberName: 'status',
-      description: 'Set bot username',
-      examples: ['setstatus idle'],
-      details: 'available status are online, idle, invisible, dnd(do not disturb)',
+      name: 'setactivity',
+      group: 'self',
+      memberName: 'activity',
+      description: 'Set bot activity',
+      examples: ['setactivity Playing ..help to display help command'],
+      details: 'available activity are PLAYING, STREAMING, LISTENING, WATCHING.',
       guarded: true,
       ownerOnly: true,
       argsType: 'multiple',
-      throttling: {
-        usages: 2,
-        duration: 3600,
-      },
     });
   }
 
   async run(msg, args) {
-    // Set username
-    msg.client.user.setStatus(args[0])
-      .then(msg.say(`Change status to \`${args[0]}\``))
+    msg.client.user.setActivity(args.slice(1).join(' '), { type: args[0].toUpperCase() })
+      .then(presence => msg.say(`Activity set to ${presence.activities[0].name}`))
       .catch(err => {
-        msg.say('Something went wrong');
+        msg.say('Please check your syntax');
         logger.log('error', err);
       });
   }
