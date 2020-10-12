@@ -1,6 +1,6 @@
 const { Command } = require('discord.js-commando')
 
-module.exports = class SetActivityCommand extends Command {
+module.exports = class SetAvatarCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'setavatar',
@@ -9,19 +9,18 @@ module.exports = class SetActivityCommand extends Command {
       description: 'set avatar from given url',
       examples: ['setavatar C:\\Users\\ASUS\\Pictures\\minecraft\\creeper.png',
         'setavatar https://upload.wikimedia.org/wikipedia/fr/thumb/0/05/Discord.svg/1200px-Discord.svg.png'],
-      guarded: true,
       ownerOnly: true,
       argsType: 'multiple',
     });
   }
 
   async run(msg, args) {
-    isLink = args.join(' ').match(/(?:https?|\.\/|\w\:(\\|\/)).*(?:png|jpg|jpeg)/);
+    let isLink = args.join(' ').match(/(?:https?|\.\/|\w\:(\\|\/)).*(?:png|jpg|jpeg)/);
     if (!isLink) {
       return msg.say('Please check the path or link');
     }
     msg.client.user.setAvatar(args.join(' '))
-      .then(msg.say(`Avatar will be updated`))
+      .then(msg.say(`Avatar will be updated soon`))
       .catch(err => {
         msg.say('Please check your url');
         logger.log('error', err);

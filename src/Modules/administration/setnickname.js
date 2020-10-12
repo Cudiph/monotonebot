@@ -2,7 +2,7 @@ const { Command } = require('discord.js-commando');
 const { getUserMention, isUserId } = require('../../library/users/get-cache.js')
 
 
-module.exports = class SetMyNicknameCommand extends Command {
+module.exports = class SetNicknameCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'setnickname',
