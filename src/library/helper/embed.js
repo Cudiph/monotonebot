@@ -87,13 +87,13 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
         embed.fields.push({
           name: `[${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} ${dataList[indexPage + i].seconds
-            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''}`,
+            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [link](${dataList[indexPage + i].link })`,
         })
       } else {
         embed.fields.push({
           name: `=> [${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} ${dataList[indexPage + i].seconds
-            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''}`,
+            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [link](${dataList[indexPage + i].link })`,
         })
       }
 
@@ -104,13 +104,13 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
         embed.fields.push({
           name: `[${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} ${dataList[indexPage + i].seconds
-            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''}`,
+            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [link](${dataList[indexPage + i].link })`,
         })
       } else {
         embed.fields.push({
           name: `=> [${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} ${dataList[indexPage + i].seconds
-            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''}`,
+            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [link](${dataList[indexPage + i].link })`,
         })
       }
     }
