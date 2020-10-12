@@ -36,41 +36,52 @@ async function play(msg) {
     return msg.channel.send(`Stopped Playing...`);
   }
 
-  let connection; // make a connection
-  if (msg.guild.me.voice.connection) {
-    connection = msg.guild.me.voice.connection;
-  } else {
-    connection = await msg.member.voice.channel.join();
-  }
-  msg.channel.startTyping();
-  let dispatcher = await connection.play(await ytdl(queue[index].link, { filter: 'audioonly' }), { type: 'opus', volume: msg.guild.volume || 0.5 });
-  msg.channel.stopTyping(true);
-  // delete queue cache when disconnected
-  connection.on('disconnect', () => {
-    delete msg.guild.queue;
-    delete msg.guild.indexQueue;
-  })
+  try {
+    let connection; // make a connection
+    if (msg.guild.me.voice.connection) {
+      connection = msg.guild.me.voice.connection;
+    } else {
+      connection = await msg.member.voice.channel.join();
+    }
+    msg.channel.startTyping();
+    let dispatcher = await connection.play(await ytdl(queue[index].link, { filter: 'audioonly' }), { type: 'opus', volume: msg.guild.volume || 0.5 });
+    msg.channel.stopTyping(true);
+    // delete queue cache when disconnected
+    connection.on('disconnect', () => {
+      msg.channel.stopTyping(true);
+      delete msg.guild.queue;
+      delete msg.guild.indexQueue;
+    })
 
-  // give data when dispatcher start
-  dispatcher.on('start', async () => {
-    msg.channel.send({ embed: await setEmbedPlaying(msg) }).then(msg => {
-      msg.delete({ timeout: queue[index].seconds ? queue[index].seconds * 1000 : 60000});
+    // give data when dispatcher start
+    dispatcher.on('start', async () => {
+      msg.channel.send({ embed: await setEmbedPlaying(msg) }).then(msg => {
+        msg.delete({ timeout: queue[index].seconds ? queue[index].seconds * 1000 : 60000 });
+      });
     });
-  });
 
-  // play next song when current song is finished
-  dispatcher.on('finish', () => {
-    msg.guild.indexQueue++;
-    return play(msg);
-  });
+    // play next song when current song is finished
+    dispatcher.on('finish', () => {
+      msg.guild.indexQueue++;
+      return play(msg);
+    });
 
-  // skip current track if error occured
-  dispatcher.on('error', err => {
+    // skip current track if error occured
+    dispatcher.on('error', err => {
+      logger.log('error', err);
+      msg.channel.send('An error occured. The current track will be skipped');
+      msg.guild.indexQueue++;
+      return play(msg);
+    });
+  } catch (err) {
+    // trying to replay if any error occured
     logger.log('error', err);
-    msg.channel.send('An error occured. The current track will be skipped');
-    msg.guild.indexQueue++;
-    return play(msg);
-  });
+    let voiceCh = msg.member.me.voice.channel;
+    await voiceCh.leave();
+    await voiceCh.join();
+    play(msg);
+  }
+
 }
 
 /**
