@@ -38,7 +38,12 @@ async function play(msg) {
   }
 
   try {
-    let connection = await msg.member.voice.channel.join(); // make a connection
+    let connection; // make a connection
+    if (msg.guild.me.voice.connection) {
+      connection = msg.guild.me.voice.connection;
+    } else {
+      connection = await msg.member.voice.channel.join();
+    }
     msg.channel.startTyping();
     let dispatcher = await connection.play(await ytdl(queue[index].link, { filter: 'audioonly' }), { type: 'opus', volume: msg.guild.volume || 0.5 });
     msg.channel.stopTyping(true);
@@ -82,7 +87,7 @@ async function play(msg) {
  * @param {Object} data data of music fetched from yt-search
  * @param {CommandoMessage} message message from textchannel
  */
-async function player(data, message, fromPlaylist=false) {
+async function player(data, message, fromPlaylist = false) {
   const construction = {
     title: data.title,
     link: data.url,
