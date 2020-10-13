@@ -3,6 +3,8 @@ const { Command } = require('discord.js-commando');
 const fetch = require('node-fetch');
 const querystring = require('querystring');
 
+const trim = (str, max) => ((str.length > max) ? `${str.slice(0, max - 3)}...` : str);
+
 module.exports = class AddPlaylistCommand extends Command {
   constructor(client) {
     super(client, {
@@ -27,18 +29,18 @@ module.exports = class AddPlaylistCommand extends Command {
   }
 
   async run(msg, args) {
-    console.log(args);
     if (args[0].match(/(?:\w+)>(?:\w+)/)) {
       var lang = args.join(' ').split('>').join(' ').split(' ');
     } else {
       var lang = args;
     }
-
+    let sl = args[0].match(/(\w+)>(\w+)/) ? lang[0] : 'auto';
+    let tl = args[0].match(/(\w+)>(\w+)/) ? lang[1] : lang[0];
     const property = querystring.stringify({
       client: 'gtx',
-      sl: args[0].match(/(\w+)>(\w+)/) ? lang[0] : 'auto',
-      tl: args[0].match(/(\w+)>(\w+)/) ? lang[1] : lang[0],
-      hl: 'en',
+      sl: sl,
+      tl: tl,
+      hl: tl,
       dt: ['at', 'bd', 'ex', 'ld', 'md', 'qca', 'rw', 'rm', 'ss', 't'],
       ie: 'UTF-8',
       oe: 'UTF-8',
@@ -53,15 +55,32 @@ module.exports = class AddPlaylistCommand extends Command {
     try {
       result = await fetch(`https://translate.googleapis.com/translate_a/single?${property}`).then(response => response.json());
       if (!result) {
-        return
+        return;
       }
     } catch (err) {
-      return msg.say('An error occured. Please check again your text');
+      return msg.say('An error occured. It maybe the API is blocked');
     }
 
-    const embed = {
-      color: 0x53bcfc,
-      fields: [
+    let embed;
+    try {
+      embed = {
+        color: 0x53bcfc,
+        fields: [],
+        footer: {
+          text: oneLine`Translated from
+        ${args.slice(1).length == 1 && result[1] ? sl : result[0][0][8] ? result[0][0][8][0][0][1].substr(0, 2).toUpperCase() : sl}
+        to ${args.slice(1).length == 1 && result[1] ? tl : result[0][0][8] ? result[0][0][8][0][0][1].substr(3, 2).toUpperCase() : tl}
+        `,
+          icon_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png',
+        }
+      }
+    } catch (err) {
+      logger.log('error', err);
+      return msg.say('Please check again you argument');
+    }
+
+    if (args.slice(1).length == 1 && result[1]) {
+      embed.fields.push(
         {
           name: 'Source Text',
           value: `${result[0][0][1]}`
@@ -69,11 +88,7 @@ module.exports = class AddPlaylistCommand extends Command {
         {
           name: 'Translated Text',
           value: `${result[0][0][0]}`
-        }
-      ]
-    }
-
-    if (args.slice(1).length == 1 && result[1]) {
+        });
       result[1].forEach(elem => {
         let value = '';
         if (elem[1]) {
@@ -86,8 +101,25 @@ module.exports = class AddPlaylistCommand extends Command {
           inline: true,
         })
       })
+    } else if (args.length < 25) {
+      embed.fields.push(
+        {
+          name: 'Source Text',
+          value: `${result[0][0][1]}`
+        },
+        {
+          name: 'Translated Text',
+          value: `${result[0][0][0]}`
+        })
+    } else {
+      embed.title = 'Translated Text'
+      let translated = '';
+      result[0].forEach(text => {
+        translated += text[0] + '\n\n';
+      })
+      embed.description = trim(translated, 2048);
     }
-    return msg.say({embed})
+    return msg.say({ embed })
   }
 
   async onBlock(msg, reason, data) {
