@@ -33,7 +33,6 @@ module.exports = class JumpCommand extends Command {
       return msg.say('argument must be a number');
     }
     let intArg;
-    let rangeIndex = msg.guild.queue.length - msg.guild.indexQueue; //
 
     // set default args to 1
     if (!args.length) {
@@ -41,18 +40,14 @@ module.exports = class JumpCommand extends Command {
     } else {
       intArg = parseInt(args[0]);
     }
-
-    // check if arg exceed the queue length and set to 1 if true
-    if (intArg > rangeIndex) {
-      intArg = rangeIndex;
-    }
+    msg.guild.indexQueue += intArg - 1;
 
     if (msg.guild.me.voice.connection.dispatcher) {
-      await msg.guild.me.voice.connection.dispatcher.pause();
+      await msg.guild.me.voice.connection.dispatcher.end();
+    } else {
+      msg.guild.indexQueue++;
+      return play(msg);
     }
-
-    msg.guild.indexQueue += intArg;
-    return play(msg);
 
   }
 

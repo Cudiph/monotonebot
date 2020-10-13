@@ -12,22 +12,23 @@ async function play(msg) {
   // if someone use jump -100 for example, so it'll reset to zero
   if (index < 0) {
     index = msg.guild.indexQueue = 0;
+  } else if (queue && index >= queue.length) {
+    index = msg.guild.indexQueue = msg.guild.queue.length;
   }
-
   // check if the queue is empty
   if (!queue || !queue.length) {
-    return msg.channel.send('No song to be played')
+    return msg.channel.send('Stopped Playing...');
   }
   // if queue is null then delete the queue
-  if (index === queue.length) {
+  if (index === msg.guild.queue.length) {
     if (msg.guild.autoplay) {
       let info = await ytdl.getBasicInfo(queue[index - 1].link);
-      let related = info.related_videos[0];
+      let related = info.related_videos.filter(video => video.length_seconds < 2000);
       const construction = {
-        title: related.title,
-        link: `https://youtube.com/watch?v=${related.id}`,
-        uploader: related.author,
-        seconds: parseInt(related.length_seconds),
+        title: related[0].title,
+        link: `https://youtube.com/watch?v=${related[0].id}`,
+        uploader: related[0].author,
+        seconds: parseInt(related[0].length_seconds),
         author: `Autoplay`
       }
       msg.guild.queue.push(construction);
@@ -37,12 +38,7 @@ async function play(msg) {
   }
 
   try {
-    let connection; // make a connection
-    if (msg.guild.me.voice.connection) {
-      connection = msg.guild.me.voice.connection;
-    } else {
-      connection = await msg.member.voice.channel.join();
-    }
+    let connection = await msg.member.voice.channel.join(); // make a connection
     msg.channel.startTyping();
     let dispatcher = await connection.play(await ytdl(queue[index].link, { filter: 'audioonly' }), { type: 'opus', volume: msg.guild.volume || 0.5 });
     msg.channel.stopTyping(true);
@@ -76,9 +72,6 @@ async function play(msg) {
   } catch (err) {
     // trying to replay if any error occured
     logger.log('error', err);
-    let voiceCh = msg.member.me.voice.channel;
-    await voiceCh.leave();
-    await voiceCh.join();
     play(msg);
   }
 
@@ -113,9 +106,6 @@ async function player(data, message, fromPlaylist=false) {
     if (!fromPlaylist) {
       message.channel.send(`${data.title} has been added to the queue.`)
         .then(msg => msg.delete({ timeout: 8000 }));
-    }
-    if (message.guild.me.voice.connection.dispatcher && message.guild.me.voice.connection.dispatcher.paused) {
-      return await play(message);
     }
   }
 }
