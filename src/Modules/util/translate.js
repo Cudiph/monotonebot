@@ -19,7 +19,7 @@ module.exports = class AddPlaylistCommand extends Command {
       Single word will give more detailed information such as noun example etc. If you
       just give only one language id (trans ru ...) it's the same like auto>ru, auto mean
       it'll auto detect the source text.
-      \nYou can see language id [here](https://cloud.google.com/translate/docs/languages)
+      \nYou can see language id [here](https://cloud.google.com/translate/docs/languages).
       `,
       throttling: {
         usages: 1,
@@ -50,7 +50,6 @@ module.exports = class AddPlaylistCommand extends Command {
       kc: 7,
       q: args.slice(1).join(' '),
     })
-
     let result;
     try {
       result = await fetch(`https://translate.googleapis.com/translate_a/single?${property}`).then(response => response.json());
@@ -58,25 +57,30 @@ module.exports = class AddPlaylistCommand extends Command {
         return;
       }
     } catch (err) {
-      return msg.say('An error occured. It maybe the API is blocked');
+      return msg.say('An error occured. It maybe the API request is blocked')
+        .then(msg => msg.delete({timeout: 10000}));
     }
 
     let embed;
+    let langId = result[0][0][8][0][0][1].match(/(?:[a-zA-Z]+_)?(\w{2})_(\w{2})_(?:.*)/)
+    // let sourceId = result[0][0][8][0][0][1].substr(0, 2).toUpperCase();
+    // let transId = result[0][0][8][0][0][1].substr(3, 2).toUpperCase();
     try {
       embed = {
         color: 0x53bcfc,
         fields: [],
         footer: {
           text: oneLine`Translated from
-        ${args.slice(1).length == 1 && result[1] ? sl : result[0][0][8] ? result[0][0][8][0][0][1].substr(0, 2).toUpperCase() : sl}
-        to ${args.slice(1).length == 1 && result[1] ? tl : result[0][0][8] ? result[0][0][8][0][0][1].substr(3, 2).toUpperCase() : tl}
+        ${args.slice(1).length == 1 && result[1] ? sl : result[0][0][8] ? langId[1].toUpperCase() : sl}
+        to ${args.slice(1).length == 1 && result[1] ? tl : result[0][0][8] ? langId[2].toUpperCase() : tl}
         `,
           icon_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png',
         }
       }
     } catch (err) {
       logger.log('error', err);
-      return msg.say('Please check again you argument');
+      return msg.say('Please check again your input')
+        .then(msg => msg.delete({ timeout: 10000 }));;
     }
 
     if (args.slice(1).length == 1 && result[1]) {
