@@ -62,7 +62,7 @@ module.exports = class AddPlaylistCommand extends Command {
     }
 
     let embed;
-    let langId = result[0][0][8][0][0][1].match(/(?:[a-zA-Z]+_)?(\w{2})_(\w{2})_(?:.*)/)
+    let langId = result[0][0][8] ? result[0][0][8][0][0][1].match(/(?:[a-zA-Z]+_)?(\w{2})_(\w{2})_(?:.*)/) : result[0][0][8] = false;
     // let sourceId = result[0][0][8][0][0][1].substr(0, 2).toUpperCase();
     // let transId = result[0][0][8][0][0][1].substr(3, 2).toUpperCase();
     try {
