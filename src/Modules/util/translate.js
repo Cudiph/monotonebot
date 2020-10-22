@@ -71,8 +71,8 @@ module.exports = class AddPlaylistCommand extends Command {
         fields: [],
         footer: {
           text: oneLine`Translated from
-        ${args.slice(1).length == 1 && result[1] ? sl : result[0][0][8] ? langId[1].toUpperCase() : sl}
-        to ${args.slice(1).length == 1 && result[1] ? tl : result[0][0][8] ? langId[2].toUpperCase() : tl}
+        ${args.slice(1).length == 1 && result[1] ? sl.toUpperCase() : result[0][0][8] ? langId[1].toUpperCase() : sl.toUpperCase()}
+        to ${args.slice(1).length == 1 && result[1] ? tl.toUpperCase() : result[0][0][8] ? langId[2].toUpperCase() : tl.toUpperCase()}
         `,
           icon_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png',
         }
