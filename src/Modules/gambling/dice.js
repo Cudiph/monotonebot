@@ -14,10 +14,10 @@ module.exports = class DiceCommand extends Command {
       examples: ['dice 4'],
       argsType: 'multiple',
       details: oneLine`
-      Roll random dice and return total value. If you correctly guess the output
+      Roll random dice and return total value. ~~If you correctly guess the output
       number, then you get a reward. To roll dice without betting or guessing,
       simply just type "0" in first and second argument. \n
-      Reward is calculated like this : <bet> * <dice rolled> * 5
+      Reward is calculated like this : <bet> * <dice rolled> * 5~~
       `,
       throttling: {
         usages: 3,

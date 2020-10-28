@@ -10,7 +10,7 @@ module.exports = class JumpCommand extends Command {
       group: 'voice',
       memberName: 'jump',
       aliases: ['skip'],
-      description: 'Jump to index of track queue',
+      description: 'Jump to index of track queue (it is a skip)',
       examples: ['jump', 'skip', 'jump 2', 'skip -1'],
       guildOnly: true,
       argsType: 'multiple',

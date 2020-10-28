@@ -9,7 +9,7 @@ module.exports = class SetNicknameCommand extends Command {
       aliases: ['setnick'],
       group: 'administration',
       memberName: 'setnickname',
-      description: 'set ',
+      description: 'set nickname',
       examples: ['setnickname @john nsfw master', 'setnick 724114678258729031'],
       guarded: true,
       argsType: 'multiple',
