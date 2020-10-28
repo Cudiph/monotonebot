@@ -19,7 +19,9 @@ async function play(msg) {
   if (!queue || !queue.length) {
     return msg.channel.send('Stopped Playing...');
   }
-  // if queue is null then delete the queue
+
+  // if queue is in the end then check if the autoplay
+  // is on, if not then return a message
   if (index === msg.guild.queue.length) {
     if (msg.guild.autoplay) {
       let info = await ytdl.getBasicInfo(queue[index - 1].link);
