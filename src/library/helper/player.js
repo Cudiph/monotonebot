@@ -96,8 +96,10 @@ async function play(msg) {
       return play(msg);
     });
   } catch (err) {
-    // trying to replay if any error occured
+    // Skip if any error
     logger.log('error', err);
+    msg.say('Something went wrong. Current track will be skipped');
+    msg.guild.indexQueue++;
     play(msg);
   }
 
