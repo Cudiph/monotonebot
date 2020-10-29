@@ -41,6 +41,7 @@ function setEmbedPlayCmd(dataList, indexPage, page, msg, itemsPerPage) {
     },
   }
 
+  // if the page is last page then execute this code
   if ((page + 1) === Math.ceil(listLength / itemsPerPage)) {
     for (let i = 0; i < (listLength - indexPage); i++) {
       embed.fields.push({
@@ -81,19 +82,22 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
     },
   }
 
+  // if page is the last page then exec this code
   if (page === Math.floor(listLength / itemsPerPage)) {
     for (let i = 0; i < (listLength - indexPage); i++) {
+      // if the current music in loop is playing in the guild
+      // then add arrow =>
       if ((indexPage + i) !== msg.guild.indexQueue) {
         embed.fields.push({
           name: `[${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} ${dataList[indexPage + i].seconds
-            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [link](${dataList[indexPage + i].link })`,
+            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [YouTube](${dataList[indexPage + i].link })`,
         })
       } else {
         embed.fields.push({
           name: `=> [${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} ${dataList[indexPage + i].seconds
-            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [link](${dataList[indexPage + i].link })`,
+            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [YouTube](${dataList[indexPage + i].link })`,
         })
       }
 
@@ -104,13 +108,13 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
         embed.fields.push({
           name: `[${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} ${dataList[indexPage + i].seconds
-            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [link](${dataList[indexPage + i].link })`,
+            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [YouTube](${dataList[indexPage + i].link })`,
         })
       } else {
         embed.fields.push({
           name: `=> [${indexPage + i}] ${dataList[indexPage + i].title}`,
           value: `${dataList[indexPage + i].uploader} ${dataList[indexPage + i].seconds
-            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [link](${dataList[indexPage + i].link })`,
+            ? '| ' + toTimestamp(dataList[indexPage + i].seconds) : ''} | [YouTube](${dataList[indexPage + i].link })`,
         })
       }
     }
