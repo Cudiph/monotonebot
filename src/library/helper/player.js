@@ -1,5 +1,6 @@
 const { setEmbedPlaying } = require('./embed.js');
 const ytdl = require('ytdl-core-discord');
+const { oneLine } = require('common-tags');
 
 /**
  * Play a music and repeat if has another music to be played
@@ -24,8 +25,22 @@ async function play(msg) {
   // is on, if not then return a message
   if (index === msg.guild.queue.length) {
     if (msg.guild.autoplay) {
-      let info = await ytdl.getBasicInfo(queue[index - 1].link);
-      let related = info.related_videos.filter(video => video.length_seconds < 2000);
+      let related;
+      try {
+        related = (await ytdl.getBasicInfo(queue[index - 1].link)).related_videos
+          .filter(video => video.length_seconds < 2000);
+        // if no related video then stop and give the message
+        if (!related.length) {
+          return msg.channel.send(oneLine`
+            No related video were found. You can request again
+            with \`${msg.guild.commandPrefix}skip command\`
+          `)
+        }
+      } catch (err) {
+        // try again
+        logger.log('error', err + ' at info');
+        return play(msg);
+      }
       const construction = {
         title: related[0].title,
         link: `https://youtube.com/watch?v=${related[0].id}`,
@@ -45,22 +60,26 @@ async function play(msg) {
       connection = msg.guild.me.voice.connection;
     } else {
       connection = await msg.member.voice.channel.join();
+      // delete queue cache when disconnected
+      connection.on('disconnect', () => {
+        msg.channel.stopTyping(true);
+        delete msg.guild.queue;
+        delete msg.guild.indexQueue;
+      })
     }
+    // start typing indicator to notice user
     msg.channel.startTyping();
-    let dispatcher = await connection.play(await ytdl(queue[index].link, { filter: 'audioonly' }), { type: 'opus', volume: msg.guild.volume || 0.5 });
+    let dispatcher = await connection.play(await ytdl(queue[index].link, {
+      filter: 'audioonly'
+    }), {
+      type: 'opus',
+      volume: msg.guild.volume || 0.5
+    });
     msg.channel.stopTyping(true);
-    // delete queue cache when disconnected
-    connection.on('disconnect', () => {
-      msg.channel.stopTyping(true);
-      delete msg.guild.queue;
-      delete msg.guild.indexQueue;
-    })
 
     // give data when dispatcher start
     dispatcher.on('start', async () => {
-      msg.channel.send({ embed: await setEmbedPlaying(msg) }).then(msg => {
-        msg.delete({ timeout: queue[index].seconds ? queue[index].seconds * 1000 : 60000 });
-      });
+      msg.channel.send({ embed: await setEmbedPlaying(msg) });
     });
 
     // play next song when current song is finished
