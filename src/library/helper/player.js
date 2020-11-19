@@ -33,7 +33,7 @@ async function play(msg) {
         if (!related.length) {
           return msg.channel.send(oneLine`
             No related video were found. You can request again
-            with \`${msg.guild.commandPrefix}skip command\`
+            with \`${msg.guild.commandPrefix}skip\` command
           `)
         }
       } catch (err) {
@@ -90,6 +90,7 @@ async function play(msg) {
 
     // skip current track if error occured
     dispatcher.on('error', err => {
+      msg.channel.stopTyping(true);
       logger.log('error', err);
       msg.channel.send('An error occured. The current track will be skipped');
       msg.guild.indexQueue++;
@@ -97,6 +98,7 @@ async function play(msg) {
     });
   } catch (err) {
     // Skip if any error
+    msg.channel.stopTyping(true);
     logger.log('error', err);
     msg.say('Something went wrong. Current track will be skipped');
     msg.guild.indexQueue++;
