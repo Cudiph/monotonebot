@@ -6,7 +6,7 @@ module.exports = class PauseCommand extends Command {
       name: 'pause',
       group: 'voice',
       memberName: 'pause',
-      description: 'Pause a stream',
+      description: 'Pause current stream',
       examples: ['pause'],
       guildOnly: true,
       throttling: {

@@ -6,7 +6,7 @@ module.exports = class SetStatusCommand extends Command {
       name: 'setstatus',
       group: 'self',
       memberName: 'status',
-      description: 'Set bot username',
+      description: 'Set bot status',
       examples: ['setstatus idle'],
       details: 'available status are online, idle, invisible, dnd(do not disturb)',
       guarded: true,

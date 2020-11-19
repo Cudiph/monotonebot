@@ -63,7 +63,7 @@ module.exports = class PlayCommand extends Command {
 
       if (!videos.length) {
         message.channel.stopTyping(true); // stop typing indicator
-        return message.say('No song found');
+        return message.say('No video found');
       }
 
       let page = 0; // for page

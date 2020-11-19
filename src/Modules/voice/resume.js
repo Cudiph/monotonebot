@@ -6,7 +6,7 @@ module.exports = class ResumeCommand extends Command {
       name: 'resume',
       group: 'voice',
       memberName: 'resume',
-      description: 'Resume a stream',
+      description: 'Resume current stream',
       examples: ['resume'],
       guildOnly: true,
       throttling: {
