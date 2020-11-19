@@ -16,8 +16,8 @@ it's reccomended to use the administrator permission. The invite link should loo
 ## <a name="env"></a> `.env` File
 .env is file that stored super secret information like your bot token.  
 Here is the list of variable you should put in .env file :
-- `TOKEN`
-- `MONGO_URL`
+- `TOKEN` = Token from the application in [discord developer portal](https://discord.com/developers/).
+- `MONGO_URL` = Full url of mongodb cluster if you're using remote database
 
 ## Running the bot
 if the steps above have been done, you can install the environment and run the bot :
@@ -27,6 +27,10 @@ if the steps above have been done, you can install the environment and run the b
 3. make the `.env` file at the root of the project (same level as package.json)
 4. And again in the shell run `node .`
 5. Congrats! You've run the bot 🥳
+
+## Official website
+You can visit the official website and see all the command list without
+looking at help command [here](https://rodocs.herokuapp.com/)
 
 ### My discord profile
 Made with ❤ by [Cudiph#7298](https://discordapp.com/users/400240052761788427)
