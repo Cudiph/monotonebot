@@ -25,17 +25,29 @@ module.exports = class AddPlaylistCommand extends Command {
         usages: 1,
         duration: 10,
       },
+      args: [
+        {
+          key: 'language',
+          prompt: 'What language you want to translated? (`en>id` or `id` for auto)',
+          type: 'string',
+        },
+        {
+          key: 'words',
+          prompt: 'Words you want to translated.',
+          type: 'string',
+        }
+      ],
     })
   }
 
-  async run(msg, args) {
-    if (args[0].match(/(?:\w+)>(?:\w+)/)) {
-      var lang = args.join(' ').split('>').join(' ').split(' ');
+  async run(msg, {language, words}) {
+    if (language.match(/(?:\w+)>(?:\w+)/)) {
+      var lang = language.split('>');
     } else {
-      var lang = args;
+      var lang = language.split();
     }
-    let sl = args[0].match(/(\w+)>(\w+)/) ? lang[0] : 'auto';
-    let tl = args[0].match(/(\w+)>(\w+)/) ? lang[1] : lang[0];
+    let sl = language.match(/(\w+)>(\w+)/) ? lang[0] : 'auto';
+    let tl = language.match(/(\w+)>(\w+)/) ? lang[1] : lang[0];
     const property = querystring.stringify({
       client: 'gtx',
       sl: sl,
@@ -48,7 +60,7 @@ module.exports = class AddPlaylistCommand extends Command {
       ssel: 0,
       tsel: 0,
       kc: 7,
-      q: args.slice(1).join(' '),
+      q: words.split(/\s+/).join(' '),
     })
     let result;
     try {
@@ -57,6 +69,7 @@ module.exports = class AddPlaylistCommand extends Command {
         return;
       }
     } catch (err) {
+      logger.log('error', err);
       return msg.say('An error occured. It maybe the API request is blocked')
         .then(msg => msg.delete({timeout: 10000}));
     }
@@ -71,8 +84,8 @@ module.exports = class AddPlaylistCommand extends Command {
         fields: [],
         footer: {
           text: oneLine`Translated from
-        ${args.slice(1).length == 1 && result[1] ? sl.toUpperCase() : result[0][0][8] ? langId[1].toUpperCase() : sl.toUpperCase()}
-        to ${args.slice(1).length == 1 && result[1] ? tl.toUpperCase() : result[0][0][8] ? langId[2].toUpperCase() : tl.toUpperCase()}
+        ${words.split(/\s+/).length == 1 && result[1] ? sl.toUpperCase() : result[0][0][8] ? langId[1].toUpperCase() : sl.toUpperCase()}
+        to ${words.split(/\s+/).length == 1 && result[1] ? tl.toUpperCase() : result[0][0][8] ? langId[2].toUpperCase() : tl.toUpperCase()}
         `,
           icon_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png',
         }
@@ -83,7 +96,7 @@ module.exports = class AddPlaylistCommand extends Command {
         .then(msg => msg.delete({ timeout: 10000 }));;
     }
 
-    if (args.slice(1).length == 1 && result[1]) {
+    if (words.split(/\s+/).length == 1 && result[1]) {
       embed.fields.push(
         {
           name: 'Source Text',
@@ -105,7 +118,7 @@ module.exports = class AddPlaylistCommand extends Command {
           inline: true,
         })
       })
-    } else if (args.length < 25) {
+    } else if (words.split(/\s+/).length < 25) {
       embed.fields.push(
         {
           name: 'Source Text',
