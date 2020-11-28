@@ -11,37 +11,49 @@ module.exports = class BanCommand extends Command {
       memberName: 'ban',
       description: 'Ban someone with mentioning or by id',
       examples: ['ban @someone', 'ban @someone Bad words', 'ban 71283497224353324 Your reason here'],
-      guarded: true,
       guildOnly: true,
-      argsType: 'multiple',
       clientPermissions: ['BAN_MEMBERS'],
-      userPermissions: ['BAN_MEMBERS']
+      userPermissions: ['BAN_MEMBERS'],
+      args: [
+        {
+          key: 'member',
+          prompt: 'Which user to be banned?',
+          type: 'member',
+        },
+        {
+          key: 'reason',
+          prompt: 'The reason why you ban him? (optional)',
+          type: 'string',
+          default: false,
+        }
+      ],
     });
   }
 
-  async run(msg, args) {
-    let member = await isUserId(args[0], msg);
-    let isMember = args[0].match(/^<@!?\d+>$/);
-    // check if the member is exist
-    if (member) {
-      member = await msg.guild.members.cache.get(args[0]);
-    } else if (isMember) {
-      member = await getUserMention(args[0], msg);
-    } else {
-      return msg.say('Invalid Id or Argument');
-    }
+  async run(msg, { member, reason }) {
+    // // manual method
+    // let member = await isUserId(args[0], msg);
+    // let isMember = args[0].match(/^<@!?\d+>$/);
+    // // check if the member is exist
+    // if (member) {
+    //   member = await msg.guild.members.cache.get(args[0]);
+    // } else if (isMember) {
+    //   member = await getUserMention(args[0], msg);
+    // } else {
+    //   return msg.say('Invalid Id or Argument');
+    // }
     // get the banned data
     const bannedName = `${member.user.username}#${member.user.discriminator} <${member.user.id}>`;
     const bannedimage = `${member.user.displayAvatarURL()}`;
     if (member) {
       member
-        .ban({ reason: args.slice(1).join(' ') })
+        .ban({ reason: reason ? reason : ' ' })
         .then(() => {
           const EmbedMsg = new Discord.MessageEmbed()
             .setColor('#ff0000')
             .setAuthor(bannedName, bannedimage)
             .setTitle(`Banned Successfully`)
-            .setDescription(`**Member** : ${bannedName}\n` + `**Reason** : ${args.slice(1).join(' ') || '-'}\n` +
+            .setDescription(`**Member** : ${bannedName}\n` + `**Reason** : ${reason || '-'}\n` +
               `**Time** : ${msg.createdAt.toUTCString()}`)
             .setFooter(`Banned by ${msg.author.username}#${msg.author.discriminator}`,
               `${msg.author.displayAvatarURL()}`);
