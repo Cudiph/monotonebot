@@ -70,10 +70,13 @@ async function play(msg) {
     // start typing indicator to notice user
     msg.channel.startTyping();
     let dispatcher = await connection.play(await ytdl(queue[index].link, {
-      filter: 'audioonly'
+      filter: 'audioonly',
+      quality: 'lowest'
     }), {
       type: 'opus',
-      volume: msg.guild.volume || 0.5
+      volume: msg.guild.volume || 0.5,
+      highWaterMark: 200,
+      bitrate: 'auto'
     });
     msg.channel.stopTyping(true);
 
