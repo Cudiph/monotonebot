@@ -8,42 +8,51 @@ module.exports = class UnbanCommand extends Command {
       group: 'administration',
       memberName: 'unban',
       description: 'Unban someone with mentioning or by id',
-      examples: ['unban @someone', 'unban @someone Your reason here','unban 623491289324'],
+      examples: ['unban @someone', 'unban @someone Your reason here', 'unban 623491289324'],
       guarded: true,
       guildOnly: true,
       argsType: 'multiple',
       clientPermissions: ['BAN_MEMBERS'],
-      userPermissions: ['BAN_MEMBERS']
+      userPermissions: ['BAN_MEMBERS'],
+      args: [
+        {
+          key: 'bannedUser',
+          prompt: 'Which user to be unbanned?',
+          type: 'member',
+        },
+        {
+          key: 'reason',
+          prompt: 'The reason why you unbanned him? (optional)',
+          type: 'string',
+          default: '',
+        }
+      ],
     });
   }
 
-  async run(msg, args) {
-    let bannedUser;
-    let isMember = args[0].match(/^<@!?\d+>$/);
-    if (!isMember) bannedUser = await msg.guild.fetchBan(args[0]);
-    // check whether the id is valid
-    if (bannedUser) {
-      bannedUser = args[0];
-    } else if (isMember) {
-      bannedUser = await getUserIdMention(args[0], msg);
-    } else {
-      return msg.say('Invalid Id or Argument');
-    }
+  async run(msg, { bannedUser, reason }) {
+    // // old method
+    // let bannedUser;
+    // let isMember = args[0].match(/^<@!?\d+>$/);
+    // if (!isMember) bannedUser = await msg.guild.fetchBan(args[0]);
+    // // check whether the id is valid
+    // if (bannedUser) {
+    //   bannedUser = args[0];
+    // } else if (isMember) {
+    //   bannedUser = await getUserIdMention(args[0], msg);
+    // } else {
+    //   return msg.say('Invalid Id or Argument');
+    // }
 
-    if (bannedUser) {
-      msg.guild.members.unban(bannedUser, args.slice(1).join(' '))
-        .then(user => msg.channel.send(`Unbanned **${user.username}#${user.discriminator}** from **${msg.guild.name}**`))
-        .catch(err => {
-          // due to missing permissions or role hierarchy
-          msg.reply('I was unable to unban the member\n' +
-            '**Error name** : ' + err.toString().split(':').slice(1).join());
-          // Log the error
-          logger.log('error', err);
-        });
-
-    } else {
-      msg.reply(`You didn't mention user to unban`);
-    }
+    msg.guild.members.unban(bannedUser, reason)
+      .then(user => msg.channel.send(`Unbanned **${user.username}#${user.discriminator}** from **${msg.guild.name}**`))
+      .catch(err => {
+        // due to missing permissions or role hierarchy
+        msg.reply('I was unable to unban the member\n' +
+          '**Error name** : ' + err.toString().split(':').slice(1).join());
+        // Log the error
+        logger.log('error', err);
+      });
 
   }
 

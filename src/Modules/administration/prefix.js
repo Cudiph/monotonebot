@@ -38,7 +38,7 @@ module.exports = class PrefixCommand extends Command {
 				If the prefix is "none", the prefix will be removed entirely, only allowing mentions to run commands.
 				Only administrators may change the prefix.
 			`,
-      examples: ['prefix', 'prefix -', 'prefix omg!', 'prefix default', 'prefix none'],
+      examples: ['prefix', 'prefix ?', 'prefix omg!', 'prefix default', 'prefix none'],
 
       args: [
         {
@@ -46,7 +46,6 @@ module.exports = class PrefixCommand extends Command {
           prompt: 'What would you like to set the bot\'s prefix to?',
           type: 'string',
           max: 15,
-          default: ''
         }
       ],
       guildOnly: true,

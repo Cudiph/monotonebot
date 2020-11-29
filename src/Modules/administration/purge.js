@@ -18,19 +18,19 @@ module.exports = class PurgeCommand extends Command {
       args: [
         {
           key: 'total',
-          prompt: 'Which user u want to show?',
+          prompt: 'How many message you want to delete?',
           type: 'string',
           default: 2
         },
-        {
-          key: 'old',
-          prompt: 'Delete message that older than 2 weeks?',
-          type: 'string',
-          default: false,
-        }
+        // {
+        //   key: 'old',
+        //   prompt: 'Auto filter message that older than 2 weeks? (true/false)',
+        //   type: 'string',
+        //   default: false,
+        // }
       ],
       clientPermissions: ['MANAGE_MESSAGES'],
-      userPermissions: ['MANAGE_MESSAGES']
+      userPermissions: ['MANAGE_MESSAGES'],
     });
   }
 
@@ -42,7 +42,13 @@ module.exports = class PurgeCommand extends Command {
       return msg.reply('Value must be a number').then(msg => msg.delete({ timeout: 6000 }));
     }
 
-    if (totalMsg > 100) totalMsg = 100;
+    if (totalMsg > 100) {
+      totalMsg = 100;
+    } else if (totalMsg <= 0) {
+      totalMsg = Math.abs(totalMsg);
+    } else if (totalMsg < 2) {
+      totalMsg = 2;
+    }
 
     let messages = await msg.channel.messages.fetch({ limit: totalMsg })
     try {

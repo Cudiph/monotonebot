@@ -8,7 +8,7 @@ module.exports = class LeaveCommand extends Command {
       memberName: 'leaveme',
       description: 'Why did u leave me?!',
       examples: ['leaveme'],
-      userPermissions: ['KICK_MEMBERS', 'ADMINISTRATOR'],
+      userPermissions: ['ADMINISTRATOR'],
     });
   }
 
