@@ -4,7 +4,7 @@
   "description": "A discord bot",
   "main": "src/shard.js",
   "scripts": {
-    "run": "node src/shard.js"
+    "bot": "node src/shard.js"
   },
   "repository": {
     "type": "git",
