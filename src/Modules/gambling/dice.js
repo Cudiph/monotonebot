@@ -12,7 +12,6 @@ module.exports = class DiceCommand extends Command {
       memberName: 'dice',
       description: 'Roll the dice',
       examples: ['dice 4'],
-      argsType: 'multiple',
       details: oneLine`
       Roll random dice and return total value. ~~If you correctly guess the output
       number, then you get a reward. To roll dice without betting or guessing,
@@ -23,22 +22,31 @@ module.exports = class DiceCommand extends Command {
         usages: 3,
         duration: 10,
       },
+      args: [
+        {
+          key: 'numberOfDice',
+          prompt: 'How many dice you want to roll?',
+          type: 'integer',
+          default: 2
+        },
+      ],
     })
   }
 
-  async run(msg, args) {
+  async run(msg, { numberOfDice }) {
     // set default dice throwed
-    if (!args.length) {
-      // args.push('0', '0', '2');
-      args.push('2');
-    }
+    // if (!args.length) {
+    //   // args.push('0', '0', '2');
+    //   args.push('2');
+    // }
+
     // parsing args to integer
-    var intArg0 = parseInt(args[0]);
+    // var numberOfDice = parseInt(args[0]);
     // var intArg1 = parseInt(args[1]);
     // var intArg2 = parseInt(args[2]);
 
     // set maximum size of dice throws
-    if (intArg0 > 10) { // chanage from intArg2
+    if (numberOfDice > 10) { // chanage from intArg2
       msg.channel.send(`i'm sorry I don't have enough dice`);
       return;
     }
@@ -46,20 +54,20 @@ module.exports = class DiceCommand extends Command {
     // Making list of image to push
     const imageList = [];
     var totalValue = 0;
-    for (let i = 0; i < intArg0; i++) {
+    for (let i = 0; i < numberOfDice; i++) {
       let roll = Math.ceil(Math.random() * 6);
       totalValue += roll;
       imageList.push(`./src/images/dice/${roll}.png`);
     }
 
-    if ((intArg0 != 0 && intArg0 > (6 * intArg0)) || (intArg0 != 0 && intArg0 < (intArg0))) {
-      // old : if ((intArg0 != 0 && intArg0 > (6 * intArg2)) || (intArg0 != 0 && intArg0 < (intArg2)));
+    if ((numberOfDice != 0 && numberOfDice > (6 * numberOfDice)) || (numberOfDice != 0 && numberOfDice < (numberOfDice))) {
+      // old : if ((numberOfDice != 0 && numberOfDice > (6 * intArg2)) || (numberOfDice != 0 && numberOfDice < (intArg2)));
       return msg.channel.send('Your guess doesn\'t fall into any range of the dice you want to roll.');
     }
 
     // get the file name so it won't reproduce the same file
     // if the dice made a 3 + 4 + 2 consecutively, then the filename is 342.png
-    function getName() {
+    function getName(imageList) {
       var name = '';
       imageList.forEach(dir => {
         let onlyName = dir.split('/').slice(-1);
@@ -69,7 +77,7 @@ module.exports = class DiceCommand extends Command {
     }
 
     function isWon() {
-      // if (totalValue === intArg0 && args[1] != '0') {
+      // if (totalValue === numberOfDice && args[1] != '0') {
       //   let reward = intArg1 * intArg2 * 5;
       //   return msg.channel.send(`You won here is your reward : ${reward} \n` +
       //     `The total value of the dice is ${totalValue}`, {
@@ -90,7 +98,7 @@ module.exports = class DiceCommand extends Command {
       })
     }
 
-    const imageFile = `./src/images/dice/${getName()}.png`;
+    const imageFile = `./src/images/dice/${getName(imageList)}.png`;
     // check if the image is exist in image folder
     if (fs.existsSync(imageFile)) {
       isWon();
