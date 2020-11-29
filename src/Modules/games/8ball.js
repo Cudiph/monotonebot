@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
 
-module.exports = class _8BallCommand extends Command {
+module.exports = class EightBallCommand extends Command {
   constructor(client) {
     super(client, {
       name: '8ball',
@@ -10,26 +10,26 @@ module.exports = class _8BallCommand extends Command {
       description: 'Answer your question',
       examples: ['8ball Are Ya Winning Son?'],
       args: [{
-        key: 'quest',
+        key: 'question',
         prompt: 'What\'s your question?',
         type: 'string',
       }],
       throttling: {
-        usages: 5,
+        usages: 4,
         duration: 10,
       },
     })
   }
 
-  async run(msg, {quest}) {
-    if (!quest.length) {
+  async run(msg, {question}) {
+    if (!question.length) {
       return msg.reply(`You didn't provide any arguments`);
     }
     const answers = require('../../data/gamesdata/8ball.json');
     const answer = answers.response[Math.floor(Math.random() * Math.floor(answers.response.length))]
     const embedMsg = new Discord.MessageEmbed()
       .setColor('#f0568a')
-      .addField(`:question: Question`, quest)
+      .addField(`:question: Question`, question)
       .addField(':speech_balloon: Answer', answer)
       .setFooter(`${msg.author.username}#${msg.author.discriminator}`)
 
