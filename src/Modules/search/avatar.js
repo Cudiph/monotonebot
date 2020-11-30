@@ -15,18 +15,26 @@ module.exports = class AvatarCommand extends Command {
         duration: 10,
       },
       argsType: 'multiple',
+      args: [
+        {
+          key: 'user',
+          prompt: 'Which user you want to display the avatar for?',
+          type: 'user',
+          default: '',
+        }
+      ],
     });
   }
 
-  async run(msg, args) {
-    let user = args[0].match(/^<@!?\d+>$/);
+  async run(msg, { user }) {
+    // let user = args[0].match(/^<@!?\d+>$/);
     // get user in guild
     if (!user) {
       msg.channel.send(msg.author.displayAvatarURL());
       return;
     } else if (user && msg.guild) {
-      const users = getUserMention(args[0], msg);
-      msg.channel.send(users.user.displayAvatarURL());
+      // const users = getUserMention(args[0], msg);
+      msg.channel.send(user.displayAvatarURL());
       return;
     } else {
       msg.channel.send('requesting avatar with mentioning in dm channel is not supported yet');
