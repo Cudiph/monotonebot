@@ -27,10 +27,17 @@ module.exports = class PlayCommand extends Command {
         duration: 10,
       },
       clientPermissions: ['CONNECT', 'SPEAK'],
+      args: [
+        {
+          key: 'queryOrUrl',
+          prompt: 'What video you want to search or put a videoId or the url?',
+          type: 'string',
+        }
+      ]
     })
   }
 
-  async run(message, args) {
+  async run(message, { queryOrUrl }) {
     // if not in voice channel
     if (!message.member.voice.channel) {
       // send message if author not connected to voice channel
@@ -38,29 +45,29 @@ module.exports = class PlayCommand extends Command {
     }
 
     if (message.member.voice.channel) {
-      if (!args.length && !message.guild.queue) {
-        return message.say('There is nothing to play');
-      }
-      if (!args.length && message.guild.me.voice.connection.dispatcher.paused) {
-        return play(message);
-      }
-      const link = args[0].match(/https?:\/\/(www.)?youtube.com\/watch\?v=\w+/)
+      // if (!args.length && !message.guild.queue) {
+      //   return message.say('There is nothing to play');
+      // }
+      // if (!args.length && message.guild.me.voice.connection.dispatcher.paused) {
+      //   return play(message);
+      // }
 
-      // check if author send a youtube link
-      if (link) {
-        let data = await ytdl.getBasicInfo(args[0]);
+      // check if author send a youtube link or video Id
+      if (ytdl.validateURL(queryOrUrl) || ytdl.validateID(queryOrUrl)) {
+        const vidId = ytdl.getVideoID(queryOrUrl);
+        let data = await ytdl.getBasicInfo(vidId);
         let dataConstructor = {
           title: data.videoDetails.title,
-          url: data.url,
+          url: 'https://youtube.com' + data.url,
+          videoId: vidId,
           author: data.videoDetails.author,
           seconds: data.videoDetails.lengthSeconds,
         }
         return player(dataConstructor, message);
       }
 
-      message.channel.startTyping(); // start type indicator cuz it'll be long
-      let { videos } = await yts(args.join(' ')) // fetch yt vid using yt-search module
-
+      message.channel.startTyping(); // start type indicator cuz it'll be a while
+      let { videos } = await yts(queryOrUrl) // fetch yt vid using yt-search module
       if (!videos.length) {
         message.channel.stopTyping(true); // stop typing indicator
         return message.say('No video found');
