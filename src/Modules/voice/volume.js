@@ -9,7 +9,7 @@ module.exports = class VolumeCommand extends Command {
       group: 'voice',
       aliases: ['vol'],
       memberName: 'volume',
-      description: 'Set volume of current audio stream from range 1-100',
+      description: 'Set volume of current audio stream from range 1-130',
       examples: ['volume 100', 'vol 5'],
       argsType: 'multiple',
       guildOnly: true,
@@ -17,46 +17,43 @@ module.exports = class VolumeCommand extends Command {
         usages: 3,
         duration: 10,
       },
+      args: [
+        {
+          key: 'volume',
+          prompt: 'How many volume do you want to play?',
+          type: 'integer',
+          min: 0,
+          max: 130,
+          default: '',
+        }
+      ]
     })
   }
 
-  async run(msg, args) {
+  async run(msg, { volume }) {
+    volume /= 100;
     if (!msg.guild.me.voice.connection) {
       return msg.say(`I'm not connected to the voice channel`);
     }
     let db = await new crud(process.env.MONGO_URL);
     db.connect();
 
-    if (!args.length) {
+    if (!volume) {
       let vol = await db.findById(guildSettingsSchema, msg.guild.id);
       return msg.say(`Current volume level is ${vol.volume * 100}`)
     }
 
-    if (isNaN(args[0])) {
-      return msg.say('argument must be a number');
-    }
-
-    let intArg = parseInt(args[0]);
-
-    if (intArg < 1 || intArg > 100) {
-      return msg.say('Please provide an argument between 1-100')
-        .then(msg => msg.delete({ timeout: 10000 }));
-    } else {
-      intArg /= 100;
-    }
-
-
     try {
       await db.writeOneUpdate(guildSettingsSchema, msg.guild.id, {
-        volume: intArg,
+        volume: volume,
       });
-      msg.guild.volume = intArg;
-      msg.say(`Change volume level to ${intArg * 100}`)
+      msg.guild.volume = volume;
+      msg.say(`Change volume level to ${volume * 100}`)
     } catch (err) {
       logger.log('error', err);
     }
     if (msg.guild.me.voice.connection.dispatcher) {
-      msg.guild.me.voice.connection.dispatcher.setVolume(intArg);
+      msg.guild.me.voice.connection.dispatcher.setVolume(volume);
     }
   }
 
