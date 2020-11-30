@@ -1,6 +1,6 @@
 const { oneLine } = require('common-tags');
 const { Command } = require('discord.js-commando');
-const fetch = require('node-fetch');
+const axios = require('axios').default;
 
 module.exports = class ShortenCommand extends Command {
   constructor(client) {
@@ -17,31 +17,55 @@ module.exports = class ShortenCommand extends Command {
       (optional), These must be between 5 and 30 characters long and can only contain alphanumeric
       characters and underscores (case sensitive).
       `,
-      argsType: 'multiple',
       throttling: {
         usages: 3,
         duration: 18,
       },
+      args: [
+        {
+          key: 'longUrl',
+          prompt: 'Please put the long url.',
+          type: 'string',
+        },
+        {
+          key: 'customUrl',
+          prompt: 'Please put the custom short url.',
+          type: 'string',
+          default: '',
+        },
+
+      ]
     })
   }
 
-  async run(msg, args) {
-    const shortUrl = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(args[0])}&shorturl=${encodeURIComponent(args.slice(1).join(''))}`)
-      .then(res => res.text());
-    if (!shortUrl.startsWith('https')) {
-      return msg.say(`${shortUrl}`)
+  async run(msg, { longUrl, customUrl }) {
+    let shortUrl;
+    try {
+      shortUrl = await axios.get(`https://is.gd/create.php`, {
+        params: {
+          format: 'simple',
+          url: encodeURIComponent(longUrl),
+          shorturl: encodeURIComponent(customUrl),
+        }
+      });
+      console.log(shortUrl);
+    } catch (err) {
+      if (err.response) {
+        return msg.reply(err.response.data.split(':')[1]);
+      }
     }
+
     msg.say({
       embed: {
         color: 0x11ff00,
         fields: [
           {
             name: `Long URL`,
-            value: `[${args[0]}](${args[0]})`
+            value: longUrl.startsWith('http') ? longUrl : `https://${longUrl}`,
           },
           {
             name: `Short URL`,
-            value: `[${shortUrl}](${shortUrl})`
+            value: shortUrl.data
           }
         ]
       }
