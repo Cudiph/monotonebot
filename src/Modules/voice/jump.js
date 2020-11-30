@@ -13,37 +13,37 @@ module.exports = class JumpCommand extends Command {
       description: 'Jump to index of track queue (it is a skip)',
       examples: ['jump', 'skip', 'jump 2', 'skip -1'],
       guildOnly: true,
-      argsType: 'multiple',
       details: oneLine`It's like skip but you can skip backward (using negatif value).
       In short it's like leaderboard`,
       throttling: {
         usages: 1,
         duration: 10,
       },
+      args: [
+        {
+          key: 'numberToJump',
+          prompt: 'How many track do you want to jump? (use negative value for backward, 0 to restart)',
+          type: 'integer',
+          default: 1,
+        },
+      ],
     })
   }
 
-  async run(msg, args) {
+  async run(msg, { numberToJump }) {
     // return if not connected
     if (!msg.guild.me.voice.connection) {
       return;
     }
-    // check if args is number or nah
-    if (args.length && isNaN(args[0])) {
-      return msg.say('argument must be a number');
-    }
-    let intArg;
 
-    // set default args to 1
-    if (!args.length) {
-      intArg = 1;
-    } else {
-      intArg = parseInt(args[0]);
-    }
-    msg.guild.indexQueue += intArg - 1;
+    // idk why when this line is deleted and modify the msg.guild.indexQueue++ to
+    // msg.guild.indexQueue += numberToJump
+    // it can't go back nor jump using numberToJump
+    // what a miracle lol
+    msg.guild.indexQueue += numberToJump - 1;
 
     if (msg.guild.me.voice.connection.dispatcher) {
-      await msg.guild.me.voice.connection.dispatcher.end();
+      return await msg.guild.me.voice.connection.dispatcher.end();
     } else {
       msg.guild.indexQueue++;
       return play(msg);
