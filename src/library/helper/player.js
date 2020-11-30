@@ -6,7 +6,7 @@ const { oneLine } = require('common-tags');
  * Play a music and repeat if has another music to be played
  * @param {CommandoMessage} msg message from textchannel
  */
-async function play(msg) {
+async function play(msg, numberOfTry = 0) {
   let queue = msg.guild.queue;
   let index = msg.guild.indexQueue;
 
@@ -27,7 +27,7 @@ async function play(msg) {
     if (msg.guild.autoplay) {
       let related;
       try {
-        related = (await ytdl.getBasicInfo(queue[index - 1].link)).related_videos
+        related = (await ytdl.getInfo(queue[index - 1].link)).related_videos
           .filter(video => video.length_seconds < 2000);
         // if no related video then stop and give the message
         if (!related.length) {
@@ -38,7 +38,12 @@ async function play(msg) {
         }
       } catch (err) {
         // try again
+        if (numberOfTry < 15) {
+          return play(msg, ++numberOfTry);
+        }
         logger.log('error', err + ' at info');
+        msg.say('Something went wrong. Current track will be skipped');
+        msg.guild.indexQueue++;
         return play(msg);
       }
       const construction = {
@@ -100,9 +105,13 @@ async function play(msg) {
       return play(msg);
     });
   } catch (err) {
-    // Skip if any error
+    // Skip if any error after 15x trying
     msg.channel.stopTyping(true);
-    logger.log('error', err);
+    // err.endsWith("metadata")
+    if (numberOfTry < 15) {
+      return play(msg, ++numberOfTry);
+    }
+    logger.log('error', err + ' at connection play after 15x trying');
     msg.say('Something went wrong. Current track will be skipped');
     msg.guild.indexQueue++;
     play(msg);
@@ -119,6 +128,7 @@ async function player(data, message, fromPlaylist = false) {
   const construction = {
     title: data.title,
     link: data.url,
+    videoId: data.videoId,
     uploader: data.author.name,
     seconds: parseInt(data.seconds),
     author: `${message.author.username}#${message.author.discriminator}`
@@ -135,10 +145,15 @@ async function player(data, message, fromPlaylist = false) {
       logger.log('error', err);
     }
   } else {
+    oldLength = message.guild.queue.length;
     message.guild.queue.push(construction);
     if (!fromPlaylist) {
       message.channel.send(`${data.title} has been added to the queue.`)
         .then(msg => msg.delete({ timeout: 8000 }));
+    }
+    // if in the end of queue then play the track
+    if (message.guild.indexQueue > oldLength - 1) {
+      return play(message);
     }
   }
 }
