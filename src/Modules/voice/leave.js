@@ -13,10 +13,16 @@ module.exports = class LeaveCommand extends Command {
   }
 
   async run(msg) {
-    if (!msg.member.voice.channel || msg.member.voice.channel.id !== msg.guild.me.voice.channel.id) {
+    if (!msg.guild.me.voice.channel) {
+      return;
+    }
+
+    if (!msg.member.voice.channel ||  msg.member.voice.channel.id !== msg.guild.me.voice.channel.id) {
       // send msg if author not connected to the same voice channel
       return msg.channel.send("You must join to my voice channel");
     }
+
+    // delete queue
     delete msg.guild.queue;
     delete msg.guild.playedQueue;
     // leave the channel
