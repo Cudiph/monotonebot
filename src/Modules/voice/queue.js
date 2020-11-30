@@ -16,10 +16,20 @@ module.exports = class QueueCommand extends Command {
         usages: 1,
         duration: 10,
       },
+      args: [
+        {
+          key: 'itemsPerPage',
+          prompt: 'How many track per page you want to show?',
+          type: 'integer',
+          default: 9,
+          min: 2,
+          max: 18,
+        }
+      ]
     })
   }
 
-  async run(msg) {
+  async run(msg, { itemsPerPage }) {
     if (!msg.guild.queue) {
       return msg.say(`There is no queue.`);
     }
@@ -28,7 +38,7 @@ module.exports = class QueueCommand extends Command {
     let queue = msg.guild.queue;
     let page = 0;
     let index = 0;
-    let itemsPerPage = 9;
+    // let itemsPerPage = 9;
 
     // send embed
     msg.channel.send({ embed: setEmbedQueueCmd(queue, index, page, msg, itemsPerPage) })
