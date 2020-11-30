@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const axios = require('axios').default;
 const { Command } = require('discord.js-commando');
 
 module.exports = class DogCommand extends Command {
@@ -18,7 +18,15 @@ module.exports = class DogCommand extends Command {
 
   async run(msg) {
     // get the data
-    const response = await fetch('https://dog.ceo/api/breeds/image/random').then(response => response.json());
+    try {
+      const response = await axios.get('https://dog.ceo/api/breeds/image/random');
+      msg.channel.send(response.data.message);
+    } catch (err) {
+      logger.log('error', err);
+      msg.say(`Something went wrong, please try again later.\n Error : \`${err}\``)
+        .then(theMsg => theMsg.delete({ timeout: 7000 }));
+    }
+    const response = await axios.get('https://dog.ceo/api/breeds/image/random');
     msg.channel.send(response.message);
   }
 

@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const axios = require('axios').default;
 const { Command } = require('discord.js-commando');
 
 module.exports = class CatCommand extends Command {
@@ -19,8 +19,14 @@ module.exports = class CatCommand extends Command {
 
   async run(msg) {
     // get the data
-    const response = await fetch('https://aws.random.cat/meow').then(response => response.json());
-    msg.channel.send(response.file);
+    try {
+      const response = await axios.get('https://aws.random.cat/meow');
+      msg.channel.send(response.data.file);
+    } catch (err) {
+      logger.log('error', err);
+      msg.say(`Something went wrong, please try again later.\n Error : \`${err}\``)
+        .then(theMsg => theMsg.delete({ timeout: 7000 }));
+    }
   }
 
   async onBlock(msg, reason, data) {

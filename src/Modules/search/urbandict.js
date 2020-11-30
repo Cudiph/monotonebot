@@ -1,17 +1,16 @@
-const fetch = require('node-fetch');
+const axios = require('axios').default;
 const querystring = require('querystring');
 const { Command } = require('discord.js-commando');
 
 module.exports = class UrbandictCommand extends Command {
-  constructor (client) {
+  constructor(client) {
     super(client, {
       name: 'urbandict',
       group: 'search',
       memberName: 'urbandict',
-      aliases:  ['ud', 'urbandictionary'],
+      aliases: ['ud', 'urbandictionary'],
       description: 'Search for slang words and phrases',
       examples: ['ud Hello World', 'urbandict bruh'],
-      argsType: 'multiple',
       throttling: {
         usages: 1,
         duration: 10,
@@ -33,7 +32,7 @@ module.exports = class UrbandictCommand extends Command {
     // define the query
     const query = querystring.stringify({ term: args.query });
     // fetching request
-    const { list } = await fetch(`https://api.urbandictionary.com/v0/define?${query}`).then(response => response.json());
+    const { list } = await axios.get(`https://api.urbandictionary.com/v0/define?${query}`).then(res => res.data);
     // return if no result
     if (!list || !list.length) {
       return message.say('No words found');
@@ -77,17 +76,18 @@ module.exports = class UrbandictCommand extends Command {
 
     message.channel.send({ embed: embed })
       .then(async msg => {
-        await msg.react('⬅');
-        await msg.react('➡');
+        let emojiNeeded = ['⬅', '➡', '🇽']
 
         const filter = (reaction, user) => {
-          return ['⬅', '➡'].includes(reaction.emoji.name) && user.id === message.author.id;
+          return emojiNeeded.includes(reaction.emoji.name) && user.id === message.author.id;
 
         };
         const collector = msg.createReactionCollector(filter, { time: 40000, dispose: true });
         // when reeaction are collected
         collector.on('collect', async collected => {
-          if (collected.emoji.name === '⬅') {
+          if (collected.emoji.name === '🇽') {
+            return msg.delete();
+          } else if (collected.emoji.name === '⬅') {
             // decrement index for list
             counter--;
             if (counter < 0) counter = 0;
@@ -127,7 +127,6 @@ module.exports = class UrbandictCommand extends Command {
               text: `${counter + 1}/${list.length}`
             }
           }
-
           msg.edit({ embed: embed2 });
         })
         // on remove the same as above
@@ -175,6 +174,12 @@ module.exports = class UrbandictCommand extends Command {
 
           msg.edit({ embed: embed2 });
         })
+
+        // react to the msg
+        for (let i = 0; i < emojiNeeded.length; i++) {
+          await msg.react(emojiNeeded[i]);
+        }
+
       }).catch(err => logger.log('error', err));
 
   }
