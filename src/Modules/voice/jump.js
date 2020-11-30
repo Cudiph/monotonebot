@@ -43,7 +43,7 @@ module.exports = class JumpCommand extends Command {
     msg.guild.indexQueue += numberToJump - 1;
 
     if (msg.guild.me.voice.connection.dispatcher) {
-      return await msg.guild.me.voice.connection.dispatcher.end();
+      await msg.guild.me.voice.connection.dispatcher.end();
     } else {
       msg.guild.indexQueue++;
       return play(msg);
