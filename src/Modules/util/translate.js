@@ -1,6 +1,6 @@
 const { oneLine } = require('common-tags');
 const { Command } = require('discord.js-commando');
-const fetch = require('node-fetch');
+const axios = require('axios').default;
 const querystring = require('querystring');
 
 const trim = (str, max) => ((str.length > max) ? `${str.slice(0, max - 3)}...` : str);
@@ -40,7 +40,7 @@ module.exports = class AddPlaylistCommand extends Command {
     })
   }
 
-  async run(msg, {language, words}) {
+  async run(msg, { language, words }) {
     if (language.match(/(?:\w+)>(?:\w+)/)) {
       var lang = language.split('>');
     } else {
@@ -62,16 +62,18 @@ module.exports = class AddPlaylistCommand extends Command {
       kc: 7,
       q: words.split(/\s+/).join(' '),
     })
+    // https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ja&hl=ja&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&kc=7&q=i%20love%20you
     let result;
     try {
-      result = await fetch(`https://translate.googleapis.com/translate_a/single?${property}`).then(response => response.json());
+      result = await axios.get(`https://translate.googleapis.com/translate_a/single?${property}`)
+        .then(response => response.data);
       if (!result) {
         return;
       }
     } catch (err) {
       logger.log('error', err);
-      return msg.say('An error occured. It maybe the API request is blocked')
-        .then(msg => msg.delete({timeout: 10000}));
+      return msg.say('An error occured. It maybe the API request is blocked or the language id is incorrect')
+        .then(msg => msg.delete({ timeout: 10000 }));
     }
 
     let embed;
