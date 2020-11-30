@@ -6,7 +6,7 @@ module.exports = class DmCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'dm',
-      aliases: ['directmsg'],
+      aliases: ['directmsg', 'email'],
       group: 'util',
       memberName: 'dm',
       description: 'dm someone with mentioning in a server',
@@ -14,29 +14,50 @@ module.exports = class DmCommand extends Command {
         usages: 1,
         duration: 30,
       },
-      examples: ['dm @epicgamers Hello;Nice too meet you', 'dm Title;Desc'],
+      examples: ['dm @epicgamers Hello;Nice too meet you', 'email @0xDeadBeef Title;Desc'],
       guildOnly: true,
-      argsType: 'multiple',
+      args: [
+        {
+          key: 'user',
+          prompt: 'Which user you want to dm?',
+          type: 'user',
+        },
+        {
+          key: 'words',
+          label: 'Subject & content',
+          prompt: 'What do you want to say?',
+          type: 'string',
+        }
+      ],
     });
   }
 
-  async run(msg, args) {
-      // spliting args
-      const content = args.slice(1).join(' ').split(';');
-      const title = content[0]
-      const value = content[1]
-      // get user data
-      const users = getUserMention(args[0], msg)
-      const EmbedMsg = new Discord.MessageEmbed()
+  async run(msg, { user, words }) {
+    // spliting args
+    const content = words.split(/\s*;\s*/);
+    const title = content[0];
+    const value = content[1];
+    // get user data
+    // const users = getUserMention(args[0], msg)
+    let EmbedMsg;
+    if (content.length > 1) {
+      EmbedMsg = new Discord.MessageEmbed()
         .setColor('#ff548e')
-        .setFooter(`Sent by ${msg.author.username} at guild '${msg.channel.guild.name}'`)
-        .addField('Subject: ' + title, value)
-      users.send(EmbedMsg).then(() => {
-        msg.channel.send('Message sent successfully');
-      }).catch(err => {
-        msg.channel.send('There was a problem during the delivery');
-        logger.log('error', err);
-      })
+        .setTitle(`Subject ${title}`)
+        .setDescription(value)
+        .setFooter(`Sent by ${msg.author.username}#${msg.author.discriminator} at guild '${msg.channel.guild.name}'`, msg.author.displayAvatarURL());
+    } else {
+      EmbedMsg = new Discord.MessageEmbed()
+        .setColor('#ff548e')
+        .setDescription(title)
+        .setFooter(`Sent by ${msg.author.username}#${msg.author.discriminator} at guild '${msg.channel.guild.name}'`, msg.author.displayAvatarURL());
+    }
+    user.send(EmbedMsg).then(() => {
+      msg.channel.send('Message sent successfully');
+    }).catch(err => {
+      msg.channel.send('There was a problem during the delivery');
+      logger.log('error', err);
+    });
 
   }
 }
