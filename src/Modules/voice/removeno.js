@@ -15,19 +15,26 @@ module.exports = class RemoveNumberCommand extends Command {
         usages: 2,
         duration: 10,
       },
+      args: [
+        {
+          key: 'rangeIndex',
+          prompt: 'What is the range of numbers do you want to delete? (slicing with "-")',
+          type: 'string',
+          min: 0,
+        }
+      ]
     })
   }
 
-  async run(msg, args) {
-    args = args.split(/ +/).join('').split('-');
+  async run(msg, { rangeIndex }) {
+    // remove zero or more white space
+    let args = rangeIndex.split(/\s*-\s{0,}/);
     if (!msg.guild.queue || !msg.guild.queue.length) {
       return msg.say('There are no songs to remove');
-    } else if (!args.length) {
-      return msg.say('Please provide an argument');
     } else if (isNaN(args[0]) || args[1] && isNaN(args[1])) {
       return msg.say('Weird character appeared on argument').then(msg => msg.delete({ timeout: 9000 }));
     } else if (parseInt(args[0]) > parseInt(args[1])) {
-      return msg.say('Bad calculation').then(msg => msg.delete({timeout: 9000}));
+      return msg.say('Bad calculation').then(msg => msg.delete({ timeout: 9000 }));
     }
 
     if (args < 0 || args > msg.guild.queue.length) {
