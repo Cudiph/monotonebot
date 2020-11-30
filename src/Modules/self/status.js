@@ -11,18 +11,25 @@ module.exports = class SetStatusCommand extends Command {
       details: 'available status are online, idle, invisible, dnd(do not disturb)',
       guarded: true,
       ownerOnly: true,
-      argsType: 'multiple',
       throttling: {
         usages: 2,
         duration: 3600,
       },
+      args: [
+        {
+          key: 'status',
+          prompt: 'What bot status do you want to display?',
+          type: 'string',
+          oneOf: ['online', 'idle', 'invisible', 'dnd'],
+        },
+      ]
     });
   }
 
-  async run(msg, args) {
+  async run(msg, { status }) {
     // Set username
-    msg.client.user.setStatus(args[0])
-      .then(msg.say(`Change status to \`${args[0]}\``))
+    msg.client.user.setStatus(status)
+      .then(msg.say(`Change status to \`${status}\``))
       .catch(err => {
         msg.say('Something went wrong');
         logger.log('error', err);

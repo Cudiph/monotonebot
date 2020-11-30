@@ -10,18 +10,24 @@ module.exports = class SetUsernameCommand extends Command {
       examples: ['setusername mylovelybot'],
       guarded: true,
       ownerOnly: true,
-      argsType: 'multiple',
       throttling: {
         usages: 2,
         duration: 3600,
       },
+      args: [
+        {
+          key: 'username',
+          prompt: 'What username do you want to assigned to the bot?',
+          type: 'string',
+        },
+      ]
     });
   }
 
-  async run(msg, args) {
+  async run(msg, { username }) {
     // Set username
-    msg.client.user.setUsername(args.join(' '))
-      .then(user => msg.say(`My new username is ${user.username}`))
+    msg.client.user.setUsername(username)
+      .then(user => msg.say(`My new username is **${user.username}**`))
       .catch(err => {
         msg.say('Something went wrong');
         logger.log('error', err);

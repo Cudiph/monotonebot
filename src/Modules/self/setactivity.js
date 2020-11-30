@@ -5,20 +5,40 @@ module.exports = class SetActivityCommand extends Command {
     super(client, {
       name: 'setactivity',
       group: 'self',
-      memberName: 'activity',
+      memberName: 'setactivity',
       description: 'Set bot activity',
       examples: ['setactivity Playing ..help to display help command'],
       details: 'available activity are PLAYING, STREAMING, LISTENING, WATCHING.',
       guarded: true,
       ownerOnly: true,
-      argsType: 'multiple',
+      args: [
+        {
+          key: 'activity',
+          prompt: 'What activity you want to set?',
+          type: 'string',
+          oneOf: ['playing', 'streaming', 'listening', 'watching', 'none'],
+        },
+        {
+          key: 'description',
+          prompt: 'What description you want to set?',
+          type: 'string',
+          default: '',
+        }
+      ]
     });
   }
 
-  async run(msg, args) {
-    msg.client.user.setActivity(args.slice(1).join(' '), { type: args[0].toUpperCase() })
-      .then(presence => msg.say(`Activity set to ${presence.activities[0].name}`))
-      .catch(err => {
+  async run(msg, { activity, description }) {
+    msg.client.user.setActivity(description, { type: activity.toUpperCase() })
+      .then(presence => {
+        if (activity.toLowerCase() != 'none' && description != '') {
+          console.log(activity);
+          console.log(!description);
+          msg.say(`Activity set to **${activity.toUpperCase()} ${presence.activities[0].name}**`)
+        } else {
+          msg.say(`Activity has been reset`);
+        }
+      }).catch(err => {
         msg.say('Please check your syntax');
         logger.log('error', err);
       });

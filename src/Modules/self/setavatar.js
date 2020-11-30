@@ -7,22 +7,28 @@ module.exports = class SetAvatarCommand extends Command {
       group: 'self',
       memberName: 'setavatar',
       description: 'set avatar from given url',
-      examples: ['setavatar C:\\Users\\ASUS\\Pictures\\minecraft\\creeper.png',
+      examples: ['setavatar C:\\Users\\User\\Pictures\\minecraft\\creeper.png',
         'setavatar https://upload.wikimedia.org/wikipedia/fr/thumb/0/05/Discord.svg/1200px-Discord.svg.png'],
       ownerOnly: true,
-      argsType: 'multiple',
+      args: [
+        {
+          key: 'path',
+          prompt: 'Where is the picture of your avatar? (url or local path)',
+          type: 'string',
+        },
+      ]
     });
   }
 
-  async run(msg, args) {
-    let isLink = args.join(' ').match(/(?:https?|\.\/|\w\:(\\|\/)).*(?:png|jpg|jpeg)/);
+  async run(msg, { path }) {
+    let isLink = path.match(/(?:https?|\.\/|\w\:(\\|\/)).*(?:png|jpg|jpeg)/);
     if (!isLink) {
       return msg.say('Please check the path or link');
     }
-    msg.client.user.setAvatar(args.join(' '))
+    msg.client.user.setAvatar(path)
       .then(msg.say(`Avatar will be updated soon`))
       .catch(err => {
-        msg.say('Please check your url');
+        msg.say('Please check your url.\nError : ' + err);
         logger.log('error', err);
       });
   }
