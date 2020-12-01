@@ -13,9 +13,6 @@ jspm_packages/
 .estlintrc.json
 .vscode
 
-# credential
-src/data/credentials.json
-
 # merged dice image
 src/images/dice/*.png
 !src/images/dice/[1-6].png
@@ -37,4 +34,3 @@ lerna-debug.log*
 # dotenv environment file
 .env
 .env.test
-

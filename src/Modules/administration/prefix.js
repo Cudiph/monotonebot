@@ -46,6 +46,7 @@ module.exports = class PrefixCommand extends Command {
           prompt: 'What would you like to set the bot\'s prefix to?',
           type: 'string',
           max: 15,
+          default: '',
         }
       ],
       guildOnly: true,
