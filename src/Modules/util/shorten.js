@@ -48,7 +48,6 @@ module.exports = class ShortenCommand extends Command {
           shorturl: encodeURIComponent(customUrl),
         }
       });
-      console.log(shortUrl);
     } catch (err) {
       if (err.response) {
         return msg.reply(err.response.data.split(':')[1]);
