@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  worker:
+    build: .
+    environment: 
+      MONGO_URL: "mongodb://mongo:27017/romonodb"
+      TOKEN: "<Discord app token>"
+    depends_on: 
+      - mongo
+  mongo:
+    image: mongo
+    ports: 
+      - "27017:27017"

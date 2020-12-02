@@ -31,18 +31,12 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# unused file
+.git
+.gitignore
+LICENSE
+README.md
+
 # dotenv environment file
 .env
 .env.test
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Optional npm cache directory
-.npm
-
-# Output of 'npm pack'
-*.tgz
