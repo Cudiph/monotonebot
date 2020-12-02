@@ -25,6 +25,7 @@ client.registry
   .registerDefaultTypes()
   .registerGroups([
     ['administration', 'Administration'],
+    ['anime', 'Anime'],
     ['gambling', 'Gambling'],
     ['games', 'Minigames'],
     ['search', 'Search'],
