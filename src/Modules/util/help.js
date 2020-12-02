@@ -15,7 +15,6 @@ module.exports = class HelpCommand extends Command {
 			`,
       examples: ['help', 'help prefix'],
       guarded: true,
-      defaultHandling: false,
       args: [
         {
           key: 'command',
@@ -33,7 +32,7 @@ module.exports = class HelpCommand extends Command {
     const showAll = args.command && args.command.toLowerCase() === 'all';
     let embed = {
       color: 0xff548e,
-      fields : [
+      fields: [
         {
           name: `**Format:**`,
           value: `${msg.anyUsage(`${commands[0].name}${commands[0].format ? ` ${commands[0].format}` : ''}`)}`
@@ -50,22 +49,22 @@ module.exports = class HelpCommand extends Command {
 					`}
         `;
 
-        if (commands[0].aliases.length > 0) embed.fields.push({ name: `**Aliases:** `, value: `${commands[0].aliases.join(', ')}`, inline: true});
+        if (commands[0].aliases.length > 0) embed.fields.push({ name: `**Aliases:** `, value: `${commands[0].aliases.join(', ')}`, inline: true });
         embed.fields.push({
           name: `**Group:**`,
           value: oneLine`
-					 ${commands[0].group.name}
-					(\`${commands[0].groupID}:${commands[0].memberName}\`)
-        `,
-        inline: true,
-      })
+            ${commands[0].group.name}
+            (\`${commands[0].groupID}:${commands[0].memberName}\`)
+          `,
+          inline: true,
+        });
 
-        if (commands[0].details) embed.fields.push({ name: `**Details:**`, value: commands[0].details});
-        if (commands[0].examples) embed.fields.push({ name: `**Examples:**`, value: '- ..' + commands[0].examples.join('\n- ..')});
+        if (commands[0].details) embed.fields.push({ name: `**Details:**`, value: commands[0].details });
+        if (commands[0].examples) embed.fields.push({ name: `**Examples:**`, value: '- ..' + commands[0].examples.join('\n- ..') });
 
         const messages = [];
         try {
-          messages.push(await msg.direct({embed}));
+          messages.push(await msg.direct({ embed }));
           if (msg.channel.type !== 'dm') messages.push(await msg.reply('Sent you a DM with information.'));
         } catch (err) {
           messages.push(await msg.reply('Unable to send you the help DM. You probably have DMs disabled.'));
@@ -105,15 +104,15 @@ module.exports = class HelpCommand extends Command {
                 if (cmd.name.length > longest) longest = cmd.name.length;
               });
               return stripIndents`
-							**${grp.name}**
-							${grp.commands.filter(cmd => !cmd.hidden && (showAll || cmd.isUsable(msg)))
-                .map(cmd => {
-                  let cmdIndent = longest + 1 - cmd.name.length;
-                  if (cmdIndent < 0 ) cmdIndent = 0;
-                  return `**\`- ${cmd.name + ' '.repeat(cmdIndent)}:\`** ${cmd.description}${cmd.nsfw ? ' (NSFW)' : ''}`
-                }).join('\n')
-              }
-						`}).join('\n\n')
+                **${grp.name}**
+                ${grp.commands.filter(cmd => !cmd.hidden && (showAll || cmd.isUsable(msg)))
+                  .map(cmd => {
+                    let cmdIndent = longest + 1 - cmd.name.length;
+                    if (cmdIndent < 0) cmdIndent = 0;
+                    return `**\`- ${cmd.name + ' '.repeat(cmdIndent)}:\`** ${cmd.description}${cmd.nsfw ? ' (NSFW)' : ''}`;
+                  }).join('\n')
+                }
+						  `}).join('\n\n')
           }
 				`, { split: true }));
         if (msg.channel.type !== 'dm') messages.push(await msg.reply('Sent you a DM with in formation.'));
