@@ -46,12 +46,14 @@ async function play(msg, numberOfTry = 0) {
         msg.guild.indexQueue++;
         return play(msg);
       }
+      const randTrack = Math.floor(Math.random() * related.length);
       const construction = {
-        title: related[0].title,
-        link: `https://youtube.com/watch?v=${related[0].id}`,
-        uploader: related[0].author,
-        seconds: parseInt(related[0].length_seconds),
-        author: `Autoplay`
+        title: related[randTrack].title,
+        link: `https://youtube.com/watch?v=${related[randTrack].id}`,
+        uploader: related[randTrack].author,
+        seconds: parseInt(related[randTrack].length_seconds),
+        author: `Autoplay`,
+        videoId: related[randTrack].id,
       }
       msg.guild.queue.push(construction);
       return play(msg);
@@ -87,11 +89,15 @@ async function play(msg, numberOfTry = 0) {
 
     // give data when dispatcher start
     dispatcher.on('start', async () => {
-      msg.channel.send({ embed: await setEmbedPlaying(msg) });
+      let nowPlaying = await msg.say({ embed: await setEmbedPlaying(msg) });
+      // assign now playing embed message id to the queue object
+      msg.guild.queue[index].embedId = nowPlaying.id;
     });
 
     // play next song when current song is finished
     dispatcher.on('finish', () => {
+      // delete the now playing embed id when the track is finished
+      msg.channel.messages.delete(msg.guild.queue[index].embedId);
       msg.guild.indexQueue++;
       return play(msg);
     });
@@ -131,7 +137,7 @@ async function player(data, message, fromPlaylist = false) {
     videoId: data.videoId,
     uploader: data.author.name,
     seconds: parseInt(data.seconds),
-    author: `${message.author.username}#${message.author.discriminator}`
+    author: `${message.author.username}#${message.author.discriminator}`,
   }
   if (!message.guild.queue) {
     try {
@@ -151,7 +157,7 @@ async function player(data, message, fromPlaylist = false) {
       message.channel.send(`${data.title} has been added to the queue.`)
         .then(msg => msg.delete({ timeout: 8000 }));
     }
-    // if in the end of queue then play the track
+    // if in the end of queue and the song is stopped then play the track
     if (message.guild.indexQueue > oldLength - 1) {
       return play(message);
     }
