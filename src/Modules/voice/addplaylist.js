@@ -1,7 +1,8 @@
-const yts = require('yt-search');
+const ytpl = require('ytpl');
 const { Command } = require('discord.js-commando');
-const { oneLine } = require('common-tags');
+const { oneLine, stripIndents } = require('common-tags');
 const { player } = require('../../library/helper/player.js');
+const { toSeconds } = require('../../library/helper/discord-item.js');
 
 module.exports = class AddPlaylistCommand extends Command {
   constructor(client) {
@@ -16,19 +17,19 @@ module.exports = class AddPlaylistCommand extends Command {
       guildOnly: true,
       details: oneLine`
       Take a playlist from youtube and add all of the video to
-      the queue. The cooldown is 30 seconds so please careful when
+      the queue. The cooldown is 600 seconds so please careful when
       using this command.
       `,
       throttling: {
-        usages: 1,
-        duration: 30,
+        usages: 2,
+        duration: 600,
       },
       clientPermissions: ['CONNECT', 'SPEAK'],
       format: '["Video Id"/"Full url"]',
       args: [
         {
           key: 'listId',
-          prompt: 'What playlist you want to add? (list id or full url)',
+          prompt: 'What playlist you want to add? (list id or full url, broken url can be tolerated)',
           type: 'string',
         }
       ]
@@ -46,44 +47,42 @@ module.exports = class AddPlaylistCommand extends Command {
       let link = listId.match(/(?:.*)?list=([\w+|-]+)(?:.*)?/);
       if (link) {
         try {
-          let playlist = await yts({ listId: link[1] });
+          let playlist = await ytpl(link[1]);
           // list of videos in the playlist
-          const videos = playlist.videos
+          const videos = playlist.items
           videos.forEach(async video => {
             await player({
               title: video.title,
-              url: `https://youtube.com/watch?v=${video.videoId}`,
-              videoId: videos.videoId,
+              videoId: video.id,
               author: video.author,
-              seconds: 0,
+              seconds: toSeconds(video.duration),
             }, msg, true);
           })
-          return msg.say(`Added playlist ${playlist.title} by ${playlist.author.name}`);
+          return msg.say(`Added playlist **${playlist.title}**. `);
         } catch (err) {
           logger.log('error', err)
-          return msg.say(oneLine`An error Occured, \n
-            Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all \n
+          return msg.say(stripIndents`An error Occured.
+            Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all
             Error : \`${err}\`
           `);
         }
       } else {
         try {
-          let playlist = await yts({ listId: listId });
-          const videos = playlist.videos
+          let playlist = await ytpl(listId);
+          const videos = playlist.items
           videos.forEach(async video => {
             await player({
               title: video.title,
-              url: `https://youtube.com/watch?v=${video.videoId}`,
-              videoId: videos.videoId,
+              videoId: video.id,
               author: video.author,
-              seconds: 0,
+              seconds: toSeconds(video.duration),
             }, msg, true);
           });
-          return msg.say(`Added playlist ${playlist.title} by ${playlist.author.name}`);
+          return msg.say(`Added playlist **${playlist.title}**. `);
         } catch (err) {
           logger.log('error', err)
-          return msg.say(oneLine`An error Occured, \n
-            Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all \n
+          return msg.say(stripIndents`An error Occured.
+            Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all
             Error : \`${err}\`
           `);
         }
