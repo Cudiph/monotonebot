@@ -11,6 +11,7 @@ global.logger = winston.createLogger({
     new winston.transports.File({ filename: './src/data/logs' }),
   ],
   format: winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`),
+  exitOnError: false,
 });
 
 // declaring some discord.js function
