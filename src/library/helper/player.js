@@ -3,8 +3,31 @@ const ytdl = require('ytdl-core-discord');
 const { oneLine } = require('common-tags');
 
 /**
+ * Structure of the queue object
+ * @param {Object} msg.guild.queue queue of the guild
+ * @param {string} msg.guild.queue[i].title Title of the track
+ * @param {string} msg.guild.queue[i].link url of the track
+ * @param {string} msg.guild.queue[i].videoId videoId of the track
+ * @param {string} msg.guild.queue[i].uploader uploader of the track
+ * @param {Number} msg.guild.queue[i].seconds Duration of the track
+ * @param {string} msg.guild.queue[i].author Name of discord account who requested the song
+ */
+
+/**
+ * Structure of the autoplay
+ * @param {boolean} msg.guild.autoplay the state of the autoplay
+ */
+
+/**
+ * Structure of the indexQueue
+ * @param {Number} msg.guild.indexQueue current playing queue
+ */
+
+
+/**
  * Play a music and repeat if has another music to be played
  * @param {CommandoMessage} msg message from textchannel
+ * @param {Number} numberOfTry The attempt whenever the track is failed to play
  */
 async function play(msg, numberOfTry = 0) {
   let queue = msg.guild.queue;
@@ -29,6 +52,7 @@ async function play(msg, numberOfTry = 0) {
       try {
         related = (await ytdl.getInfo(queue[index - 1].link)).related_videos
           .filter(video => video.length_seconds < 2000);
+
         // if no related video then stop and give the message
         if (!related.length) {
           return msg.channel.send(oneLine`
@@ -42,7 +66,7 @@ async function play(msg, numberOfTry = 0) {
           return play(msg, ++numberOfTry);
         }
         logger.log('error', err + ' at info');
-        msg.say('Something went wrong. Current track will be skipped');
+        msg.say(`Something went wrong. Try to resolve related track`);
         msg.guild.indexQueue++;
         return play(msg);
       }
@@ -76,7 +100,7 @@ async function play(msg, numberOfTry = 0) {
     }
     // start typing indicator to notice user
     msg.channel.startTyping();
-    let dispatcher = await connection.play(await ytdl(queue[index].link, {
+    let dispatcher = await connection.play(await ytdl(queue[index].link || queue[index].videoId, {
       filter: 'audioonly',
       quality: 'lowest'
     }), {
@@ -92,12 +116,13 @@ async function play(msg, numberOfTry = 0) {
       let nowPlaying = await msg.say({ embed: await setEmbedPlaying(msg) });
       // assign now playing embed message id to the queue object
       msg.guild.queue[index].embedId = nowPlaying.id;
+      msg.channel.stopTyping(true);
     });
 
     // play next song when current song is finished
     dispatcher.on('finish', () => {
-      // delete the now playing embed id when the track is finished
-      msg.channel.messages.delete(msg.guild.queue[index].embedId);
+      // delete the now playing embed when the track is finished
+      if (msg.guild.queue && msg.guild.queue[index]) msg.channel.messages.delete(msg.guild.queue[index].embedId);
       msg.guild.indexQueue++;
       return play(msg);
     });
@@ -106,7 +131,7 @@ async function play(msg, numberOfTry = 0) {
     dispatcher.on('error', err => {
       msg.channel.stopTyping(true);
       logger.log('error', err);
-      msg.channel.send('An error occured. The current track will be skipped');
+      msg.channel.send(`An error occured. **Track #${msg.guild.indexQueue}** will be skipped`);
       msg.guild.indexQueue++;
       return play(msg);
     });
@@ -118,7 +143,7 @@ async function play(msg, numberOfTry = 0) {
       return play(msg, ++numberOfTry);
     }
     logger.log('error', err + ' at connection play after 15x trying');
-    msg.say('Something went wrong. Current track will be skipped');
+    msg.say(`Something went wrong. **Track #${msg.guild.indexQueue}** will be skipped`);
     msg.guild.indexQueue++;
     play(msg);
   }
@@ -130,36 +155,36 @@ async function play(msg, numberOfTry = 0) {
  * @param {Object} data data of music fetched from yt-search
  * @param {CommandoMessage} message message from textchannel
  */
-async function player(data, message, fromPlaylist = false) {
+async function player(data, msg, fromPlaylist = false) {
   const construction = {
     title: data.title,
     link: data.url,
     videoId: data.videoId,
     uploader: data.author.name,
     seconds: parseInt(data.seconds),
-    author: `${message.author.username}#${message.author.discriminator}`,
+    author: `${msg.author.username}#${msg.author.discriminator}`,
   }
-  if (!message.guild.queue) {
+  if (!msg.guild.queue) {
     try {
-      message.guild.queue = [];
-      message.guild.indexQueue = 0;
-      await message.guild.queue.push(construction);
-      return await play(message);
+      msg.guild.queue = [];
+      msg.guild.indexQueue = 0;
+      await msg.guild.queue.push(construction);
+      return await play(msg);
     } catch (err) {
-      message.channel.send('Something went wrong');
-      delete message.guild.queue;
+      msg.channel.send('Something went wrong');
+      delete msg.guild.queue;
       logger.log('error', err);
     }
   } else {
-    oldLength = message.guild.queue.length;
-    message.guild.queue.push(construction);
+    oldLength = msg.guild.queue.length;
+    msg.guild.queue.push(construction);
     if (!fromPlaylist) {
-      message.channel.send(`${data.title} has been added to the queue.`)
+      msg.channel.send(`${data.title} has been added to the queue.`)
         .then(msg => msg.delete({ timeout: 8000 }));
     }
     // if in the end of queue and the song is stopped then play the track
-    if (message.guild.indexQueue > oldLength - 1) {
-      return play(message);
+    if (msg.guild.indexQueue > oldLength - 1) {
+      return play(msg);
     }
   }
 }

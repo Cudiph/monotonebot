@@ -1,6 +1,9 @@
 const { toTimestamp, randomHex } = require('./discord-item.js');
 
-
+/**
+ * Property for a now playing embed
+ * @param {CommandoMessage} msg message from text channel
+ */
 async function setEmbedPlaying(msg) {
   let music = msg.guild.queue[msg.guild.indexQueue];
   const embed = {
@@ -85,8 +88,7 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
   // if page is the last page then exec this code
   if (page === Math.floor(listLength / itemsPerPage)) {
     for (let i = 0; i < (listLength - indexPage); i++) {
-      // if the current music in loop is playing in the guild
-      // then add arrow =>
+      // add => sign to current playing
       if ((indexPage + i) !== msg.guild.indexQueue) {
         embed.fields.push({
           name: `[${indexPage + i}] ${dataList[indexPage + i].title}`,
