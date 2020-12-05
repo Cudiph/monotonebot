@@ -33,7 +33,7 @@ async function play(msg, numberOfTry = 0) {
   let queue = msg.guild.queue;
   let index = msg.guild.indexQueue;
 
-  // if someone use jump -100 for example, so it'll reset to zero
+  // handle the indexQueue
   if (index < 0) {
     index = msg.guild.indexQueue = 0;
   } else if (queue && index >= queue.length) {
@@ -44,13 +44,12 @@ async function play(msg, numberOfTry = 0) {
     return msg.channel.send('Stopped Playing...');
   }
 
-  // if queue is in the end then check if the autoplay
-  // is on, if not then return a message
+  // autoplay
   if (index === msg.guild.queue.length) {
     if (msg.guild.autoplay) {
       let related;
       try {
-        related = (await ytdl.getInfo(queue[index - 1].link)).related_videos
+        related = (await ytdl.getInfo(queue[index - 1].link || queue[index - 1].videoId)).related_videos
           .filter(video => video.length_seconds < 2000);
 
         // if no related video then stop and give the message
@@ -100,9 +99,11 @@ async function play(msg, numberOfTry = 0) {
     }
     // start typing indicator to notice user
     msg.channel.startTyping();
-    let dispatcher = await connection.play(await ytdl(queue[index].link || queue[index].videoId, {
+    const url = `https://www.youtube.com/watch?v=${queue[index].videoId}`
+    let dispatcher = await connection.play(await ytdl(queue[index].link || url, {
       filter: 'audioonly',
-      quality: 'lowest'
+      quality: 'lowest',
+      dlChunkSize: 0,
     }), {
       type: 'opus',
       volume: msg.guild.volume || 0.5,
@@ -122,7 +123,10 @@ async function play(msg, numberOfTry = 0) {
     // play next song when current song is finished
     dispatcher.on('finish', () => {
       // delete the now playing embed when the track is finished
-      if (msg.guild.queue && msg.guild.queue[index]) msg.channel.messages.delete(msg.guild.queue[index].embedId);
+      if (msg.guild.queue && msg.guild.queue[index]) {
+        msg.channel.messages.delete(msg.guild.queue[index].embedId)
+          .catch(e => logger.log('error', 'object in queue is maybe already deleted'))
+      };
       msg.guild.indexQueue++;
       return play(msg);
     });
