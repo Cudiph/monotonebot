@@ -47,6 +47,12 @@ async function play(msg, numberOfTry = 0) {
   // autoplay
   if (index === msg.guild.queue.length) {
     if (msg.guild.autoplay) {
+      if (msg.guild.queue && msg.guild.queue.length > 150) {
+        return msg.say(oneLine`
+          You reached maximum number of track.
+          Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
+        `);
+      }
       let related;
       try {
         related = (await ytdl.getInfo(queue[index - 1].link || queue[index - 1].videoId)).related_videos
@@ -160,6 +166,12 @@ async function play(msg, numberOfTry = 0) {
  * @param {CommandoMessage} message message from textchannel
  */
 async function player(data, msg, fromPlaylist = false) {
+  if (msg.guild.queue && msg.guild.queue.length > 150) {
+    return msg.say(oneLine`
+    You reached maximum number of track.
+    Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
+    `)
+  }
   const construction = {
     title: data.title,
     link: data.url,
@@ -180,14 +192,14 @@ async function player(data, msg, fromPlaylist = false) {
       logger.log('error', err);
     }
   } else {
-    oldLength = msg.guild.queue.length;
+    const oldLength = msg.guild.queue.length;
     msg.guild.queue.push(construction);
     if (!fromPlaylist) {
       msg.channel.send(`${data.title} has been added to the queue.`)
         .then(msg => msg.delete({ timeout: 8000 }));
     }
     // if in the end of queue and the song is stopped then play the track
-    if (msg.guild.indexQueue > oldLength - 1) {
+    if (msg.guild.indexQueue >= oldLength) {
       return play(msg);
     }
   }
