@@ -19,7 +19,7 @@ module.exports = class QueueCommand extends Command {
       args: [
         {
           key: 'itemsPerPage',
-          prompt: 'How many track per page you want to show?',
+          prompt: 'How many track per page do you want to show?',
           type: 'integer',
           default: 9,
           min: 2,
@@ -85,6 +85,8 @@ module.exports = class QueueCommand extends Command {
           for (let i = 0; i < emojiNeeded.length; i++) {
             await embedMsg.react(emojiNeeded[i]);
           }
+        } else {
+          embedMsg.react(emoji.x);
         }
       })
   }
