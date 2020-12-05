@@ -6,35 +6,39 @@ module.exports = class StopCommand extends Command {
       name: 'stop',
       group: 'voice',
       memberName: 'stop',
-      description: 'Stop current Track and clear the queue',
+      description: 'Stop current Track and move to the end of queue',
       examples: ['stop'],
       guildOnly: true,
       throttling: {
         usages: 2,
         duration: 10,
       },
+      args: [
+        {
+          key: 'deleteQueue',
+          label: 'DeleteQueue?',
+          prompt: 'Delete the queue?',
+          type: 'boolean',
+          default: false,
+        }
+      ]
     })
   }
 
-  async run(msg) {
+  async run(msg, { deleteQueue }) {
     if (!msg.guild.me.voice.connection) {
       return msg.say(`I'm not connected to the voice channel`);
     }
 
     if (msg.guild.me.voice.connection.dispatcher) {
+      msg.guild.indexQueue = msg.guild.queue.length;
+      msg.guild.autoplay = false;
       msg.guild.me.voice.connection.dispatcher.end();
     }
-    delete msg.guild.queue;
-    delete msg.guild.playedQueue;
+
+    if (deleteQueue) {
+      delete msg.guild.queue;
+    }
   }
 
-  async onBlock(msg, reason, data) {
-    let parent = await super.onBlock(msg, reason, data);
-    parent.delete({ timeout: 9000 });
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 9000 }));
-  }
 }
