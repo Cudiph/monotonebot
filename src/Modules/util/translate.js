@@ -22,7 +22,7 @@ module.exports = class AddPlaylistCommand extends Command {
       \nYou can see language id [here](https://cloud.google.com/translate/docs/languages).
       `,
       throttling: {
-        usages: 1,
+        usages: 3,
         duration: 10,
       },
       args: [

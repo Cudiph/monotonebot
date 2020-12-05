@@ -14,8 +14,8 @@ module.exports = class VolumeCommand extends Command {
       argsType: 'multiple',
       guildOnly: true,
       throttling: {
-        usages: 3,
-        duration: 10,
+        usages: 2,
+        duration: 20,
       },
       args: [
         {

@@ -23,8 +23,8 @@ module.exports = class PlayCommand extends Command {
       the player with no argument.
       `,
       throttling: {
-        usages: 3,
-        duration: 10,
+        usages: 2,
+        duration: 15,
       },
       clientPermissions: ['CONNECT', 'SPEAK'],
       args: [

@@ -19,8 +19,8 @@ module.exports = class DiceCommand extends Command {
       Reward is calculated like this : <bet> * <dice rolled> * 5~~
       `,
       throttling: {
-        usages: 3,
-        duration: 10,
+        usages: 2,
+        duration: 15,
       },
       args: [
         {

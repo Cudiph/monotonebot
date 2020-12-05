@@ -12,7 +12,7 @@ module.exports = class UrbandictCommand extends Command {
       nsfw: true,
       throttling: {
         usages: 4,
-        duration: 10,
+        duration: 20,
       },
       args: [
         {

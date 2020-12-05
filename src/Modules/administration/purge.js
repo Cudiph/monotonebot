@@ -12,8 +12,8 @@ module.exports = class PurgeCommand extends Command {
       description: 'Bulk delete',
       examples: ['purge', 'purge 100'],
       throttling: {
-        usages: 3,
-        duration: 10,
+        usages: 2,
+        duration: 15,
       },
       args: [
         {
