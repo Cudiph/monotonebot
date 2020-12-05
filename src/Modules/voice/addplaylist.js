@@ -51,6 +51,9 @@ module.exports = class AddPlaylistCommand extends Command {
           // list of videos in the playlist
           const videos = playlist.items
           videos.forEach(async video => {
+            if (msg.guild.queue && msg.guild.queue.length >= 150) {
+              return;
+            }
             await player({
               title: video.title,
               url: `https://youtube.com/watch?v=${video.id}`,
@@ -58,7 +61,13 @@ module.exports = class AddPlaylistCommand extends Command {
               author: video.author,
               seconds: toSeconds(video.duration),
             }, msg, true);
-          })
+          });
+          if (msg.guild.queue && msg.guild.queue.length >= 150) {
+            return msg.say(oneLine`
+              You reached maximum number of track.
+              Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
+            `);
+          }
           return msg.say(`Added playlist **${playlist.title}**. `);
         } catch (err) {
           logger.log('error', err)
@@ -72,6 +81,9 @@ module.exports = class AddPlaylistCommand extends Command {
           let playlist = await ytpl(listId);
           const videos = playlist.items
           videos.forEach(async video => {
+            if (msg.guild.queue && msg.guild.queue.length >= 150) {
+              return;
+            }
             await player({
               title: video.title,
               url: `https://youtube.com/watch?v=${video.id}`,
@@ -80,6 +92,12 @@ module.exports = class AddPlaylistCommand extends Command {
               seconds: toSeconds(video.duration),
             }, msg, true);
           });
+          if (msg.guild.queue && msg.guild.queue.length >= 150) {
+            return msg.say(oneLine`
+              You reached maximum number of track.
+              Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
+            `);
+          }
           return msg.say(`Added playlist **${playlist.title}**. `);
         } catch (err) {
           logger.log('error', err)
