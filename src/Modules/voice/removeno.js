@@ -37,8 +37,8 @@ module.exports = class RemoveNumberCommand extends Command {
       return msg.say('Bad calculation').then(msg => msg.delete({ timeout: 9000 }));
     }
 
-    if (args < 0 || args > msg.guild.queue.length) {
-      return msg.say(`Current total queue is 0-${msg.guild.queue.length}`);
+    if (args < 0 || args >= msg.guild.queue.length) {
+      return msg.say(`Current total queue is 0-${msg.guild.queue.length - 1}`);
     }
 
     let end;
