@@ -10,11 +10,14 @@ module.exports = class JumpCommand extends Command {
       group: 'voice',
       memberName: 'jump',
       aliases: ['skip'],
-      description: 'Jump to index of track queue (it is a skip)',
+      description: 'Relatively jump to index of track queue (it is a skip)',
       examples: ['jump', 'skip', 'jump 2', 'skip -1'],
       guildOnly: true,
-      details: oneLine`It's like skip but you can skip backward (using negatif value).
-      In short it's like leaderboard`,
+      details: oneLine`
+      Jump to an index relatively if current playing track
+      is #3 and you put \`..skip 2\`, it means you're playing
+      track #5. Put a dash (-) before number if you want to go backward.
+      `,
       throttling: {
         usages: 1,
         duration: 10,
@@ -36,18 +39,19 @@ module.exports = class JumpCommand extends Command {
       return;
     }
 
-    // idk why when this line is deleted and modify the msg.guild.indexQueue++ to
-    // msg.guild.indexQueue += numberToJump
-    // it can't go back nor jump using numberToJump
-    // what a miracle lol
+    // now i know why. dispatcher.end() handled it all lol
     msg.guild.indexQueue += numberToJump - 1;
 
-    if (msg.guild.me.voice.connection.dispatcher) {
-      await msg.guild.me.voice.connection.dispatcher.end();
-    } else {
+    if (msg.guild.me.voice.connection.dispatcher && msg.guild.me.voice.connection.dispatcher.paused) {
       msg.guild.indexQueue++;
       return play(msg);
+    } else if (msg.guild.me.voice.connection.dispatcher) {
+      msg.guild.me.voice.connection.dispatcher.end();
+      return;
     }
+    
+    msg.guild.indexQueue++;
+    play(msg);
 
   }
 
