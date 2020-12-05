@@ -53,6 +53,7 @@ module.exports = class AddPlaylistCommand extends Command {
           videos.forEach(async video => {
             await player({
               title: video.title,
+              url: `https://youtube.com/watch?v=${video.id}`,
               videoId: video.id,
               author: video.author,
               seconds: toSeconds(video.duration),
@@ -73,6 +74,7 @@ module.exports = class AddPlaylistCommand extends Command {
           videos.forEach(async video => {
             await player({
               title: video.title,
+              url: `https://youtube.com/watch?v=${video.id}`,
               videoId: video.id,
               author: video.author,
               seconds: toSeconds(video.duration),
