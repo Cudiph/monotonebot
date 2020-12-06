@@ -7,7 +7,8 @@ module.exports = class PlayCommand extends Command {
       name: 'removeplaylist',
       group: 'voice',
       memberName: 'removeplaylist',
-      aliases: ['rmpl 2', 'removepl 1'],
+      aliases: ['rmpl', 'removepl'],
+      examples: ['rmpl 4', 'removepl 2', 'removeplaylist 0'],
       description: 'Delete playlist from database',
       guildOnly: true,
       throttling: {
@@ -25,6 +26,7 @@ module.exports = class PlayCommand extends Command {
   }
 
   async run(msg, { playlistId }) {
+    console.log('jalan');
     const data = await userDataSchema.findOne({ id: msg.author.id });
 
     if (!data || !data.userPlaylists.length) {
