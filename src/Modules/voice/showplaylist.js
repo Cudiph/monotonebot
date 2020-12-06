@@ -10,33 +10,42 @@ function setEmbedPlaylist(data, indexPage, page, msg, itemsPerPage) {
   const listLength = data.userPlaylists.length;
   let embed = {
     color: parseInt(randomHex(), 16),
-    title: `Playlist of ${msg.author.name}#${msg.author.discriminator}`,
+    author: {
+      name: `Playlist of ${msg.author.username}#${msg.author.discriminator}`,
+      icon_url: msg.author.displayAvatarURL(),
+    },
     description: '',
-    timestamp: new Date(),
     footer: {
-      text: `${page + 1}/${Math.ceil(listLength / itemsPerPage)}`,
+      text: oneLine`
+        ${page + 1}/${Math.ceil(listLength / itemsPerPage)}
+        • Received ${listLength} ${listLength > 1 ? 'Playlists' : 'Playlist'}
+      `,
     },
   }
 
   if (page === Math.floor(listLength / itemsPerPage)) {
-    for (let i = 0; i < (listLength - indexPage); i++) {
+    for (let i = indexPage; i < listLength; i++) {
+      const trackCount = data.userPlaylists[i].videoList.length;
       embed.description += stripIndents`
         \`\`\`yaml
         Name  : '${data.userPlaylists[i].name}'
         Desc  : ${data.userPlaylists[i].description}
         Index : ${i}
-        Created : ${data.userPlaylists[i].timestamps}
+        Total : ${trackCount} ${trackCount > 1 ? 'Tracks' : 'Track'} 
+        Created At  : ${data.userPlaylists[i].timestamps.toUTCString()}
         \`\`\`
         `;
     }
   } else {
-    for (let i = 0; i < itemsPerPage; i++) {
+    for (let i = indexPage; i < (indexPage + itemsPerPage); i++) {
+      const trackCount = data.userPlaylists[i].videoList.length;
       embed.description += stripIndents`
         \`\`\`yaml
         Name  : '${data.userPlaylists[i].name}'
         Desc  : ${data.userPlaylists[i].description}
         Index : ${i}
-        CreatedAt : ${data.userPlaylists[i].timestamps}
+        Total : ${trackCount} ${trackCount > 1 ? 'Tracks' : 'Track'} 
+        Created At : ${data.userPlaylists[i].timestamps.toUTCString()}
         \`\`\`
         `;
     }
@@ -64,7 +73,7 @@ module.exports = class PlayCommand extends Command {
           type: 'integer',
           default: 5,
           min: 2,
-          max: 8,
+          max: 7,
         }
       ]
     })
@@ -82,7 +91,7 @@ module.exports = class PlayCommand extends Command {
       data = await userDataSchema.findOne({ id: msg.author.id });
       playlist = data.userPlaylists;
       if (!playlist.length) {
-        throw new Error();
+        throw 'user playlist is null';
       }
     } catch (e) {
       return msg.say(oneLine`
