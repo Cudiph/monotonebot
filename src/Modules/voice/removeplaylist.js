@@ -31,7 +31,7 @@ module.exports = class PlayCommand extends Command {
 
     if (!data || !data.userPlaylists.length) {
       return msg.say('You don\'t have any playlist')
-    } else if (playlistId < 0 && playlistId > data.userPlaylists.length) {
+    } else if (playlistId < 0 && playlistId >= data.userPlaylists.length) {
       return msg.say(`Your current playlist is from 0-${data.userPlaylists.length - 1}`)
     }
 
