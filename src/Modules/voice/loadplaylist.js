@@ -53,10 +53,10 @@ module.exports = class PlayCommand extends Command {
       }
       const oldLength = msg.guild.queue.length;
       msg.guild.queue.push(...playlist.videoList);
+      msg.say(`Added playlist **${playlist.name}**.`);
       if (msg.guild.indexQueue >= oldLength) {
         return play(msg);
       }
-      msg.say(`Added playlist **${playlist.name}**.`);
     } catch (err) {
       logger.log('error', err);
       return msg.channel.send(`Can't load the playlist`);
