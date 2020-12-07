@@ -1,6 +1,6 @@
 const { setEmbedPlaying } = require('./embed.js');
-const ytdl = require('ytdl-core-discord');
-const { oneLine } = require('common-tags');
+const ytdl = require('discord-ytdl-core');
+const { oneLine, stripIndents } = require('common-tags');
 
 /**
  * Structure of the queue object
@@ -39,6 +39,7 @@ async function play(msg, numberOfTry = 0) {
   } else if (queue && index >= queue.length) {
     index = msg.guild.indexQueue = msg.guild.queue.length;
   }
+
   // check if the queue is empty
   if (!queue || !queue.length) {
     return msg.channel.send('Stopped Playing...');
@@ -55,14 +56,14 @@ async function play(msg, numberOfTry = 0) {
       }
       let related;
       try {
-        related = (await ytdl.getInfo(queue[index - 1].link || queue[index - 1].videoId)).related_videos
+        const url = queue[index - 1].link || queue[index - 1].videoId || queue[index - 2].link || queue[index - 2].videoId;
+        related = (await ytdl.getBasicInfo(url)).related_videos
           .filter(video => video.length_seconds < 2000);
-
         // if no related video then stop and give the message
         if (!related.length) {
-          return msg.channel.send(oneLine`
-            No related video were found. You can request again
-            with \`${msg.guild.commandPrefix}skip\` command
+          return msg.channel.send(stripIndents`
+            No related video were found. You can request again with \`${msg.guild.commandPrefix}skip\` command. 
+            Videos with a duration longer than 40 minutes will not be listed.
           `)
         }
       } catch (err) {
@@ -79,10 +80,11 @@ async function play(msg, numberOfTry = 0) {
       const construction = {
         title: related[randTrack].title,
         link: `https://youtube.com/watch?v=${related[randTrack].id}`,
-        uploader: related[randTrack].author,
+        uploader: related[randTrack].author.name || 'unknown',
         seconds: parseInt(related[randTrack].length_seconds),
         author: `Autoplay`,
         videoId: related[randTrack].id,
+        isLive: related[randTrack].isLive,
       }
       msg.guild.queue.push(construction);
       return play(msg);
@@ -106,11 +108,14 @@ async function play(msg, numberOfTry = 0) {
     // start typing indicator to notice user
     msg.channel.startTyping();
     const url = `https://www.youtube.com/watch?v=${queue[index].videoId}`
-    let dispatcher = await connection.play(await ytdl(queue[index].link || url, {
-      filter: 'audioonly',
-      quality: 'lowest',
+    const stream = await ytdl(queue[index].link || url, {
+      filter: queue[index].isLive ? 'audio' : 'audioonly',
+      quality: queue[index].isLive ? [91, 92, 93, 94] : 'highest',
       dlChunkSize: 0,
-    }), {
+      opusEncoded: true,
+      encoderArgs: ['-af', 'bass=g=10,dynaudnorm=f=200'],
+    })
+    let dispatcher = await connection.play(stream, {
       type: 'opus',
       volume: msg.guild.volume || 0.5,
       highWaterMark: 200,
@@ -165,7 +170,7 @@ async function play(msg, numberOfTry = 0) {
  * @param {Object} data data of music fetched from yt-search
  * @param {CommandoMessage} message message from textchannel
  */
-async function player(data, msg, fromPlaylist = false) {
+async function player(data = {}, msg, fromPlaylist = false) {
   if (msg.guild.queue && msg.guild.queue.length > 150) {
     return msg.say(oneLine`
     You reached maximum number of track.
@@ -179,6 +184,7 @@ async function player(data, msg, fromPlaylist = false) {
     uploader: data.author.name,
     seconds: parseInt(data.seconds),
     author: `${msg.author.username}#${msg.author.discriminator}`,
+    isLive: data.isLive,
   }
   if (!msg.guild.queue) {
     try {
