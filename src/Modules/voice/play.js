@@ -1,4 +1,4 @@
-const ytdl = require('ytdl-core-discord');
+const ytdl = require('discord-ytdl-core');
 const yts = require('yt-search');
 const { emoji } = require('../../library/helper/discord-item.js');
 const { Command } = require('discord.js-commando');
@@ -58,10 +58,11 @@ module.exports = class PlayCommand extends Command {
         let data = await ytdl.getBasicInfo(vidId);
         let dataConstructor = {
           title: data.videoDetails.title,
-          url: 'https://youtube.com' + data.url,
+          url: data.videoDetails.video_url,
           videoId: vidId,
-          author: data.videoDetails.author,
+          author: data.videoDetails.author.name || 'sdfdsfsd',
           seconds: data.videoDetails.lengthSeconds,
+          isLive: data.videoDetails.isLiveContent,
         }
         return player(dataConstructor, message);
       }
@@ -118,8 +119,11 @@ module.exports = class PlayCommand extends Command {
 
           if (emojiNeeded.slice(0, 5).includes(collected.emoji.name)) {
             let reversed = Object.keys(emoji).find(key => emoji[key] === collected.emoji.name);
-            let intEmoji = parseInt(reversed);
+            const intEmoji = parseInt(reversed);
             let data = videos[music + intEmoji - 1];
+            if (data.seconds === 0) {
+              data.isLive = (await ytdl.getBasicInfo(data.videoId)).videoDetails.isLiveContent;
+            }
             msg.delete();
             return player(data, message);
           }
