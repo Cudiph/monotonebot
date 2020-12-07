@@ -1,4 +1,5 @@
 const { Command } = require('discord.js-commando');
+const { play } = require('../../library/helper/player');
 
 module.exports = class AutoPlayCommand extends Command {
   constructor(client) {
@@ -14,23 +15,22 @@ module.exports = class AutoPlayCommand extends Command {
         usages: 1,
         duration: 10,
       },
+      args: [
+        {
+          key: 'turnOn',
+          type: 'boolean',
+          prompt: 'Argument must be true or false',
+          default: ''
+        }
+      ]
     })
   }
 
-  async run(msg, args) {
-    let arg;
-    if (args.length) {
-      arg = args[0].toLowerCase();
-    }
-
-    if (!args.length) {
+  async run(msg, { turnOn }) {
+    if (turnOn === '') {
       msg.guild.autoplay = !msg.guild.autoplay;
-    } else if (arg == 'true') {
-      msg.guild.autoplay = true;
-    } else if (arg == 'false') {
-      msg.guild.autoplay = false;
     } else {
-      msg.say('Argument must be true or false');
+      msg.guild.autoplay = turnOn;
     }
     let embed = {
       description: `Set \`autoplay\` to **${msg.guild.autoplay ? 'True' : 'False'}**`
@@ -41,7 +41,10 @@ module.exports = class AutoPlayCommand extends Command {
       embed.color = 0xff1100;
     }
 
-    return msg.say({embed})
+    if (msg.guild.queue && msg.guild.queue.length && (msg.guild.indexQueue >= msg.guild.queue.length)) {
+      return play(msg);
+    }
+    return msg.say({ embed })
   }
 
   async onBlock(msg, reason, data) {
