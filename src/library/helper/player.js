@@ -3,30 +3,18 @@ const ytdl = require('discord-ytdl-core');
 const { oneLine, stripIndents } = require('common-tags');
 
 /**
- * Structure of the queue object
- * @param {Object} msg.guild.queue queue of the guild
- * @param {string} msg.guild.queue[i].title Title of the track
- * @param {string} msg.guild.queue[i].link url of the track
- * @param {string} msg.guild.queue[i].videoId videoId of the track
- * @param {string} msg.guild.queue[i].uploader uploader of the track
- * @param {Number} msg.guild.queue[i].seconds Duration of the track
- * @param {string} msg.guild.queue[i].author Name of discord account who requested the song
- */
-
-/**
- * Structure of the autoplay
- * @param {boolean} msg.guild.autoplay the state of the autoplay
- */
-
-/**
- * Structure of the indexQueue
- * @param {Number} msg.guild.indexQueue current playing queue
- */
-
-
-/**
  * Play a music and repeat if has another music to be played
  * @param {CommandoMessage} msg message from textchannel
+ * @param {boolean} msg.guild.autoplay the state of the autoplay
+ * @param {Number} msg.guild.indexQueue current playing track
+ * @param {Object[]} msg.guild.queue queue of the guild
+ * @param {string} msg.guild.queue[].title Title of the track
+ * @param {string} msg.guild.queue[].link url of the track
+ * @param {string} msg.guild.queue[].videoId videoId of the track
+ * @param {string} msg.guild.queue[].uploader uploader of the track
+ * @param {Number} msg.guild.queue[].seconds Duration of the track
+ * @param {string} msg.guild.queue[].author Name of discord account who requested the song
+ * @param {boolean} msg.guild.queue[].isLive whether the video is in livestream or not
  * @param {Number} numberOfTry The attempt whenever the track is failed to play
  */
 async function play(msg, numberOfTry = 0) {
@@ -168,6 +156,10 @@ async function play(msg, numberOfTry = 0) {
 /**
  * Push to the queue and play if not playing any music
  * @param {Object} data data of music fetched from yt-search
+ * @param {string} data.title title of the track
+ * @param {string} data.url full youtube url of the track
+ * @param {string} data.videoId unique track's video ID
+ * @param {Object} data.uploader Information about the uploader of the track
  * @param {CommandoMessage} message message from textchannel
  */
 async function player(data = {}, msg, fromPlaylist = false) {
@@ -181,7 +173,7 @@ async function player(data = {}, msg, fromPlaylist = false) {
     title: data.title,
     link: data.url,
     videoId: data.videoId,
-    uploader: data.author.name,
+    uploader: data.author.name || 'Unknown',
     seconds: parseInt(data.seconds),
     author: `${msg.author.username}#${msg.author.discriminator}`,
     isLive: data.isLive,
