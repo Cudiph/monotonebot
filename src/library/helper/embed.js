@@ -15,7 +15,7 @@ async function setEmbedPlaying(msg) {
       }
     ],
     footer: {
-      text: `🔊 ${msg.guild.volume * 100} | ${toTimestamp(music.seconds)} | ${music.author}`
+      text: `🔊 ${msg.guild.volume * 100} | ${music.isLive ? '• Live' : toTimestamp(music.seconds)} | ${music.author}`
     }
   }
   return embed;
