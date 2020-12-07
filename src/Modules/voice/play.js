@@ -3,7 +3,7 @@ const yts = require('yt-search');
 const { emoji } = require('../../library/helper/discord-item.js');
 const { Command } = require('discord.js-commando');
 const { oneLine } = require('common-tags');
-const { player, play } = require('../../library/helper/player.js');
+const { player } = require('../../library/helper/player.js');
 const { setEmbedPlayCmd } = require('../../library/helper/embed.js');
 
 module.exports = class PlayCommand extends Command {
@@ -45,13 +45,6 @@ module.exports = class PlayCommand extends Command {
     }
 
     if (message.member.voice.channel) {
-      // if (!args.length && !message.guild.queue) {
-      //   return message.say('There is nothing to play');
-      // }
-      // if (!args.length && message.guild.me.voice.connection.dispatcher.paused) {
-      //   return play(message);
-      // }
-
       // check if author send a youtube link or video Id
       if (ytdl.validateURL(queryOrUrl) || ytdl.validateID(queryOrUrl)) {
         const vidId = ytdl.getVideoID(queryOrUrl);
@@ -60,7 +53,7 @@ module.exports = class PlayCommand extends Command {
           title: data.videoDetails.title,
           url: data.videoDetails.video_url,
           videoId: vidId,
-          author: data.videoDetails.author.name || 'sdfdsfsd',
+          author: data.videoDetails.author.name ? data.videoDetails.author : { name: data.videoDetails.ownerChannelName },
           seconds: data.videoDetails.lengthSeconds,
           isLive: data.videoDetails.isLiveContent,
         }
