@@ -13,14 +13,22 @@ module.exports = class PauseCommand extends Command {
         usages: 1,
         duration: 10,
       },
+      args: [
+        {
+          key: 'silencePause',
+          prompt: 'use silencePause?',
+          type: 'boolean',
+          default: false,
+        },
+      ]
     })
   }
 
-  async run(msg) {
+  async run(msg, { silencePause }) {
     if (!msg.guild.me.voice.connection) {
       return msg.say(`I'm not connected to the voice channel`);
     } else if (msg.guild.me.voice.connection.dispatcher) {
-      return msg.guild.me.voice.connection.dispatcher.pause(true);
+      return msg.guild.me.voice.connection.dispatcher.pause(silencePause);
     }
   }
 
