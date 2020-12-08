@@ -88,7 +88,7 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
   if (page === Math.floor(listLength / itemsPerPage)) {
     for (let i = indexPage; i < listLength; i++) {
       // add => sign to current playing
-      if ((indexPage + i) !== msg.guild.indexQueue) {
+      if (i !== msg.guild.indexQueue) {
         embed.fields.push({
           name: `[${i}] ${dataList[i].title}`,
           value: `${dataList[i].uploader} ${dataList[i].seconds ?
@@ -105,7 +105,7 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
     }
   } else {
     for (let i = indexPage; i < (itemsPerPage + indexPage); i++) {
-      if ((indexPage + i) !== msg.guild.indexQueue) {
+      if (i !== msg.guild.indexQueue) {
         embed.fields.push({
           name: `[${i}] ${dataList[i].title}`,
           value: `${dataList[i].uploader} ${dataList[i].seconds ?
