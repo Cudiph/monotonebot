@@ -19,7 +19,7 @@ module.exports = class PurgeCommand extends Command {
         {
           key: 'total',
           prompt: 'How many message you want to delete?',
-          type: 'string',
+          type: 'integer',
           default: 2
         },
         // {
@@ -34,32 +34,25 @@ module.exports = class PurgeCommand extends Command {
     });
   }
 
-  async run(msg, args) {
-    let totalMsg;
-    if (parseInt(args.total)) {
-      totalMsg = parseInt(args.total);
-    } else {
-      return msg.reply('Value must be a number').then(msg => msg.delete({ timeout: 6000 }));
+  async run(msg, { total }) {
+    if (total > 100) {
+      total = 100;
+    } else if (total <= 0) {
+      total = Math.abs(total);
+    } else if (total < 2) {
+      total = 2;
     }
 
-    if (totalMsg > 100) {
-      totalMsg = 100;
-    } else if (totalMsg <= 0) {
-      totalMsg = Math.abs(totalMsg);
-    } else if (totalMsg < 2) {
-      totalMsg = 2;
-    }
-
-    let messages = await msg.channel.messages.fetch({ limit: totalMsg })
     try {
+      let messages = await msg.channel.messages.fetch({ limit: total })
       msg.channel.bulkDelete(messages).then(messages => {
-        msg.channel.send(`Bulk deleted ${messages.size} messages`).then(msg => msg.delete({ timeout: 5000 }));
+        msg.channel.send(`Bulk deleted ${messages.size} messages`);
       }).catch(err => {
         logger.log('error', err);
         msg.channel.send(stripIndents`
         Unable to delete messages
         It's likely because you are trying to delete messages that are under 14 days old.
-      `).then(msg => msg.delete({ timeout: 7000 }))
+      `).then(msg => msg.delete({ timeout: 7000 }));
       });
     } catch (err) {
       logger.log('error', err);
