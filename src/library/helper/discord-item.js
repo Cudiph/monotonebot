@@ -26,9 +26,9 @@ function randomHex() {
  * @param {Number} seconds seconds in numbers
  */
 function toTimestamp(seconds) {
-  let day = Math.floor(seconds / 86400);
-  if (seconds > 86400) {
-    return day.toString() + ':' + new Date(seconds * 1000).toISOString().substr(11, 8);
+  if (seconds >= 86400) {
+    const day = Math.floor(seconds / 86400);
+    return day.toString().padStart(2, '0') + ':' + new Date(seconds * 1000).toISOString().substr(11, 8);
   } else if (seconds > 3599) {
     return new Date(seconds * 1000).toISOString().substr(11, 8);
   } else {
@@ -43,15 +43,15 @@ function toTimestamp(seconds) {
 function toSeconds(timestamp) {
   // reverse the splitted timestamp from 10:00:00 to ['00','00','10']
   // so it start from secs, mins, hours
-  let time = timestamp.split(/\s*:\s*/).reverse();
+  let timeList = timestamp.split(/\s*:\s*/).reverse();
   let seconds = 0;
-  for (let i = 0; i < time.length; i++) {
+  for (let i = 0; i < timeList.length; i++) {
     if (i === 0) {
-      seconds += parseInt(time[i]);
-    } else if (i <= 3) {
-      seconds += parseInt(time[i]) * 60 ** i;
+      seconds += parseInt(timeList[i]);
+    } else if (i < 3) {
+      seconds += parseInt(timeList[i]) * 60 ** i;
     } else {
-      seconds += parseInt(time[i]) * 86400;
+      seconds += parseInt(timeList[i]) * 86400;
     }
   }
   return seconds;
