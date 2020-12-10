@@ -3,23 +3,41 @@ const ytdl = require('discord-ytdl-core');
 const { oneLine, stripIndents } = require('common-tags');
 const { CommandoMessage } = require('discord.js-commando');
 
+/**
+ * @typedef {Object[]} PushedQueue
+ * @property {string} title - Title of the track
+ * @property {string} link - url of the track
+ * @property {string} videoId - videoId of the track
+ * @property {string} uploader - uploader of the track
+ * @property {number} seconds - Duration of the track
+ * @property {string} author - Name of discord account who requested the song
+ * @property {boolean} isLive - whether the video is in livestream or not
+ */
+
+/**
+ * @typedef {Object} QueueConstructor
+ * @property {string} title - title of the track
+ * @property {string} url - full youtube url of the track
+ * @property {string} videoId - unique track's video ID
+ * @property {Object} uploader - Information about the uploader of the track
+ * @property {string} uploader.name - Channel name who upload the video
+ * @property {number} seconds - length of the video
+ * @property {string} author - the author who requested the track
+ * @property {boolean} isLive - whether the video is on livestream
+ */
 
 /**
  * Play a music and repeat if has another music to be played
- * @param {CommandoMessage} msg message from textchannel
- * @param {boolean} msg.guild.autoplay the state of the autoplay
- * @param {number} msg.guild.indexQueue current playing track
- * @param {Object[]} msg.guild.queue queue of the guild
- * @param {string} msg.guild.queue[].title Title of the track
- * @param {string} msg.guild.queue[].link url of the track
- * @param {string} msg.guild.queue[].videoId videoId of the track
- * @param {string} msg.guild.queue[].uploader uploader of the track
- * @param {number} msg.guild.queue[].seconds Duration of the track
- * @param {string} msg.guild.queue[].author Name of discord account who requested the song
- * @param {boolean} msg.guild.queue[].isLive whether the video is in livestream or not
- * @param {number} numberOfTry The attempt whenever the track is failed to play
+ * @async
+ * @returns {CommandoMessage} 
+ * @param {CommandoMessage} msg - message from textchannel
+ * @param {boolean} msg.guild.autoplay - the state of the autoplay
+ * @param {number} msg.guild.indexQueue - current playing track
+ * @param {PushedQueue} msg.guild.queue - queue of the guild
+ * @param {number} [seek=0] - a number in seconds to seek
+ * @param {number} [numberOfTry=0] - The attempt whenever the track is failed to play
  */
-async function play(msg, numberOfTry = 0) {
+async function play(msg, seek = 0, numberOfTry = 0) {
   let queue = msg.guild.queue;
   let index = msg.guild.indexQueue;
 
@@ -59,7 +77,7 @@ async function play(msg, numberOfTry = 0) {
       } catch (err) {
         // try again
         if (numberOfTry < 15) {
-          return play(msg, ++numberOfTry);
+          return play(msg, numberOfTry = ++numberOfTry);
         }
         logger.log('error', err + ' at info');
         msg.say(`Something went wrong. Try to resolve related track`);
@@ -104,6 +122,7 @@ async function play(msg, numberOfTry = 0) {
       dlChunkSize: 0,
       opusEncoded: true,
       encoderArgs: ['-af', 'bass=g=10,dynaudnorm=f=200'],
+      seek: seek,
     })
     let dispatcher = await connection.play(stream, {
       type: 'opus',
@@ -145,7 +164,7 @@ async function play(msg, numberOfTry = 0) {
     msg.channel.stopTyping(true);
     // err.endsWith("metadata")
     if (numberOfTry < 15) {
-      return play(msg, ++numberOfTry);
+      return play(msg, numberOfTry = ++numberOfTry);
     }
     logger.log('error', err + ' at connection play after 15x trying');
     msg.say(`Something went wrong. **Track #${msg.guild.indexQueue}** will be skipped`);
@@ -157,17 +176,9 @@ async function play(msg, numberOfTry = 0) {
 
 /**
  * Push to the queue and play if not playing any music
- * @param {Object} data data of music fetched from yt-search
- * @param {string} data.title title of the track
- * @param {string} data.url full youtube url of the track
- * @param {string} data.videoId unique track's video ID
- * @param {Object} data.uploader Information about the uploader of the track
- * @param {string} data.uploader.name Channel name who upload the video
- * @param {number} data.seconds length of the video
- * @param {string} data.author the author who requested the track
- * @param {boolean} data.isLive whether the video is on livestream
- * @param {CommandoMessage} msg message from textchannel
- * @param {boolean} fromPlaylist whether player is called from playlist.js or called multiple times
+ * @param {QueueConstructor} data - data of music fetched from yt-search
+ * @param {CommandoMessage} msg - message from textchannel
+ * @param {boolean} fromPlaylist - whether player is called from playlist.js or called multiple times
  */
 async function player(data = {}, msg, fromPlaylist = false) {
   if (msg.guild.queue && msg.guild.queue.length > 150) {

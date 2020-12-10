@@ -2,6 +2,19 @@ const { toTimestamp, randomHex } = require('./discord-item.js');
 const { CommandoMessage } = require('discord.js-commando');
 
 /**
+ * @typedef {Object[]} DataList 
+ * @property {string} title - Title of the track
+ * @property {Object} author - Object of uploader information (yt-search only)
+ * @property {string} author.name - Name of the channel (yt-search only)
+ * @property {string} timestamp - Timestamp of the video (yt-search only)
+ * @property {string} link - url of the track
+ * @property {string} uploader - uploader of the track
+ * @property {number} seconds - Duration of the track
+ * @property {boolean} isLive - whether the video is in livestream or not
+ */
+
+
+/**
  * Property for a now playing embed
  * @param {CommandoMessage} msg message from text channel
  */
@@ -24,15 +37,11 @@ async function setEmbedPlaying(msg) {
 
 /**
  * Setting up embed so you won't repeat it
- * @param {Object[]} dataList array of music fetched from yt-search
- * @param {string} dataList[].title Title of the video
- * @param {Object} dataList[].author Object of uploader information
- * @param {string} dataList[].author.name Name of the channel
- * @param {string} dataList[].timestamp Timestamp of the video
- * @param {number} indexPage A number from indexes to choose between list of object
- * @param {number} page number of page now
- * @param {CommandoMessage} msg message from textchannel
- * @param {number} itemsPerPage number of items showed in one embed
+ * @param {DataList} dataList - array of music fetched from yt-search
+ * @param {number} indexPage - A number from indexes to choose between list of object
+ * @param {number} page - number of page now
+ * @param {CommandoMessage} msg - message from textchannel
+ * @param {number} itemsPerPage - number of items to be showed in one page of embed
  */
 function setEmbedPlayCmd(dataList, indexPage, page, msg, itemsPerPage) {
   let listLength = dataList.length;
@@ -70,16 +79,11 @@ function setEmbedPlayCmd(dataList, indexPage, page, msg, itemsPerPage) {
 
 /**
  * Set embed for ..queue
- * @param {Object[]} dataList - array of music queue from message.guild.queue
- * @param {string} dataList[].title - Title of the track
- * @param {string} dataList[].link - url of the track
- * @param {string} dataList[].uploader uploader of the track
- * @param {number} dataList[].seconds Duration of the track
- * @param {boolean} datalist[].isLive whether the video is in livestream or not
- * @param {number} indexPage number for indexing queue items
- * @param {number} page for showing current page in embed
- * @param {CommandoMessage} msg message from user
- * @param {number} itemsPerPage number of items showed in embed
+ * @param {DataList} dataList - array of music queue from message.guild.queue
+ * @param {number} indexPage - number for indexing queue items
+ * @param {number} page - for showing current page in embed
+ * @param {CommandoMessage} msg - message from user
+ * @param {number} itemsPerPage - number of items to be showed in one page of embed
  */
 function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
   let listLength = dataList.length;
