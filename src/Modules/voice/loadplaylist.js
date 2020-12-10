@@ -41,22 +41,23 @@ module.exports = class LoadPlaylistCommand extends Command {
     try {
       const data = await userDataSchema.findOne({ id: msg.author.id });
       if (!data || !data.userPlaylists.length) {
-        return msg.say('You don\'t have any playlist')
+        return msg.say('You don\'t have any playlist');
       } else if (playlistId < 0 && playlistId > data.userPlaylists.length) {
-        return msg.say(`Your current playlist is from 0-${data.userPlaylists.length - 1}`)
+        return msg.say(`Your current playlist is from 0-${data.userPlaylists.length - 1}`);
       }
-      const playlist = data.userPlaylists[playlistId]
+      const playlist = data.userPlaylists[playlistId];
       if (!msg.guild.queue) {
         msg.guild.queue = playlist.videoList;
         msg.guild.indexQueue = 0;
-        return play(msg);
+        play(msg);
+        return msg.say(`Added playlist **${playlist.name}**.`);
       }
       const oldLength = msg.guild.queue.length;
       msg.guild.queue.push(...playlist.videoList);
-      msg.say(`Added playlist **${playlist.name}**.`);
       if (msg.guild.indexQueue >= oldLength) {
-        return play(msg);
+        play(msg);
       }
+      return msg.say(`Added playlist **${playlist.name}**.`);
     } catch (err) {
       logger.log('error', err);
       return msg.channel.send(`Can't load the playlist`);

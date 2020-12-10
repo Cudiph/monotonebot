@@ -42,9 +42,9 @@ module.exports = class AutoPlayCommand extends Command {
     }
 
     if (msg.guild.queue && msg.guild.queue.length && (msg.guild.indexQueue >= msg.guild.queue.length)) {
-      return play(msg);
+      play(msg);
     }
-    return msg.say({ embed })
+    return msg.say({ embed });
   }
 
   async onBlock(msg, reason, data) {
