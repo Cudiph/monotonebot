@@ -1,21 +1,23 @@
 const { setEmbedPlaying } = require('./embed.js');
 const ytdl = require('discord-ytdl-core');
 const { oneLine, stripIndents } = require('common-tags');
+const { CommandoMessage } = require('discord.js-commando');
+
 
 /**
  * Play a music and repeat if has another music to be played
  * @param {CommandoMessage} msg message from textchannel
  * @param {boolean} msg.guild.autoplay the state of the autoplay
- * @param {Number} msg.guild.indexQueue current playing track
+ * @param {number} msg.guild.indexQueue current playing track
  * @param {Object[]} msg.guild.queue queue of the guild
  * @param {string} msg.guild.queue[].title Title of the track
  * @param {string} msg.guild.queue[].link url of the track
  * @param {string} msg.guild.queue[].videoId videoId of the track
  * @param {string} msg.guild.queue[].uploader uploader of the track
- * @param {Number} msg.guild.queue[].seconds Duration of the track
+ * @param {number} msg.guild.queue[].seconds Duration of the track
  * @param {string} msg.guild.queue[].author Name of discord account who requested the song
  * @param {boolean} msg.guild.queue[].isLive whether the video is in livestream or not
- * @param {Number} numberOfTry The attempt whenever the track is failed to play
+ * @param {number} numberOfTry The attempt whenever the track is failed to play
  */
 async function play(msg, numberOfTry = 0) {
   let queue = msg.guild.queue;
@@ -160,7 +162,12 @@ async function play(msg, numberOfTry = 0) {
  * @param {string} data.url full youtube url of the track
  * @param {string} data.videoId unique track's video ID
  * @param {Object} data.uploader Information about the uploader of the track
- * @param {CommandoMessage} message message from textchannel
+ * @param {string} data.uploader.name Channel name who upload the video
+ * @param {number} data.seconds length of the video
+ * @param {string} data.author the author who requested the track
+ * @param {boolean} data.isLive whether the video is on livestream
+ * @param {CommandoMessage} msg message from textchannel
+ * @param {boolean} fromPlaylist whether player is called from playlist.js or called multiple times
  */
 async function player(data = {}, msg, fromPlaylist = false) {
   if (msg.guild.queue && msg.guild.queue.length > 150) {

@@ -1,4 +1,5 @@
 const { toTimestamp, randomHex } = require('./discord-item.js');
+const { CommandoMessage } = require('discord.js-commando');
 
 /**
  * Property for a now playing embed
@@ -23,7 +24,11 @@ async function setEmbedPlaying(msg) {
 
 /**
  * Setting up embed so you won't repeat it
- * @param {object} dataList data of music fetched from yt-search
+ * @param {Object[]} dataList array of music fetched from yt-search
+ * @param {string} dataList[].title Title of the video
+ * @param {Object} dataList[].author Object of uploader information
+ * @param {string} dataList[].author.name Name of the channel
+ * @param {string} dataList[].timestamp Timestamp of the video
  * @param {number} indexPage A number from indexes to choose between list of object
  * @param {number} page number of page now
  * @param {CommandoMessage} msg message from textchannel
@@ -65,11 +70,16 @@ function setEmbedPlayCmd(dataList, indexPage, page, msg, itemsPerPage) {
 
 /**
  * Set embed for ..queue
- * @param {Array} dataList array of music queue from message.guild.queue
- * @param {Number} indexPage number for indexing queue items
- * @param {Number} page for showing current page in embed
+ * @param {Object[]} dataList - array of music queue from message.guild.queue
+ * @param {string} dataList[].title - Title of the track
+ * @param {string} dataList[].link - url of the track
+ * @param {string} dataList[].uploader uploader of the track
+ * @param {number} dataList[].seconds Duration of the track
+ * @param {boolean} datalist[].isLive whether the video is in livestream or not
+ * @param {number} indexPage number for indexing queue items
+ * @param {number} page for showing current page in embed
  * @param {CommandoMessage} msg message from user
- * @param {Number} itemsPerPage number of items showed in embed
+ * @param {number} itemsPerPage number of items showed in embed
  */
 function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
   let listLength = dataList.length;
@@ -92,13 +102,13 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
         embed.fields.push({
           name: `[${i}] ${dataList[i].title}`,
           value: `${dataList[i].uploader} ${dataList[i].seconds ?
-            '| ' + toTimestamp(dataList[i].seconds) : ''} | [YouTube](${dataList[i].link})`,
+            '| ' + toTimestamp(dataList[i].seconds) : dataList[i].isLive ? '| • Live' : ''} | [YouTube](${dataList[i].link})`,
         })
       } else {
         embed.fields.push({
           name: `=> [${i}] ${dataList[i].title}`,
           value: `${dataList[i].uploader} ${dataList[i].seconds ?
-            '| ' + toTimestamp(dataList[i].seconds) : ''} | [YouTube](${dataList[i].link})`,
+            '| ' + toTimestamp(dataList[i].seconds) : dataList[i].isLive ? '| • Live' : ''} | [YouTube](${dataList[i].link})`,
         })
       }
 
@@ -109,13 +119,13 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
         embed.fields.push({
           name: `[${i}] ${dataList[i].title}`,
           value: `${dataList[i].uploader} ${dataList[i].seconds ?
-            '| ' + toTimestamp(dataList[i].seconds) : ''} | [YouTube](${dataList[i].link})`,
+            '| ' + toTimestamp(dataList[i].seconds) : dataList[i].isLive ? '| • Live' : ''} | [YouTube](${dataList[i].link})`,
         })
       } else {
         embed.fields.push({
           name: `=> [${i}] ${dataList[i].title}`,
           value: `${dataList[i].uploader} ${dataList[i].seconds ?
-            '| ' + toTimestamp(dataList[i].seconds) : ''} | [YouTube](${dataList[i].link})`,
+            '| ' + toTimestamp(dataList[i].seconds) : dataList[i].isLive ? '| • Live' : ''} | [YouTube](${dataList[i].link})`,
         })
       }
     }
