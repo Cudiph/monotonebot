@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
-const { getChannelMention } = require('../../library/users/get-cache.js');
-const { Command } = require('discord.js-commando');
+const { Command, CommandoMessage } = require('discord.js-commando');
 
 module.exports = class SayCommand extends Command {
   constructor(client) {
@@ -25,12 +24,21 @@ module.exports = class SayCommand extends Command {
           key: 'words',
           prompt: 'What do you want to say?',
           type: 'string',
+          isEmpty: function (val, msg, arg) {
+            const splittedMsg = msg.content.split(/\s+/);
+            if (splittedMsg[1].match(/^<#\d+>$/) && !splittedMsg[2]) {
+              return true;
+            } else {
+              return false;
+            }
+          }
         }
       ],
     });
   }
 
-  async run(msg, {textChannel, words}) {
+  /** @param {CommandoMessage} msg */
+  async run(msg, { textChannel, words }) {
     let channel;
     if (typeof textChannel == 'object') {
       channel = textChannel
@@ -44,15 +52,15 @@ module.exports = class SayCommand extends Command {
 
     // check if user mention a channel if not send all args in that channel
     if (!channel) {
-      let embedMsg = new Discord.MessageEmbed()
+      embedMsg = new Discord.MessageEmbed()
         .setColor('#ff548e')
-        .setDescription(textChannel.concat(' ', words));
+        .setDescription(textChannel.concat(' ', words ? words : ''));
       return msg.channel.send(embedMsg);
     }
 
     // check if the user have perm to send the message
     if (!channel.permissionsFor(msg.author.id).has('SEND_MESSAGES')) {
-      return msg.channel.send(`You don't have a permission for sending messages to that channel`);
+      return msg.reply(`You don't have a permission for sending messages to that channel`);
     }
 
     channel.send({
