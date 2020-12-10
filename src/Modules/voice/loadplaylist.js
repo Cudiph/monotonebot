@@ -3,7 +3,7 @@ const { Command } = require('discord.js-commando');
 const { userDataSchema } = require('../../library/Database/schema.js');
 const { play } = require('../../library/helper/player.js');
 
-module.exports = class PlayCommand extends Command {
+module.exports = class LoadPlaylistCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'loadplaylist',

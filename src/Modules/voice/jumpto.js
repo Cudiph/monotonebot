@@ -3,7 +3,7 @@ const { Command } = require('discord.js-commando');
 const { play } = require('../../library/helper/player.js');
 
 // based on jump.js
-module.exports = class JumpCommand extends Command {
+module.exports = class JumpToCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'jumpto',

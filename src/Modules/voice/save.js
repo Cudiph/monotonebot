@@ -2,7 +2,7 @@ const { Command } = require('discord.js-commando');
 const { oneLine } = require('common-tags');
 const { userDataSchema } = require('../../library/Database/schema.js');
 
-module.exports = class PlayCommand extends Command {
+module.exports = class SaveCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'save',

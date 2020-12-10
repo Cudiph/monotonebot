@@ -126,7 +126,7 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
 }
 
 
-module.exports = class PlayCommand extends Command {
+module.exports = class ShowPlaylistCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'showplaylist',

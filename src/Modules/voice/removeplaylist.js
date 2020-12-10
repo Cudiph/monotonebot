@@ -1,7 +1,7 @@
 const { Command } = require('discord.js-commando');
 const { userDataSchema } = require('../../library/Database/schema.js');
 
-module.exports = class PlayCommand extends Command {
+module.exports = class RemovePlaylistCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'removeplaylist',
