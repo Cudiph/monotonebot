@@ -34,10 +34,14 @@ const { CommandoMessage } = require('discord.js-commando');
  * @param {boolean} msg.guild.autoplay - the state of the autoplay
  * @param {number} msg.guild.indexQueue - current playing track
  * @param {PushedQueue} msg.guild.queue - queue of the guild
- * @param {number} [seek=0] - a number in seconds to seek
- * @param {number} [numberOfTry=0] - The attempt whenever the track is failed to play
+ * @param {Object} [options] - Option
+ * @param {number} [options.seek] - a number in seconds to seek
+ * @param {number} [options.numberOfTry] - The attempt whenever the track is failed to play
  */
-async function play(msg, seek = 0, numberOfTry = 0) {
+async function play(msg, options = {}) {
+  if (typeof options !== 'object') throw new TypeError('INVALID_TYPE');
+  const { seek = 0, numberOfTry = 0 } = options;
+
   let queue = msg.guild.queue;
   let index = msg.guild.indexQueue;
 
@@ -77,9 +81,9 @@ async function play(msg, seek = 0, numberOfTry = 0) {
       } catch (err) {
         // try again
         if (numberOfTry < 15) {
-          return play(msg, numberOfTry = ++numberOfTry);
+          return play(msg, { numberOfTry: ++numberOfTry });
         }
-        logger.log('error', err + ' at info');
+        logger.log('error', err.stack);
         msg.say(`Something went wrong. Try to resolve related track`);
         msg.guild.indexQueue++;
         return play(msg);
@@ -113,6 +117,9 @@ async function play(msg, seek = 0, numberOfTry = 0) {
         delete msg.guild.indexQueue;
       })
     }
+    if (seek) {
+      msg.guild.queue[index].seekTime = seek;
+    }
     // start typing indicator to notice user
     msg.channel.startTyping();
     const url = `https://www.youtube.com/watch?v=${queue[index].videoId}`
@@ -145,7 +152,7 @@ async function play(msg, seek = 0, numberOfTry = 0) {
       // delete the now playing embed when the track is finished
       if (msg.guild.queue && msg.guild.queue[index]) {
         msg.channel.messages.delete(msg.guild.queue[index].embedId)
-          .catch(e => logger.log('error', 'object in queue is maybe already deleted'))
+          .catch(e => logger.log('error', 'message is already deleted'))
       };
       msg.guild.indexQueue++;
       return play(msg);
@@ -154,19 +161,14 @@ async function play(msg, seek = 0, numberOfTry = 0) {
     // skip current track if error occured
     dispatcher.on('error', err => {
       msg.channel.stopTyping(true);
-      logger.log('error', err);
+      logger.log('error', err.stack);
       msg.channel.send(`An error occured. **Track #${msg.guild.indexQueue}** will be skipped`);
       msg.guild.indexQueue++;
       return play(msg);
     });
   } catch (err) {
-    // Skip if any error after 15x trying
     msg.channel.stopTyping(true);
-    // err.endsWith("metadata")
-    if (numberOfTry < 15) {
-      return play(msg, numberOfTry = ++numberOfTry);
-    }
-    logger.log('error', err + ' at connection play after 15x trying');
+    logger.log('error', err.stack);
     msg.say(`Something went wrong. **Track #${msg.guild.indexQueue}** will be skipped`);
     msg.guild.indexQueue++;
     play(msg);
@@ -212,7 +214,8 @@ async function player(data = {}, msg, fromPlaylist = false) {
     msg.guild.queue.push(construction);
     if (!fromPlaylist) {
       msg.channel.send(`${data.title} has been added to the queue.`)
-        .then(msg => msg.delete({ timeout: 8000 }));
+        .then(msg => msg.delete({ timeout: 8000 }))
+        .catch(e => logger.log('info', 'msg is already deleted'));
     }
     // if in the end of queue and the song is stopped then play the track
     if (msg.guild.indexQueue >= oldLength) {
