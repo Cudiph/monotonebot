@@ -1,5 +1,5 @@
 const { client } = require('../bot.js');
-const { guildSettingsSchema } = require('../library/Database/schema.js');
+const { guildSettingsSchema, userDataSchema } = require('../library/Database/schema.js');
 
 // event on message
 client.on('message', async msg => {
@@ -15,7 +15,7 @@ client.on('message', async msg => {
             guildId: guildId,
             guildName: msg.guild.name,
             prefix: client.commandPrefix,
-            volume: 1
+            volume: 1,
           }, { upsert: true });
           msg.guild.commandPrefix = client.commandPrefix;
           msg.guild.volume = 1;
@@ -33,6 +33,26 @@ client.on('message', async msg => {
         logger.log('error', err.stack);
       }
     }
+
+    if (msg.content.startsWith(msg.guild.commandPrefix)) {
+      updateUser(msg);
+    }
+
     // console.log(Date.now() - now); // performance test
   }
 });
+
+/**
+ * Function to update user data
+ * @param {CommandoMessage} msg - Commando Message
+ * @async
+ * @returns {void} 
+ */
+async function updateUser(msg) {
+  try {
+    await userDataSchema.findOneAndUpdate({ userId: msg.author.id }, {
+      $inc: { exp: 1, money: msg.content.length * 5 },
+    }, { upsert: true, setDefaultsOnInsert: true, new: true });
+    
+  } catch (e) { }
+}
