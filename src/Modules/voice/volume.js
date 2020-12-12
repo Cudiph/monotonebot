@@ -1,5 +1,4 @@
-const { Command } = require('discord.js-commando');
-const { crud } = require('../../library/Database/crud.js');
+const { Command, CommandoMessage } = require('discord.js-commando');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
 
 module.exports = class VolumeCommand extends Command {
@@ -30,21 +29,19 @@ module.exports = class VolumeCommand extends Command {
     })
   }
 
+  /** @param {CommandoMessage} msg */
   async run(msg, { volume }) {
     volume /= 100;
     if (!msg.guild.me.voice.connection) {
       return msg.say(`I'm not connected to the voice channel`);
     }
-    let db = await new crud(process.env.MONGO_URL);
-    db.connect();
-
     if (!volume) {
-      let vol = await db.findById(guildSettingsSchema, msg.guild.id);
+      let vol = await guildSettingsSchema.findOne({ guildId: msg.guild.id })
       return msg.say(`Current volume level is ${vol.volume * 100}`)
     }
 
     try {
-      await db.writeOneUpdate(guildSettingsSchema, msg.guild.id, {
+      await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
         volume: volume,
       });
       msg.guild.volume = volume;

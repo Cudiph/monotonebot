@@ -1,38 +1,36 @@
 const { client } = require('../bot.js');
-const { crud } = require('../library/Database/crud.js');
 const { guildSettingsSchema } = require('../library/Database/schema.js');
 
 // event on message
-client.on('message', async message => {
+client.on('message', async msg => {
   // let now = Date.now(); // performance test
   // fetch prefix from database
-  if (message.guild) {
-    if (!message.guild.isCached) {
-      // fetch data from database
-      let db = await new crud(process.env.MONGO_URL);
-      db.connect();
+  const guildId = msg.guild.id;
+  if (msg.guild) {
+    if (!msg.guild.isCached) {
       try {
-        const check = await db.findById(guildSettingsSchema, message.guild.id);
+        const check = await guildSettingsSchema.findOne({ guildId: guildId });
         if (!check) {
-          await db.writeOneUpdate(guildSettingsSchema, message.guild.id, {
-            _id: message.guild.id,
+          await guildSettingsSchema.findOneAndUpdate({ guildId: guildId }, {
+            guildId: guildId,
+            guildName: msg.guild.name,
             prefix: client.commandPrefix,
             volume: 1
-          });
-          message.guild.commandPrefix = client.commandPrefix;
-          message.guild.volume = 1;
-          message.guild.isCached = true;
+          }, { upsert: true });
+          msg.guild.commandPrefix = client.commandPrefix;
+          msg.guild.volume = 1;
+          msg.guild.isCached = true;
           // make a sign
         } else {
-          message.guild.commandPrefix = check.prefix;
-          message.guild.volume = check.volume;
+          msg.guild.commandPrefix = check.prefix;
+          msg.guild.volume = check.volume;
         }
 
         if (check) {
-          message.guild.isCached = true;
+          msg.guild.isCached = true;
         }
       } catch (err) {
-        logger.log('error', err);
+        logger.log('error', err.stack);
       }
     }
     // console.log(Date.now() - now); // performance test

@@ -1,26 +1,21 @@
 const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
-const { crud } = require('../../library/Database/crud.js');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
 const { oneLine, stripIndents } = require('common-tags');
 const { client } = require('../../bot.js');
 
-const writePrefix = async (newPrefix, msg) => {
+async function writePrefix(newPrefix, msg) {
   // set new prefix for guild
-  let url = process.env.MONGO_URL;
-  let db = await new crud(url);
-  db.connect();
   try {
-    let result = await db.writeOneUpdate(guildSettingsSchema, { _id: msg.guild.id }, {
-      _id: msg.guild.id,
+    let result = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+      guildId: msg.guild.id,
       prefix: newPrefix,
-    });
+    }, { upsert: true });
     if (result) return result.prefix; else return client.commandPrefix;
   } catch (err) {
     logger.log('error', err);
-    return msg.channel.send(`Can't update the prefix.`);
-  } finally {
-    db.close();
+    msg.channel.send(`Can't update the prefix.`);
+    return 'error';
   }
 }
 
@@ -83,7 +78,7 @@ module.exports = class PrefixCommand extends Command {
       response = `Reset the command prefix to the default (currently ${current}).`;
       msg.channel.send(response);
     } else {
-      let oldPrefix = await writePrefix(prefix, msg)
+      let oldPrefix = await writePrefix(prefix, msg);
       if (msg.guild) msg.guild.commandPrefix = prefix; else this.client.commandPrefix = prefix;
       const embed = new Discord.MessageEmbed()
         .setColor('#ff548e')
