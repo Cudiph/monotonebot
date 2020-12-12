@@ -1,0 +1,50 @@
+const { Command, CommandoMessage } = require('discord.js-commando');
+
+module.exports = class LoopCommand extends Command {
+  constructor(client) {
+    super(client, {
+      name: 'loop',
+      group: 'voice',
+      memberName: 'loop',
+      description: 'Loop current playing track',
+      examples: ['loop', 'loop false'],
+      guildOnly: true,
+      throttling: {
+        usages: 1,
+        duration: 10,
+      },
+      args: [
+        {
+          key: 'turnOn',
+          type: 'boolean',
+          prompt: 'Argument must be true or false.',
+          default: ''
+        }
+      ]
+    })
+  }
+
+  /** @param {CommandoMessage} msg */
+  async run(msg, { turnOn }) {
+    if (turnOn === '') {
+      msg.guild.loop = !msg.guild.loop;
+    } else {
+      msg.guild.loop = turnOn;
+    }
+    const embed = {
+      color: msg.guild.loop ? 0x11ff00 : 0xff1100,
+      description: `Set \`loop\` to **${msg.guild.loop ? 'True' : 'False'}**`
+    }
+    return msg.say({ embed });
+  }
+
+  async onBlock(msg, reason, data) {
+    let parent = await super.onBlock(msg, reason, data);
+    parent.delete({ timeout: 9000 });
+  }
+
+  onError(err, message, args, fromPattern, result) {
+    super.onError(err, message, args, fromPattern, result)
+      .then(msgParent => msgParent.delete({ timeout: 9000 }));
+  }
+}
