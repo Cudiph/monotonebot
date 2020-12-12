@@ -2,19 +2,25 @@ const mongoose = require('mongoose');
 
 const reqNumber = {
   type: Number,
-  required: true
+  required: true,
+}
+
+const reqStr = {
+  type: String,
+  required: true,
 }
 
 const guildSettings = new mongoose.Schema({
-  _id: reqNumber, // guild id
-  autoAssignRoleId: Number,
-  logChannelId: Number,
+  guildId: reqStr, // guild id
+  guildName: String,
+  autoAssignRoleId: String,
+  logChannelId: String,
   welcomeMessage: {
-    Channel: Number,
+    Channel: String,
     Message: String
   },
   goodbyeMessage: {
-    Channel: Number,
+    Channel: String,
     Message: String
   },
   prefix: {
@@ -25,7 +31,8 @@ const guildSettings = new mongoose.Schema({
 })
 
 const userData = new mongoose.Schema({
-  id: reqNumber, // member id
+  userId: reqStr, // member id
+  exp: Number,
   money: Number,
   userPlaylists: [{
     name: String,
@@ -42,23 +49,11 @@ const userData = new mongoose.Schema({
   }]
 })
 
-const musicQueue = new mongoose.Schema({
-  guildId: reqNumber, // guild id
-  queue: [{
-    Title: String,
-    Uploader: String,
-    Url: String
-  }],
-  Date: { type: Date, default: Date.now, index: true }
-})
-
 const guildSettingsSchema = mongoose.model('guildSettings', guildSettings);
 const userDataSchema = mongoose.model('userData', userData);
-const musicQueueSchema = mongoose.model('musicQueue', musicQueue);
 
 
 module.exports = {
   guildSettingsSchema,
   userDataSchema,
-  musicQueueSchema,
 }
