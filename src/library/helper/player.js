@@ -183,8 +183,14 @@ async function play(msg, options = {}) {
 
   // loop
   if (msg.guild.loop) {
+    if (seek) {
+      return playStream(msg,seek);
+    }
+    if (msg.guild.indexQueue === 0) {
+      return playStream(msg, seek);
+    }
     msg.guild.indexQueue--;
-    return playStream(msg);
+    return playStream(msg, seek);
   }
 
   // autoplay
