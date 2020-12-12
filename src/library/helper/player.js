@@ -27,82 +27,13 @@ const { CommandoMessage } = require('discord.js-commando');
  */
 
 /**
- * Play a music and repeat if has another music to be played
- * @async
- * @returns {CommandoMessage} 
- * @param {CommandoMessage} msg - message from textchannel
- * @param {boolean} msg.guild.autoplay - the state of the autoplay
- * @param {number} msg.guild.indexQueue - current playing track
- * @param {PushedQueue} msg.guild.queue - queue of the guild
- * @param {Object} [options] - Option
- * @param {number} [options.seek] - a number in seconds to seek
- * @param {number} [options.numberOfTry] - The attempt whenever the track is failed to play
+ * 
+ * @param {CommandoMessage} msg - msg
+ * @param {number} [seek=0] - a number in seconds to seek
  */
-async function play(msg, options = {}) {
-  if (typeof options !== 'object') throw new TypeError('INVALID_TYPE');
-  const { seek = 0, numberOfTry = 0 } = options;
-
-  let queue = msg.guild.queue;
-  let index = msg.guild.indexQueue;
-
-  // handle the indexQueue
-  if (index < 0) {
-    index = msg.guild.indexQueue = 0;
-  } else if (queue && index >= queue.length) {
-    index = msg.guild.indexQueue = msg.guild.queue.length;
-  }
-
-  // check if the queue is empty
-  if (!queue || !queue.length) {
-    return msg.channel.send('Stopped Playing...');
-  }
-
-  // autoplay
-  if (index === msg.guild.queue.length) {
-    if (msg.guild.autoplay) {
-      if (msg.guild.queue && msg.guild.queue.length > 150) {
-        return msg.say(oneLine`
-          You reached maximum number of track.
-          Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
-        `);
-      }
-      let related;
-      try {
-        const url = queue[index - 1].link || queue[index - 1].videoId || queue[index - 2].link || queue[index - 2].videoId;
-        related = (await ytdl.getBasicInfo(url)).related_videos
-          .filter(video => video.length_seconds < 2000);
-        // if no related video then stop and give the message
-        if (!related.length) {
-          return msg.channel.send(stripIndents`
-            No related video were found. You can request again with \`${msg.guild.commandPrefix}skip\` command. 
-            Videos with a duration longer than 40 minutes will not be listed.
-          `)
-        }
-      } catch (err) {
-        // try again
-        if (numberOfTry < 15) {
-          return play(msg, { numberOfTry: ++numberOfTry });
-        }
-        logger.log('error', err.stack);
-        msg.say(`Something went wrong. Try to resolve related track`);
-        msg.guild.indexQueue++;
-        return play(msg);
-      }
-      const randTrack = Math.floor(Math.random() * related.length);
-      const construction = {
-        title: related[randTrack].title,
-        link: `https://youtube.com/watch?v=${related[randTrack].id}`,
-        uploader: related[randTrack].author.name || 'unknown',
-        seconds: parseInt(related[randTrack].length_seconds),
-        author: `Autoplay`,
-        videoId: related[randTrack].id,
-        isLive: related[randTrack].isLive,
-      }
-      msg.guild.queue.push(construction);
-      return play(msg);
-    }
-    return msg.channel.send(`Stopped Playing...`);
-  }
+async function playStream(msg, seek = 0) {
+  const queue = msg.guild.queue;
+  const index = msg.guild.indexQueue;
 
   try {
     let connection; // make a connection
@@ -173,6 +104,98 @@ async function play(msg, options = {}) {
     msg.guild.indexQueue++;
     play(msg);
   }
+}
+
+/**
+ * Function to fetch related track
+ * @param {CommandoMessage} msg - msg
+ */
+async function fetchAutoplay(msg) {
+  let queue = msg.guild.queue;
+  let index = msg.guild.indexQueue;
+  if (msg.guild.queue && msg.guild.queue.length > 150) {
+    return msg.say(oneLine`
+      You reached maximum number of track.
+      Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
+    `);
+  }
+  let related;
+  try {
+    const url = queue[index - 1].link || queue[index - 1].videoId || queue[index - 2].link || queue[index - 2].videoId;
+    related = (await ytdl.getBasicInfo(url)).related_videos
+      .filter(video => video.length_seconds < 2000);
+    // if no related video then stop and give the message
+    if (!related.length) {
+      return msg.channel.send(stripIndents`
+        No related video were found. You can request again with \`${msg.guild.commandPrefix}skip\` command. 
+        Videos with a duration longer than 40 minutes will not be listed.
+      `)
+    }
+  } catch (err) {
+    logger.log('error', err.stack);
+    msg.say(`Something went wrong. You can try again with \`${msg.guild.commandPrefix}skip\` command.`);
+    msg.guild.indexQueue++;
+    return;
+  }
+  const randTrack = Math.floor(Math.random() * related.length);
+  const construction = {
+    title: related[randTrack].title,
+    link: `https://youtube.com/watch?v=${related[randTrack].id}`,
+    uploader: related[randTrack].author.name || 'unknown',
+    seconds: parseInt(related[randTrack].length_seconds),
+    author: `Autoplay`,
+    videoId: related[randTrack].id,
+    isLive: related[randTrack].isLive,
+  }
+  msg.guild.queue.push(construction);
+  return play(msg);
+}
+
+/**
+ * Play a music and repeat if has another music to be played
+ * @async
+ * @returns {any} 
+ * @param {CommandoMessage} msg - message from textchannel
+ * @param {boolean} msg.guild.autoplay - the state of the autoplay
+ * @param {number} msg.guild.indexQueue - current playing track
+ * @param {PushedQueue} msg.guild.queue - queue of the guild
+ * @param {Object} [options] - Option
+ * @param {number} [options.seek=0] - a number in seconds to seek
+ */
+async function play(msg, options = {}) {
+  if (typeof options !== 'object') throw new TypeError('INVALID_TYPE');
+  const { seek = 0 } = options;
+
+  let queue = msg.guild.queue;
+  let index = msg.guild.indexQueue;
+
+  // handle the indexQueue
+  if (index < 0) {
+    index = msg.guild.indexQueue = 0;
+  } else if (queue && index >= queue.length) {
+    index = msg.guild.indexQueue = msg.guild.queue.length;
+  }
+
+  // check if the queue is empty
+  if (!queue || !queue.length) {
+    return msg.channel.send('Stopped Playing...');
+  }
+
+  // loop
+  if (msg.guild.loop) {
+    msg.guild.indexQueue--;
+    return playStream(msg);
+  }
+
+  // autoplay
+  if (index === msg.guild.queue.length) {
+    if (msg.guild.autoplay) {
+      return fetchAutoplay(msg);
+    }
+    return msg.channel.send(`Stopped Playing...`);
+  }
+
+  return await playStream(msg, seek);
 
 }
 
