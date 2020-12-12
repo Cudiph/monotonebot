@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
-const { getUserMention, isUserId } = require('../../library/users/get-cache.js')
-const { Command } = require('discord.js-commando')
+const { Command } = require('discord.js-commando');
+const { sendtoLogChan } = require('../../library/helper/embed.js');
 
 module.exports = class KickCommand extends Command {
   constructor(client) {
@@ -25,7 +25,7 @@ module.exports = class KickCommand extends Command {
           key: 'reason',
           prompt: 'The reason why you kick him? (optional)',
           type: 'string',
-          default: false,
+          default: '-',
         }
       ],
     });
@@ -45,28 +45,24 @@ module.exports = class KickCommand extends Command {
     // }
     const kickedName = `${member.user.username}#${member.user.discriminator} <${member.user.id}>`;
     const kickedimage = `${member.user.displayAvatarURL()}`;
-    member
-      .kick(reason)
-      .then(() => {
-        const EmbedMsg = new Discord.MessageEmbed()
-          .setColor('#fc6b03')
-          .setAuthor(kickedName, kickedimage)
-          .setTitle(`Kicked Successfully`)
-          .setDescription(`**Member** : ${kickedName}\n` + `**Reason** : ${reason || '-'}\n` +
-            `**Time** : ${msg.createdAt.toUTCString()}`)
-          .setFooter(`Kicked by ${msg.author.username}#${msg.author.discriminator}`,
-            `${msg.author.displayAvatarURL()}`);
+    try {
+      await member.kick(reason);
+      const embedMsg = new Discord.MessageEmbed()
+        .setColor('#fc6b03')
+        .setAuthor(kickedName, kickedimage)
+        .setTitle(`Kicked Successfully`)
+        .setDescription(`**Member** : ${kickedName}\n` + `**Reason** : ${reason}\n` +
+          `**Time** : ${msg.createdAt.toUTCString()}`)
+        .setFooter(`Kicked by ${msg.author.username}#${msg.author.discriminator}`,
+          `${msg.author.displayAvatarURL()}`);
 
-        msg.channel.send({
-          embed: EmbedMsg
-        });
-      })
-      .catch(err => {
-        // due to missing permissions or role hierarchy
-        msg.reply('I was unable to kick the member');
-        // Log the error
-        logger.log('error', err);
-      });
+      return sendtoLogChan(msg, { embedMsg: embedMsg });
+
+    } catch (e) {
+      // due to missing permissions or role hierarchy
+      msg.reply('I was unable to kick the member');
+      logger.log('error', e.stack);
+    }
 
   }
 

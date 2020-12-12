@@ -1,7 +1,6 @@
-const { stripIndents, oneLine } = require('common-tags');
-const { getUserMention, isUserId } = require('../../library/users/get-cache.js')
-const { Command } = require('discord.js-commando')
+const { Command, CommandoMessage } = require('discord.js-commando')
 const Discord = require('discord.js');
+const { sendtoLogChan } = require('../../library/helper/embed.js');
 
 module.exports = class BanCommand extends Command {
   constructor(client) {
@@ -24,12 +23,13 @@ module.exports = class BanCommand extends Command {
           key: 'reason',
           prompt: 'The reason why you ban him? (optional)',
           type: 'string',
-          default: false,
+          default: '-',
         }
       ],
     });
   }
 
+  /** @param {CommandoMessage} msg */
   async run(msg, { member, reason }) {
     // // manual method
     // let member = await isUserId(args[0], msg);
@@ -42,32 +42,29 @@ module.exports = class BanCommand extends Command {
     // } else {
     //   return msg.say('Invalid Id or Argument');
     // }
+
     // get the banned data
     const bannedName = `${member.user.username}#${member.user.discriminator} <${member.user.id}>`;
-    const bannedimage = `${member.user.displayAvatarURL()}`;
+    const bannedImage = `${member.user.displayAvatarURL()}`;
     if (member) {
-      member
-        .ban({ reason: reason ? reason : ' ' })
-        .then(() => {
-          const EmbedMsg = new Discord.MessageEmbed()
-            .setColor('#ff0000')
-            .setAuthor(bannedName, bannedimage)
-            .setTitle(`Banned Successfully`)
-            .setDescription(`**Member** : ${bannedName}\n` + `**Reason** : ${reason || '-'}\n` +
-              `**Time** : ${msg.createdAt.toUTCString()}`)
-            .setFooter(`Banned by ${msg.author.username}#${msg.author.discriminator}`,
-              `${msg.author.displayAvatarURL()}`);
+      try {
+        await member.ban({ reason: reason });
+        const embedMsg = new Discord.MessageEmbed()
+          .setColor('#ff0000')
+          .setAuthor(bannedName, bannedImage)
+          .setTitle(`Banned Successfully`)
+          .setDescription(`**Member** : ${bannedName}\n` + `**Reason** : ${reason}\n` +
+            `**Time** : ${msg.createdAt.toUTCString()}`)
+          .setFooter(`Banned by ${msg.author.username}#${msg.author.discriminator}`,
+            `${msg.author.displayAvatarURL()}`);
 
-          msg.channel.send({
-            embed: EmbedMsg
-          });
-        })
-        .catch(err => {
-          // due to missing permissions or role hierarchy
-          msg.reply('I was unable to ban the member');
-          // Log the error
-          logger.log('error', err);
-        });
+        return sendtoLogChan(msg, { embedMsg: embedMsg });
+      } catch (e) {
+        // due to missing permissions or role hierarchy
+        msg.reply(`I was unable to ban the member`);
+        logger.log('error', e.stack);
+      }
+
     }
     // Otherwise, if no user was mentioned
     else {

@@ -1,6 +1,6 @@
-const { Command } = require('discord.js-commando');
-const { emoji } = require('../../library/helper/discord-item.js');
+const { Command, CommandoMessage } = require('discord.js-commando');
 const { stripIndents } = require('common-tags');
+const { sendtoLogChan } = require('../../library/helper/embed.js');
 
 module.exports = class PurgeCommand extends Command {
   constructor(client) {
@@ -34,6 +34,7 @@ module.exports = class PurgeCommand extends Command {
     });
   }
 
+  /** @param {CommandoMessage} msg */
   async run(msg, { total }) {
     if (total > 100) {
       total = 100;
@@ -46,7 +47,8 @@ module.exports = class PurgeCommand extends Command {
     try {
       let messages = await msg.channel.messages.fetch({ limit: total })
       msg.channel.bulkDelete(messages).then(messages => {
-        msg.channel.send(`Bulk deleted ${messages.size} messages`);
+        const response = `Bulk deleted **${messages.size}** messages on <#${msg.channel.id}>`;
+        return sendtoLogChan(msg, { strMsg: response })
       }).catch(err => {
         logger.log('error', err);
         msg.channel.send(stripIndents`

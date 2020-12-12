@@ -1,8 +1,9 @@
 const Discord = require('discord.js');
-const { Command } = require('discord.js-commando');
+const { Command, CommandoMessage } = require('discord.js-commando');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
 const { oneLine, stripIndents } = require('common-tags');
 const { client } = require('../../bot.js');
+const { sendtoLogChan } = require('../../library/helper/embed.js');
 
 async function writePrefix(newPrefix, msg) {
   // set new prefix for guild
@@ -49,6 +50,7 @@ module.exports = class PrefixCommand extends Command {
     });
   }
 
+  /** @param {CommandoMessage} msg */
   async run(msg, args) {
     // Just output the prefix
     if (!args.prefix) {
@@ -82,12 +84,12 @@ module.exports = class PrefixCommand extends Command {
       if (msg.guild) msg.guild.commandPrefix = prefix; else this.client.commandPrefix = prefix;
       const embed = new Discord.MessageEmbed()
         .setColor('#ff548e')
-        .setDescription(`This guild prefix has been updated`)
+        .setDescription(`The guild prefix has been updated`)
         .addField('From', `**${oldPrefix}**`, true)
         .addField('To', `**${args.prefix}**`, true)
         .addField('Usage', `${msg.anyUsage('command')}`);
       // send embed
-      msg.channel.send(embed);
+      return sendtoLogChan(msg, { embedMsg: embed });
     }
     return null;
   }

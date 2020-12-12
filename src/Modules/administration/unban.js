@@ -1,5 +1,5 @@
-const { getUserIdMention, isUserId } = require('../../library/users/get-cache.js')
-const { Command } = require('discord.js-commando')
+const { Command, CommandoMessage } = require('discord.js-commando');
+const { sendtoLogChan } = require('../../library/helper/embed.js');
 
 module.exports = class UnbanCommand extends Command {
   constructor(client) {
@@ -30,6 +30,7 @@ module.exports = class UnbanCommand extends Command {
     });
   }
 
+  /** @param {CommandoMessage} msg */
   async run(msg, { bannedUser, reason }) {
     // // old method
     // let bannedUser;
@@ -45,7 +46,10 @@ module.exports = class UnbanCommand extends Command {
     // }
 
     msg.guild.members.unban(bannedUser, reason)
-      .then(user => msg.channel.send(`Unbanned **${user.username}#${user.discriminator}** from **${msg.guild.name}**`))
+      .then(user => {
+        const res = `Unbanned **${user.username}#${user.discriminator}** from **${msg.guild.name}**`;
+        return sendtoLogChan(msg, { strMsg: res });
+      })
       .catch(err => {
         // due to missing permissions or role hierarchy
         msg.reply('I was unable to unban the member\n' +
