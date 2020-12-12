@@ -1,5 +1,5 @@
-# Romono Bot 
-**A multipurpose bot written in javascript along with discord.js library**
+# Monotone Bot 
+**A multipurpose bot written in javascript along with discord.js library and Commando framework**
 
 ## Setup
 If you want to self hosting the bot, then you have to make an application in [discord developer portal](https://discord.com/developers/).  
@@ -24,13 +24,9 @@ if the steps above have been done, you can install the environment and run the b
 1. Install [node.js](https://nodejs.org/en/download/)
 2. Install mongodb on your PC or you can create a mongodb cluster at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 2. use `npm Install` at the root folder with powershell
-3. make the `.env` file at the root of the project (same level as package.json)
+3. create the `.env` file at the root of the project (same level as package.json)
 4. And again in the shell run `node .`
 5. Congrats! You've run the bot 🥳
-
-## Official website
-You can visit the official website and see all the command list without
-looking at help command [here](https://rodocs.herokuapp.com/)
 
 ### My discord profile
 Made with ❤ by [Cudiph#7298](https://discordapp.com/users/400240052761788427)
