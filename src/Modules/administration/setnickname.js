@@ -33,7 +33,6 @@ module.exports = class SetNicknameCommand extends Command {
   }
 
   async run(msg, { member, newNick }) {
-    console.log(newNick);
     // // old method
     // let member = await isUserId(args[0], msg);
     // let isMember = args[0].match(/^<@!?\d+>$/);

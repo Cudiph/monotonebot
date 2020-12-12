@@ -32,8 +32,6 @@ module.exports = class SetActivityCommand extends Command {
     msg.client.user.setActivity(description, { type: activity.toUpperCase() })
       .then(presence => {
         if (activity.toLowerCase() != 'none' && description != '') {
-          console.log(activity);
-          console.log(!description);
           msg.say(`Activity set to **${activity.toUpperCase()} ${presence.activities[0].name}**`)
         } else {
           msg.say(`Activity has been reset`);
