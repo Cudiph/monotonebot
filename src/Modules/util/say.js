@@ -62,6 +62,9 @@ module.exports = class SayCommand extends Command {
     if (!channel.permissionsFor(msg.author.id).has('SEND_MESSAGES')) {
       return msg.reply(`You don't have a permission for sending messages to that channel`);
     }
+    if (!channel.permissionsFor(msg.guild.me.id).has('SEND_MESSAGES')) {
+      return msg.reply(`I don't have a permission for sending messages to that channel`);
+    }
 
     channel.send({
       embed: embedMsg
