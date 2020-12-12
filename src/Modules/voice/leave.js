@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const { Command, CommandoMessage } = require('discord.js-commando');
 
 module.exports = class LeaveCommand extends Command {
   constructor(client) {
@@ -12,6 +12,7 @@ module.exports = class LeaveCommand extends Command {
     })
   }
 
+  /** @param {CommandoMessage} msg */
   async run(msg) {
     if (!msg.guild.me.voice.channel) {
       return;
@@ -25,6 +26,8 @@ module.exports = class LeaveCommand extends Command {
     // delete queue
     delete msg.guild.queue;
     delete msg.guild.playedQueue;
+    msg.guild.autoplay = false;
+    msg.guild.loop = false;
     // leave the channel
     return await msg.member.voice.channel.leave();
   }

@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const { Command, CommandoMessage } = require('discord.js-commando');
 
 module.exports = class StopCommand extends Command {
   constructor(client) {
@@ -25,6 +25,7 @@ module.exports = class StopCommand extends Command {
     })
   }
 
+  /** @param {CommandoMessage} msg */
   async run(msg, { deleteQueue }) {
     if (!msg.guild.me.voice.connection) {
       return msg.say(`I'm not connected to the voice channel`);
@@ -33,6 +34,7 @@ module.exports = class StopCommand extends Command {
     if (msg.guild.me.voice.connection.dispatcher) {
       msg.guild.indexQueue = msg.guild.queue.length;
       msg.guild.autoplay = false;
+      msg.guild.loop = false;
       msg.guild.me.voice.connection.dispatcher.end();
     }
 
