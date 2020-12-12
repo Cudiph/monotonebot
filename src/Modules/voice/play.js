@@ -1,7 +1,7 @@
 const ytdl = require('discord-ytdl-core');
 const yts = require('yt-search');
 const { emoji } = require('../../library/helper/discord-item.js');
-const { Command } = require('discord.js-commando');
+const { Command, CommandoMessage } = require('discord.js-commando');
 const { oneLine } = require('common-tags');
 const { player } = require('../../library/helper/player.js');
 const { setEmbedPlayCmd } = require('../../library/helper/embed.js');
@@ -37,6 +37,7 @@ module.exports = class PlayCommand extends Command {
     })
   }
 
+  /** @param {CommandoMessage} message */
   async run(message, { queryOrUrl }) {
     // if not in voice channel
     if (!message.member.voice.channel) {
@@ -113,6 +114,11 @@ module.exports = class PlayCommand extends Command {
           if (emojiNeeded.slice(0, 5).includes(collected.emoji.name)) {
             let reversed = Object.keys(emoji).find(key => emoji[key] === collected.emoji.name);
             const intEmoji = parseInt(reversed);
+            if ((music + intEmoji) > videos.length) {
+              // return if user choose more than the available song
+              msg.delete();
+              return message.reply(`Please choose the correct number.`);
+            }
             let data = videos[music + intEmoji - 1];
             if (data.seconds === 0) {
               data.isLive = (await ytdl.getBasicInfo(data.videoId)).videoDetails.isLiveContent;
