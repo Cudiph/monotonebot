@@ -1,6 +1,7 @@
 const { toTimestamp, randomHex } = require('./discord-item.js');
 const { CommandoMessage } = require('discord.js-commando');
-
+const { MessageEmbed } = require('discord.js');
+const { guildSettingsSchema } = require('../Database/schema.js');
 /**
  * @typedef {Object[]} DataList 
  * @property {string} title - Title of the track
@@ -157,8 +158,39 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
   return embed;
 }
 
+/**
+ * Log to logchannel for moderation commands
+ * @param {CommandoMessage} msg msg
+ * @param {Object} options options
+ * @param {MessageEmbed} [options.embedMsg] embed msg to sent
+ * @param {string} [options.strMsg] raw string to sent
+ * @returns {MessageChannel}
+ */
+async function sendtoLogChan(msg, options = {}) {
+  const { embedMsg, strMsg } = options;
+  let guildSetting = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
+  const logChan = await msg.guild.channels.cache.get(guildSetting.logChannelId);
+  if (embedMsg) {
+    if (guildSetting.logChannelId && logChan) {
+      return logChan.send({ embed: embedMsg });
+    } else {
+      return msg.channel.send({
+        embed: embedMsg
+      });
+    }
+  } else if (strMsg) {
+    if (guildSetting.logChannelId && logChan) {
+      return logChan.send(strMsg);
+    } else {
+      return msg.channel.send(strMsg);
+    }
+  }
+
+}
+
 module.exports = {
   setEmbedPlayCmd,
   setEmbedPlaying,
   setEmbedQueueCmd,
+  sendtoLogChan,
 }
