@@ -9,14 +9,14 @@ module.exports = class LogChannelCommand extends Command {
       memberName: 'logchannel',
       aliases: ['setlogchannel'],
       description: 'Set log channel where all the log is sent',
-      examples: ['logchannel #log', 'logchannel'],
+      examples: ['logchannel #log', 'logchannel', 'logchannel unset'],
       guildOnly: true,
       userPermissions: ['ADMINISTRATOR'],
       args: [
         {
           key: 'channel',
           prompt: 'Which channel will be the log channel?',
-          type: 'text-channel',
+          type: 'text-channel|string',
           default: '',
         },
       ],
@@ -35,6 +35,12 @@ module.exports = class LogChannelCommand extends Command {
     }
     // show current log channel if no argument
     if (typeof channel !== 'object') {
+      if (channel.toLowerCase() === 'unset') {
+        await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+          $unset: { logChannelId: '' },
+        });
+        return msg.reply(`Logchannel is unsetted successfully.`);
+      }
       if (guildSettings && guildSettings.logChannelId) {
         return msg.reply(`Current log channel is <#${guildSettings.logChannelId}>`)
       } else {
