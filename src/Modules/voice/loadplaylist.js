@@ -39,7 +39,7 @@ module.exports = class LoadPlaylistCommand extends Command {
     }
 
     try {
-      const data = await userDataSchema.findOne({ id: msg.author.id });
+      const data = await userDataSchema.findOne({ userId: msg.author.id });
       if (!data || !data.userPlaylists.length) {
         return msg.say('You don\'t have any playlist');
       } else if (playlistId < 0 && playlistId > data.userPlaylists.length) {

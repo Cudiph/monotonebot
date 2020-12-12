@@ -26,8 +26,7 @@ module.exports = class RemovePlaylistCommand extends Command {
   }
 
   async run(msg, { playlistId }) {
-    console.log('jalan');
-    const data = await userDataSchema.findOne({ id: msg.author.id });
+    const data = await userDataSchema.findOne({ userId: msg.author.id });
 
     if (!data || !data.userPlaylists.length) {
       return msg.say('You don\'t have any playlist')
@@ -40,8 +39,8 @@ module.exports = class RemovePlaylistCommand extends Command {
       const update = {
         $set: { [template]: 'deletethis' }
       }
-      let before = await userDataSchema.findOneAndUpdate({ id: msg.author.id, }, update)
-      await userDataSchema.findOneAndUpdate({ id: msg.author.id, }, {
+      let before = await userDataSchema.findOneAndUpdate({ userId: msg.author.id, }, update)
+      await userDataSchema.findOneAndUpdate({ userId: msg.author.id, }, {
         $pull: {
           userPlaylists: {
             name: 'deletethis'

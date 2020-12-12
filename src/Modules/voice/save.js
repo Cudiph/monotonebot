@@ -44,7 +44,7 @@ module.exports = class SaveCommand extends Command {
 
     try {
       const condition = {
-        id: msg.author.id,
+        userId: msg.author.id,
       }
       const update = {
         $push: {
