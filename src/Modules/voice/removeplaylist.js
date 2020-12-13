@@ -1,4 +1,5 @@
-const { Command } = require('discord.js-commando');
+const { oneLine } = require('common-tags');
+const { Command, CommandoMessage } = require('discord.js-commando');
 const { userDataSchema } = require('../../library/Database/schema.js');
 
 module.exports = class RemovePlaylistCommand extends Command {
@@ -8,8 +9,12 @@ module.exports = class RemovePlaylistCommand extends Command {
       group: 'voice',
       memberName: 'removeplaylist',
       aliases: ['rmpl', 'removepl'],
-      examples: ['rmpl 4', 'removepl 2', 'removeplaylist 0'],
+      examples: ['rmpl "My best playlist"', 'removepl 2', 'removeplaylist pop music'],
       description: 'Delete playlist from database',
+      details: oneLine`
+        If there any playlist with the same name, all of those playlist will be deleted.
+        Regex for this command is not allowed and the argument is case sensitive.
+      `,
       guildOnly: true,
       throttling: {
         usages: 2,
@@ -17,43 +22,65 @@ module.exports = class RemovePlaylistCommand extends Command {
       },
       args: [
         {
-          key: 'playlistId',
-          prompt: 'What is the id of your playlist?',
-          type: 'string',
+          key: 'playlistArg',
+          prompt: 'What is the name or id of your playlist?',
+          type: 'integer|string',
         },
       ]
     })
   }
 
-  async run(msg, { playlistId }) {
+  /** @param {CommandoMessage} msg */
+  async run(msg, { playlistArg }) {
     const data = await userDataSchema.findOne({ userId: msg.author.id });
 
     if (!data || !data.userPlaylists.length) {
       return msg.say('You don\'t have any playlist')
-    } else if (playlistId < 0 && playlistId >= data.userPlaylists.length) {
+    } else if (playlistArg < 0 && playlistArg >= data.userPlaylists.length) {
       return msg.say(`Your current playlist is from 0-${data.userPlaylists.length - 1}`)
     }
 
-    try {
-      const template = `userPlaylists.${playlistId}.name`
-      const update = {
-        $set: { [template]: 'deletethis' }
-      }
-      let before = await userDataSchema.findOneAndUpdate({ userId: msg.author.id, }, update)
-      await userDataSchema.findOneAndUpdate({ userId: msg.author.id, }, {
-        $pull: {
-          userPlaylists: {
-            name: 'deletethis'
+    if (typeof playlistArg === 'number') {
+      try {
+        // change the name because mongodb can remove based on index
+        const template = `userPlaylists.${playlistArg}.name`
+        const update = {
+          $set: { [template]: 'deletethis' }
+        };
+        let before = await userDataSchema.findOneAndUpdate({ userId: msg.author.id, }, update)
+        // finally delete the renamed playlist
+        await userDataSchema.findOneAndUpdate({ userId: msg.author.id, }, {
+          $pull: {
+            userPlaylists: {
+              name: 'deletethis'
+            }
           }
+        })
+        msg.say(`Deleted playlist **${before.userPlaylists[playlistArg].name}**`)
+      } catch (err) {
+        logger.log('error', err.stack);
+        return msg.reply(`Can't remove the playlist`);
+      }
+    } else {
+      const data = await userDataSchema.findOneAndUpdate({ userId: msg.author.id }, {
+        $pull: { userPlaylists: { name: playlistArg } }
+      });
+      let counter = 0;
+      for (let i = 0; i < data.userPlaylists.length; i++) {
+        if (data.userPlaylists[i].name === playlistArg) {
+          counter++;
         }
-      })
-      msg.say(`Deleted playlist **${before.userPlaylists[playlistId].name}**`)
-    } catch (err) {
-      logger.log('error', err.stack);
-      return msg.channel.send(`Can't remove the playlist`);
+      }
+      if (counter) {
+        if (counter > 1) {
+          return msg.reply(`Removed ${counter} playlists named **${playlistArg}**`);
+        } else {
+          return msg.reply(`**${playlistArg}** Playlist was successfully removed`);
+        }
+      } else {
+        return msg.reply(`No playlist named **${playlistArg}**`);
+      }
     }
 
   }
-
 }
-
