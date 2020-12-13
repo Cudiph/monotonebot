@@ -28,10 +28,10 @@ module.exports = class ShuffleCommand extends Command {
   async run(msg, { turnOn }) {
     if (turnOn === '') {
       msg.guild.shuffle = !msg.guild.shuffle;
-      msg.guild.loop = msg.guild.shuffle ? false : msg.guild.loop;
     } else {
       msg.guild.shuffle = turnOn;
     }
+    msg.guild.loop = msg.guild.shuffle ? false : msg.guild.loop;
     const embed = {
       color: msg.guild.shuffle ? 0x11ff00 : 0xff1100,
       description: `Set \`shuffle\` to **${msg.guild.shuffle ? 'True' : 'False'}**`
