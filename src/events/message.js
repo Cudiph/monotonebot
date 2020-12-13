@@ -5,8 +5,8 @@ const { guildSettingsSchema, userDataSchema } = require('../library/Database/sch
 client.on('message', async msg => {
   // let now = Date.now(); // performance test
   // fetch prefix from database
-  const guildId = msg.guild.id;
   if (msg.guild) {
+    const guildId = msg.guild.id;
     if (!msg.guild.isCached) {
       try {
         const check = await guildSettingsSchema.findOne({ guildId: guildId });
