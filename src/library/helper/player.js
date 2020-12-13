@@ -27,13 +27,14 @@ const { CommandoMessage } = require('discord.js-commando');
  */
 
 /**
- * 
+ * Play a track
  * @param {CommandoMessage} msg - msg
  * @param {number} [seek=0] - a number in seconds to seek
+ * @returns {void}
  */
 async function playStream(msg, seek = 0) {
   const queue = msg.guild.queue;
-  const index = msg.guild.indexQueue;
+  const indexQ = msg.guild.indexQueue;
 
   try {
     let connection; // make a connection
@@ -46,17 +47,18 @@ async function playStream(msg, seek = 0) {
         msg.channel.stopTyping(true);
         delete msg.guild.queue;
         delete msg.guild.indexQueue;
+        delete msg.guild.played;
       })
     }
     if (seek) {
-      msg.guild.queue[index].seekTime = seek;
+      msg.guild.queue[indexQ].seekTime = seek;
     }
     // start typing indicator to notice user
     msg.channel.startTyping();
-    const url = `https://www.youtube.com/watch?v=${queue[index].videoId}`
-    const stream = await ytdl(queue[index].link || url, {
-      filter: queue[index].isLive ? 'audio' : 'audioonly',
-      quality: queue[index].isLive ? [91, 92, 93, 94] : 'highest',
+    const url = `https://www.youtube.com/watch?v=${queue[indexQ].videoId}`
+    const stream = await ytdl(queue[indexQ].link || url, {
+      filter: queue[indexQ].isLive ? 'audio' : 'audioonly',
+      quality: queue[indexQ].isLive ? [91, 92, 93, 94] : 'highest',
       dlChunkSize: 0,
       opusEncoded: true,
       encoderArgs: ['-af', 'bass=g=10,dynaudnorm=f=200'],
@@ -74,15 +76,15 @@ async function playStream(msg, seek = 0) {
     dispatcher.on('start', async () => {
       let nowPlaying = await msg.say({ embed: await setEmbedPlaying(msg) });
       // assign now playing embed message id to the queue object
-      msg.guild.queue[index].embedId = nowPlaying.id;
+      msg.guild.queue[indexQ].embedId = nowPlaying.id;
       msg.channel.stopTyping(true);
     });
 
     // play next song when current song is finished
     dispatcher.on('finish', () => {
       // delete the now playing embed when the track is finished
-      if (msg.guild.queue && msg.guild.queue[index]) {
-        msg.channel.messages.delete(msg.guild.queue[index].embedId)
+      if (msg.guild.queue && msg.guild.queue[indexQ]) {
+        msg.channel.messages.delete(msg.guild.queue[indexQ].embedId)
           .catch(e => logger.log('error', 'message is already deleted'))
       };
       msg.guild.indexQueue++;
@@ -109,11 +111,12 @@ async function playStream(msg, seek = 0) {
 /**
  * Function to fetch related track
  * @param {CommandoMessage} msg - msg
+ * @returns {any}
  */
 async function fetchAutoplay(msg) {
   let queue = msg.guild.queue;
-  let index = msg.guild.indexQueue;
-  if (msg.guild.queue && msg.guild.queue.length > 150) {
+  let indexQ = msg.guild.indexQueue;
+  if (queue && queue.length > 150) {
     return msg.say(oneLine`
       You reached maximum number of track.
       Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
@@ -121,7 +124,12 @@ async function fetchAutoplay(msg) {
   }
   let related;
   try {
-    const url = queue[index - 1].link || queue[index - 1].videoId || queue[index - 2].link || queue[index - 2].videoId;
+    let url;
+    if (indexQ === 0) {
+      url = queue[indexQ].link || queue[indexQ].videoId;
+    } else {
+      url = queue[indexQ - 1].link || queue[indexQ - 1].videoId || queue[indexQ - 2].link || queue[indexQ - 2].videoId;
+    }
     related = (await ytdl.getBasicInfo(url)).related_videos
       .filter(video => video.length_seconds < 2000);
     // if no related video then stop and give the message
@@ -152,7 +160,7 @@ async function fetchAutoplay(msg) {
 }
 
 /**
- * Play a music and repeat if has another music to be played
+ * Handler to voice stream related command
  * @async
  * @returns {any} 
  * @param {CommandoMessage} msg - message from textchannel
@@ -167,13 +175,13 @@ async function play(msg, options = {}) {
   const { seek = 0 } = options;
 
   let queue = msg.guild.queue;
-  let index = msg.guild.indexQueue;
+  let indexQ = msg.guild.indexQueue;
 
   // handle the indexQueue
-  if (index < 0) {
-    index = msg.guild.indexQueue = 0;
-  } else if (queue && index >= queue.length) {
-    index = msg.guild.indexQueue = msg.guild.queue.length;
+  if (indexQ < 0) {
+    indexQ = msg.guild.indexQueue = 0;
+  } else if (queue && indexQ >= queue.length) {
+    indexQ = msg.guild.indexQueue = msg.guild.queue.length;
   }
 
   // check if the queue is empty
@@ -184,7 +192,7 @@ async function play(msg, options = {}) {
   // loop
   if (msg.guild.loop) {
     if (seek) {
-      return playStream(msg,seek);
+      return playStream(msg, seek);
     }
     if (msg.guild.indexQueue === 0) {
       return playStream(msg, seek);
@@ -193,8 +201,25 @@ async function play(msg, options = {}) {
     return playStream(msg, seek);
   }
 
+  // shuffle
+  if (msg.guild.shuffle) {
+    if (!msg.guild.played) {
+      msg.guild.played = [];
+    }
+    if (msg.guild.played.length < queue.length) {
+      let randIndex = Math.floor(Math.random() * queue.length);
+      while (msg.guild.played.includes(randIndex)) {
+        randIndex = Math.floor(Math.random() * queue.length);
+      }
+      msg.guild.indexQueue = randIndex;
+      msg.guild.played.push(randIndex);
+    } else {
+      msg.guild.indexQueue = queue.length;
+    }
+  }
+
   // autoplay
-  if (index === msg.guild.queue.length) {
+  if (msg.guild.indexQueue === queue.length) {
     if (msg.guild.autoplay) {
       return fetchAutoplay(msg);
     }
@@ -206,10 +231,12 @@ async function play(msg, options = {}) {
 }
 
 /**
- * Push to the queue and play if not playing any music
+ * Processing data before something pushed to the guild queue
+ * @async
  * @param {QueueConstructor} data - data of music fetched from yt-search
  * @param {CommandoMessage} msg - message from textchannel
  * @param {boolean} fromPlaylist - whether player is called from playlist.js or called multiple times
+ * @returns {play}
  */
 async function player(data = {}, msg, fromPlaylist = false) {
   if (msg.guild.queue && msg.guild.queue.length > 150) {
