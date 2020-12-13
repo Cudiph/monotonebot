@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const { Command, CommandoMessage } = require('discord.js-commando');
 const { oneLine } = require('common-tags');
 const { userDataSchema } = require('../../library/Database/schema.js');
 
@@ -18,7 +18,7 @@ module.exports = class SaveCommand extends Command {
       with \`loadpl\` command 
       `,
       throttling: {
-        usages: 2,
+        usages: 3,
         duration: 86400,
       },
       args: [
@@ -37,9 +37,14 @@ module.exports = class SaveCommand extends Command {
     })
   }
 
+  /** @param {CommandoMessage} msg */
   async run(msg, { playlistName, description }) {
     if (!msg.guild.queue || msg.guild.queue && !msg.guild.queue.length) {
       return msg.say('The queue is empty');
+    }
+
+    if (playlistName.match(/[^a-zA-Z0-9_ ]+/)) {
+      return msg.reply(`Non word character for playlist name is not allowed.`);
     }
 
     try {
