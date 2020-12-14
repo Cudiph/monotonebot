@@ -1,8 +1,8 @@
 const axios = require('axios').default;
 const { oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando');
+const { Command, CommandoMessage } = require('discord.js-commando');
 
-module.exports = class UrbandictCommand extends Command {
+module.exports = class AniSafeCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'anisafe',
@@ -22,7 +22,7 @@ module.exports = class UrbandictCommand extends Command {
       args: [
         {
           key: 'tag',
-          prompt: 'What genre/tag you want to see?',
+          prompt: 'What genre/tag do you want to see?',
           type: 'string',
           default: '',
         }
@@ -31,6 +31,7 @@ module.exports = class UrbandictCommand extends Command {
   }
 
   // Thanks to nekos.life for the service
+  /** @param {CommandoMessage} msg */
   async run(msg, { tag }) {
     const safeTag = [
       'meow', 'avatar', 'fox_girl', 'gecg', 'kemonomimi', 'holo',
@@ -47,18 +48,8 @@ module.exports = class UrbandictCommand extends Command {
       let res = await axios.get(`https://nekos.life/api/v2/img/${tag ? tag : getRandomTag}`);
       return msg.say(res.data.url);
     } catch (err) {
-      logger.log('error', err + ' at hentai.js')
-      msg.reply(`There was an error when requesting the link. Please try again later`);
+      logger.log('error', err.stack)
+      msg.reply(`There was an error when requesting the image. Please try again later`);
     }
-  }
-
-  async onBlock(msg, reason, data) {
-    let parent = await super.onBlock(msg, reason, data);
-    parent.delete({ timeout: 9000 })
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 9000 }));
   }
 }
