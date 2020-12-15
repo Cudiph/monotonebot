@@ -1,5 +1,5 @@
 const { stripIndents, oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando')
+const { Command, CommandoMessage } = require('discord.js-commando')
 
 module.exports = class HelpCommand extends Command {
   constructor(client) {
@@ -26,6 +26,7 @@ module.exports = class HelpCommand extends Command {
     });
   }
 
+  /** @param {CommandoMessage} msg */
   async run(msg, args) { // eslint-disable-line complexity
     const groups = this.client.registry.groups;
     const commands = this.client.registry.findCommands(args.command, false, msg);
@@ -34,7 +35,7 @@ module.exports = class HelpCommand extends Command {
       color: 0xff548e,
       fields: [
         {
-          name: `**Format:**`,
+          name: `:pen_ballpoint: **Format:**`,
           value: `${msg.anyUsage(`${commands[0].name}${commands[0].format ? ` ${commands[0].format}` : ''}`)}`
         }
       ]
@@ -45,13 +46,13 @@ module.exports = class HelpCommand extends Command {
 					${oneLine`
 						Command **${commands[0].name}**: ${commands[0].description}
 						${commands[0].guildOnly ? ' (Usable only in servers)' : ''}
-						${commands[0].nsfw ? ' (NSFW)' : ''}
+						${commands[0].nsfw ? ' **(NSFW)**' : ''}
 					`}
         `;
 
-        if (commands[0].aliases.length > 0) embed.fields.push({ name: `**Aliases:** `, value: `${commands[0].aliases.join(', ')}`, inline: true });
+        if (commands[0].aliases.length > 0) embed.fields.push({ name: `:mag_right: **Aliases:** `, value: `${`**${commands[0].aliases.join('**, **')}**`}`, inline: true });
         embed.fields.push({
-          name: `**Group:**`,
+          name: `:family_mwgb: **Group:**`,
           value: oneLine`
             ${commands[0].group.name}
             (\`${commands[0].groupID}:${commands[0].memberName}\`)
@@ -59,8 +60,18 @@ module.exports = class HelpCommand extends Command {
           inline: true,
         });
 
-        if (commands[0].details) embed.fields.push({ name: `**Details:**`, value: commands[0].details });
-        if (commands[0].examples) embed.fields.push({ name: `**Examples:**`, value: '- ..' + commands[0].examples.join('\n- ..') });
+        if (commands[0].details) embed.fields.push({ name: `:scroll: **Details:**`, value: commands[0].details });
+        if (commands[0].examples) embed.fields.push({
+          name: `:pencil: **Examples:**`,
+          value: `- **..${commands[0].examples.map(elem => {
+            const splitted = elem.split(/\s+/);
+            splitted.splice(1, 0, '**');
+            for (let i = 2; i < splitted.length; i += 2) {
+              splitted.splice(i, 0, ' ');
+            }
+            return splitted.join('');
+          }).join('\n- **..')}`
+        });
 
         const messages = [];
         try {
@@ -109,7 +120,7 @@ module.exports = class HelpCommand extends Command {
                   .map(cmd => {
                     let cmdIndent = longest + 1 - cmd.name.length;
                     if (cmdIndent < 0) cmdIndent = 0;
-                    return `**\`- ${cmd.name + ' '.repeat(cmdIndent)}:\`** ${cmd.description}${cmd.nsfw ? ' (NSFW)' : ''}`;
+                    return `**\`- ${cmd.name + ' '.repeat(cmdIndent)}:\`** ${cmd.description}${cmd.nsfw ? ' **(NSFW)**' : ''}`;
                   }).join('\n')
                 }
 						  `}).join('\n\n')

@@ -9,7 +9,7 @@ module.exports = class DanbooruCommand extends Command {
       group: 'anime',
       memberName: 'danbooru',
       description: 'Search for random anime image from danbooru.',
-      examples: ['danbooru 1girl twintails dress', 'danbooru genshin_impact', '..danbooru azur_lane 5'],
+      examples: ['danbooru 1girl twintails dress', 'danbooru genshin_impact', 'danbooru azur_lane 5'],
       details: stripIndents`
         If the tags contain 2 or more words, you must use underscore to combine them for danbooru,
         **e.g.** if you want a character with **blue hair** then it'll be typed like **blue_hair**. 
