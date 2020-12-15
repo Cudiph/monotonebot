@@ -119,12 +119,14 @@ module.exports = class DiceCommand extends Command {
   }
 
   async onBlock(msg, reason, data) {
-    let parent = await super.onBlock(msg, reason, data);
-    parent.delete({ timeout: 9000 })
+    super.onBlock(msg, reason, data)
+      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
+      .catch(e => e); // do nothing
   }
 
   onError(err, message, args, fromPattern, result) {
     super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 9000 }));
+      .then(msgParent => msgParent.delete({ timeout: 10000 }))
+      .catch(e => e); // do nothing
   }
 }
