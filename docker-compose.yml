@@ -3,8 +3,8 @@ services:
   worker:
     build: .
     environment: 
-      MONGO_URL: "mongodb://mongo:27017/romonodb"
-      TOKEN: "<Discord app token>"
+      MONGO_URL: "mongodb://mongo:27017/monotone"
+      TOKEN: "<Discord Bot Token Here>"
     depends_on: 
       - mongo
   mongo:
