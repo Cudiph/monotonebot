@@ -1,4 +1,4 @@
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 
 module.exports = class LeaveCommand extends Command {
   constructor(client) {
@@ -12,7 +12,7 @@ module.exports = class LeaveCommand extends Command {
     })
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg) {
     if (!msg.guild.me.voice.channel) {
       return;

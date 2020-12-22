@@ -1,6 +1,6 @@
 const axios = require('axios').default;
 const { oneLine } = require('common-tags');
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 
 module.exports = class AniSafeCommand extends Command {
   constructor(client) {
@@ -31,7 +31,7 @@ module.exports = class AniSafeCommand extends Command {
   }
 
   // Thanks to nekos.life for the service
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { tag }) {
     const safeTag = [
       'meow', 'avatar', 'fox_girl', 'gecg', 'kemonomimi', 'holo',

@@ -1,7 +1,7 @@
 const ytdl = require('discord-ytdl-core');
 const yts = require('yt-search');
 const { emoji } = require('../../library/helper/discord-item.js');
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 const { oneLine } = require('common-tags');
 const { player } = require('../../library/helper/player.js');
 const { setEmbedPlayCmd } = require('../../library/helper/embed.js');
@@ -133,7 +133,10 @@ module.exports = class PlayCommand extends Command {
             await msg.react(emojiNeeded[i]);
           }
         }
-      }).catch(err => message.channel.stopTyping(true)); // cuz error is normal in this case
+      }).catch(err => {
+        message.channel.stopTyping(true);
+        return err;
+      }); // cuz error is normal in this case
 
     }
 

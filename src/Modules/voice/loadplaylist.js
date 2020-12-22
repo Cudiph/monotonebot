@@ -1,5 +1,5 @@
 const { oneLine } = require('common-tags');
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 const { userDataSchema } = require('../../library/Database/schema.js');
 const { play } = require('../../library/helper/player.js');
 
@@ -33,7 +33,7 @@ module.exports = class LoadPlaylistCommand extends Command {
     })
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { playlistArg }) {
     if (!msg.member.voice.channel) {
       return msg.channel.send("You're not connected to any voice channel");

@@ -1,4 +1,4 @@
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
 
 module.exports = class LogChannelCommand extends Command {
@@ -23,7 +23,7 @@ module.exports = class LogChannelCommand extends Command {
     });
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { channel }) {
     // fetch data
     let guildSettings;

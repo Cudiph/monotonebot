@@ -1,5 +1,5 @@
 const { oneLine } = require('common-tags');
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 const { userDataSchema } = require('../../library/Database/schema.js');
 
 module.exports = class RemovePlaylistCommand extends Command {
@@ -30,7 +30,7 @@ module.exports = class RemovePlaylistCommand extends Command {
     })
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { playlistArg }) {
     const data = await userDataSchema.findOne({ userId: msg.author.id });
 

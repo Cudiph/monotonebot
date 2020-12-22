@@ -1,5 +1,5 @@
 const { stripIndents, oneLine } = require('common-tags');
-const { Command, CommandoMessage } = require('discord.js-commando')
+const { Command } = require('discord.js-commando')
 
 module.exports = class HelpCommand extends Command {
   constructor(client) {
@@ -26,7 +26,7 @@ module.exports = class HelpCommand extends Command {
     });
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, args) { // eslint-disable-line complexity
     const groups = this.client.registry.groups;
     const commands = this.client.registry.findCommands(args.command, false, msg);

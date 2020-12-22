@@ -1,6 +1,6 @@
 const axios = require('axios').default;
 const { stripIndents } = require('common-tags');
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 
 module.exports = class DanbooruCommand extends Command {
   constructor(client) {
@@ -34,7 +34,7 @@ module.exports = class DanbooruCommand extends Command {
     })
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { tag }) {
     let numOfImages = parseInt(tag.split(/\s+/).pop());
     if (numOfImages && numOfImages > 10) {

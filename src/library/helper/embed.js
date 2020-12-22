@@ -1,6 +1,4 @@
 const { toTimestamp, randomHex } = require('./discord-item.js');
-const { CommandoMessage } = require('discord.js-commando');
-const { MessageEmbed } = require('discord.js');
 const { guildSettingsSchema } = require('../Database/schema.js');
 /**
  * @typedef {Object[]} DataList 
@@ -17,7 +15,7 @@ const { guildSettingsSchema } = require('../Database/schema.js');
 
 /**
  * Property for a now playing embed
- * @param {CommandoMessage} msg message from text channel
+ * @param {import("discord.js-commando").CommandoMessage} msg message from text channel
  */
 async function setEmbedPlaying(msg) {
   let music = msg.guild.queue[msg.guild.indexQueue];
@@ -162,7 +160,7 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
  * Log to logchannel for moderation commands
  * @param {CommandoMessage} msg msg
  * @param {Object} options options
- * @param {MessageEmbed} [options.embedMsg] embed msg to sent
+ * @param {import("discord.js").MessageEmbed} [options.embedMsg] embed msg to sent
  * @param {string} [options.strMsg] raw string to sent
  * @returns {MessageChannel}
  */

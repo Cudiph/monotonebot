@@ -1,4 +1,4 @@
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
 
 module.exports = class VolumeCommand extends Command {
@@ -29,7 +29,7 @@ module.exports = class VolumeCommand extends Command {
     })
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { volume }) {
     volume /= 100;
     if (!msg.guild.me.voice.connection) {

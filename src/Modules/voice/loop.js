@@ -1,4 +1,4 @@
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 
 module.exports = class LoopCommand extends Command {
   constructor(client) {
@@ -24,7 +24,7 @@ module.exports = class LoopCommand extends Command {
     })
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { turnOn }) {
     if (turnOn === '') {
       msg.guild.loop = !msg.guild.loop;

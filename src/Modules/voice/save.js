@@ -1,4 +1,4 @@
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 const { oneLine } = require('common-tags');
 const { userDataSchema } = require('../../library/Database/schema.js');
 
@@ -37,7 +37,7 @@ module.exports = class SaveCommand extends Command {
     })
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { playlistName, description }) {
     if (!msg.guild.queue || msg.guild.queue && !msg.guild.queue.length) {
       return msg.say('The queue is empty');

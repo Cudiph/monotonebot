@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
 const { oneLine, stripIndents } = require('common-tags');
 const { client } = require('../../bot.js');
@@ -50,7 +50,7 @@ module.exports = class PrefixCommand extends Command {
     });
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, args) {
     // Just output the prefix
     if (!args.prefix) {

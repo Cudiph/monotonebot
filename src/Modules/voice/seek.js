@@ -1,4 +1,4 @@
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 const { toSeconds, toTimestamp, randomHex } = require('../../library/helper/discord-item');
 const { play } = require('../../library/helper/player');
 
@@ -61,7 +61,7 @@ module.exports = class SeekCommand extends Command {
     })
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { timestamp }) {
     // handler
     if (!msg.guild.me.voice.connection) {

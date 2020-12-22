@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 
 module.exports = class SayCommand extends Command {
   constructor(client) {
@@ -37,7 +37,7 @@ module.exports = class SayCommand extends Command {
     });
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { textChannel, words }) {
     let channel;
     if (typeof textChannel == 'object') {

@@ -1,4 +1,4 @@
-const { Command, CommandoMessage } = require('discord.js-commando')
+const { Command } = require('discord.js-commando')
 const Discord = require('discord.js');
 const { sendtoLogChan } = require('../../library/helper/embed.js');
 
@@ -29,7 +29,7 @@ module.exports = class BanCommand extends Command {
     });
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { member, reason }) {
     // // manual method
     // let member = await isUserId(args[0], msg);

@@ -1,7 +1,6 @@
 const { setEmbedPlaying } = require('./embed.js');
 const ytdl = require('discord-ytdl-core');
 const { oneLine, stripIndents } = require('common-tags');
-const { CommandoMessage } = require('discord.js-commando');
 
 /**
  * @typedef {Object[]} PushedQueue
@@ -15,20 +14,8 @@ const { CommandoMessage } = require('discord.js-commando');
  */
 
 /**
- * @typedef {Object} QueueConstructor
- * @property {string} title - title of the track
- * @property {string} url - full youtube url of the track
- * @property {string} videoId - unique track's video ID
- * @property {Object} uploader - Information about the uploader of the track
- * @property {string} uploader.name - Channel name who upload the video
- * @property {number} seconds - length of the video
- * @property {string} author - the author who requested the track
- * @property {boolean} isLive - whether the video is on livestream
- */
-
-/**
  * Play a track
- * @param {CommandoMessage} msg - msg
+ * @param {import("discord.js-commando").CommandoMessage} msg - msg
  * @param {number} [seek=0] - a number in seconds to seek
  * @returns {void}
  */
@@ -85,8 +72,8 @@ async function playStream(msg, seek = 0) {
       // delete the now playing embed when the track is finished
       if (msg.guild.queue && msg.guild.queue[indexQ]) {
         msg.channel.messages.delete(msg.guild.queue[indexQ].embedId)
-          .catch(e => logger.log('error', 'message is already deleted'))
-      };
+          .catch(e => e)
+      }
       msg.guild.indexQueue++;
       return play(msg);
     });
@@ -110,7 +97,7 @@ async function playStream(msg, seek = 0) {
 
 /**
  * Function to fetch related track
- * @param {CommandoMessage} msg - msg
+ * @param {import("discord.js-commando").CommandoMessage} msg - msg
  * @returns {any}
  */
 async function fetchAutoplay(msg) {
@@ -163,7 +150,7 @@ async function fetchAutoplay(msg) {
  * Handler to voice stream related command
  * @async
  * @returns {any} 
- * @param {CommandoMessage} msg - message from textchannel
+ * @param {import("discord.js-commando").CommandoMessage} msg - message from textchannel
  * @param {boolean} msg.guild.autoplay - the state of the autoplay
  * @param {number} msg.guild.indexQueue - current playing track
  * @param {PushedQueue} msg.guild.queue - queue of the guild
@@ -231,10 +218,22 @@ async function play(msg, options = {}) {
 }
 
 /**
+ * @typedef {Object} QueueConstructor
+ * @property {string} title - title of the track
+ * @property {string} url - full youtube url of the track
+ * @property {string} videoId - unique track's video ID
+ * @property {Object} uploader - Information about the uploader of the track
+ * @property {string} uploader.name - Channel name who upload the video
+ * @property {number} seconds - length of the video
+ * @property {string} author - the author who requested the track
+ * @property {boolean} isLive - whether the video is on livestream
+ */
+
+/**
  * Processing data before something pushed to the guild queue
  * @async
  * @param {QueueConstructor} data - data of music fetched from yt-search
- * @param {CommandoMessage} msg - message from textchannel
+ * @param {import("discord.js-commando").CommandoMessage} msg - message from textchannel
  * @param {boolean} fromPlaylist - whether player is called from playlist.js or called multiple times
  * @returns {play}
  */
@@ -271,7 +270,7 @@ async function player(data = {}, msg, fromPlaylist = false) {
     if (!fromPlaylist) {
       msg.channel.send(`${data.title} has been added to the queue.`)
         .then(msg => msg.delete({ timeout: 8000 }))
-        .catch(e => logger.log('info', 'msg is already deleted'));
+        .catch(e => e);
     }
     // if in the end of queue and the song is stopped then play the track
     if (msg.guild.indexQueue >= oldLength) {

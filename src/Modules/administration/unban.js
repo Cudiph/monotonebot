@@ -1,4 +1,4 @@
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 const { sendtoLogChan } = require('../../library/helper/embed.js');
 
 module.exports = class UnbanCommand extends Command {
@@ -30,7 +30,7 @@ module.exports = class UnbanCommand extends Command {
     });
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { bannedUser, reason }) {
     // // old method
     // let bannedUser;

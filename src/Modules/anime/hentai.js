@@ -1,6 +1,6 @@
 const axios = require('axios').default;
 const { oneLine } = require('common-tags');
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 
 module.exports = class HentaiCommand extends Command {
   constructor(client) {
@@ -37,7 +37,7 @@ module.exports = class HentaiCommand extends Command {
   }
 
   // Thanks to nekos.life for the service
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { tag }) {
     const nsfwTag = [
       'femdom', 'erofeet', 'erok', 'hololewd', 'lewdk', 'keta', 'eroyuri', 'tits', 'pussy_jpg',

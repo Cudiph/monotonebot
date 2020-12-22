@@ -1,4 +1,4 @@
-const { Command, CommandoMessage } = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
 const { stripIndents } = require('common-tags');
 const { sendtoLogChan } = require('../../library/helper/embed.js');
 
@@ -34,7 +34,7 @@ module.exports = class PurgeCommand extends Command {
     });
   }
 
-  /** @param {CommandoMessage} msg */
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { total }) {
     if (total > 100) {
       total = 100;
