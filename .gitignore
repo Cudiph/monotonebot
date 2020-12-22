@@ -1,6 +1,5 @@
 # ignoring depedency
 node_modules/
-jspm_packages/
 
 # yarn v2
 .yarn/cache
@@ -34,15 +33,3 @@ lerna-debug.log*
 # dotenv environment file
 .env
 .env.test
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Optional npm cache directory
-.npm
-
-# Output of 'npm pack'
-*.tgz
