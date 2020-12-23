@@ -73,8 +73,8 @@ module.exports = class SeekCommand extends Command {
     // convert timestamp
     if (timestamp) {
       if (timestamp.includes(':')) {
-        const timestampOnly = timestamp.match(/\s*\d+:\d+/);
-        timestamp = toSeconds(timestampOnly[0]);
+        const timestampOnly = timestamp.replace(/\s+/g, '');
+        timestamp = toSeconds(timestampOnly);
       } else if (timestamp.match(/\d+/)) {
         const secondsOnly = timestamp.match(/\d+/);
         timestamp = parseInt(secondsOnly[0]);

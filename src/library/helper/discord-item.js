@@ -41,6 +41,9 @@ function toTimestamp(seconds) {
  * @param {String} timestamp String from timestamp like 10:00:00
  */
 function toSeconds(timestamp) {
+  if (timestamp.endsWith(':')) {
+    timestamp += '0';
+  }
   // reverse the splitted timestamp from 10:00:00 to ['00','00','10']
   // so it start from secs, mins, hours
   const timeList = timestamp.split(/\s*:\s*/).reverse();
