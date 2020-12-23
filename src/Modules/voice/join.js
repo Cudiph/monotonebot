@@ -13,7 +13,7 @@ module.exports = class JoinCommand extends Command {
         usages: 2,
         duration: 10,
       },
-    })
+    });
   }
 
   async run(msg) {
@@ -35,4 +35,4 @@ module.exports = class JoinCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

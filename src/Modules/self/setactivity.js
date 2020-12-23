@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando')
+const { Command } = require('discord.js-commando');
 
 module.exports = class SetActivityCommand extends Command {
   constructor(client) {
@@ -32,7 +32,7 @@ module.exports = class SetActivityCommand extends Command {
     msg.client.user.setActivity(description, { type: activity.toUpperCase() })
       .then(presence => {
         if (activity.toLowerCase() != 'none' && description != '') {
-          msg.say(`Activity set to **${activity.toUpperCase()} ${presence.activities[0].name}**`)
+          msg.say(`Activity set to **${activity.toUpperCase()} ${presence.activities[0].name}**`);
         } else {
           msg.say(`Activity has been reset`);
         }
@@ -54,6 +54,4 @@ module.exports = class SetActivityCommand extends Command {
       .catch(e => e); // do nothing
   }
 };
-
-
 

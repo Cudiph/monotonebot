@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
@@ -8,7 +9,7 @@ const { sendtoLogChan } = require('../../library/helper/embed.js');
 async function writePrefix(newPrefix, msg) {
   // set new prefix for guild
   try {
-    let result = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+    const result = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
       guildId: msg.guild.id,
       prefix: newPrefix,
     }, { upsert: true });
@@ -29,11 +30,11 @@ module.exports = class PrefixCommand extends Command {
       description: 'Shows or sets the command prefix.',
       format: '[prefix/"default"/"none"]',
       details: oneLine`
-				If no prefix is provided, the current prefix will be shown.
-				If the prefix is "default", the prefix will be reset to the bot's default prefix.
-				If the prefix is "none", the prefix will be removed entirely, only allowing mentions to run commands.
-				Only administrators may change the prefix.
-			`,
+        If no prefix is provided, the current prefix will be shown.
+        If the prefix is "default", the prefix will be reset to the bot's default prefix.
+        If the prefix is "none", the prefix will be removed entirely, only allowing mentions to run commands.
+        Only administrators may change the prefix.
+      `,
       examples: ['prefix', 'prefix ?', 'prefix omg!', 'prefix default', 'prefix none'],
 
       args: [
@@ -56,9 +57,9 @@ module.exports = class PrefixCommand extends Command {
     if (!args.prefix) {
       const prefix = msg.guild ? msg.guild.commandPrefix : this.client.commandPrefix;
       return msg.reply(stripIndents`
-				${prefix ? `The command prefix is \`\`${prefix}\`\`.` : 'There is no command prefix.'}
-				To run commands, use ${msg.anyUsage('command')}.
-			`);
+        ${prefix ? `The command prefix is \`\`${prefix}\`\`.` : 'There is no command prefix.'}
+        To run commands, use ${msg.anyUsage('command')}.
+      `);
     }
 
     // Check the user's permission before changing anything
@@ -80,7 +81,7 @@ module.exports = class PrefixCommand extends Command {
       response = `Reset the command prefix to the default (currently ${current}).`;
       msg.channel.send(response);
     } else {
-      let oldPrefix = await writePrefix(prefix, msg);
+      const oldPrefix = await writePrefix(prefix, msg);
       if (msg.guild) msg.guild.commandPrefix = prefix; else this.client.commandPrefix = prefix;
       const embed = new Discord.MessageEmbed()
         .setColor('#ff548e')

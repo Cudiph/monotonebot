@@ -30,7 +30,7 @@ module.exports = class LoadPlaylistCommand extends Command {
           type: 'integer|string',
         }
       ]
-    })
+    });
   }
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
@@ -87,7 +87,7 @@ module.exports = class LoadPlaylistCommand extends Command {
             }
           },
           { $unwind: "$userPlaylists" }
-        ])
+        ]);
         if (!data.length) {
           return msg.reply(`Can't find the specified playlist`);
         }
@@ -116,5 +116,5 @@ module.exports = class LoadPlaylistCommand extends Command {
 
   }
 
-}
+};
 

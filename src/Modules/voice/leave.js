@@ -9,7 +9,7 @@ module.exports = class LeaveCommand extends Command {
       description: 'leave voice channel',
       examples: ['leave'],
       guildOnly: true,
-    })
+    });
   }
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
@@ -18,7 +18,7 @@ module.exports = class LeaveCommand extends Command {
       return;
     }
 
-    if (!msg.member.voice.channel ||  msg.member.voice.channel.id !== msg.guild.me.voice.channel.id) {
+    if (!msg.member.voice.channel || msg.member.voice.channel.id !== msg.guild.me.voice.channel.id) {
       // send msg if author not connected to the same voice channel
       return msg.channel.send("You must join to my voice channel");
     }
@@ -43,4 +43,4 @@ module.exports = class LeaveCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

@@ -21,7 +21,7 @@ module.exports = class LoopCommand extends Command {
           default: ''
         }
       ]
-    })
+    });
   }
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
@@ -35,7 +35,7 @@ module.exports = class LoopCommand extends Command {
     const embed = {
       color: msg.guild.loop ? 0x11ff00 : 0xff1100,
       description: `Set \`loop\` to **${msg.guild.loop ? 'True' : 'False'}**`
-    }
+    };
     return msg.say({ embed });
   }
 
@@ -50,4 +50,4 @@ module.exports = class LoopCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

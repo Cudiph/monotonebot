@@ -22,7 +22,7 @@ module.exports = class StopCommand extends Command {
           default: false,
         }
       ]
-    })
+    });
   }
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
@@ -43,4 +43,4 @@ module.exports = class StopCommand extends Command {
     }
   }
 
-}
+};

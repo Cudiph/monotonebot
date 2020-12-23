@@ -4,10 +4,10 @@ const { play } = require('../../library/helper/player');
 
 
 /**
- * 
+ *
  * @param {string[]} template A template of timeline
- * @param {CommandoMessage} msg 
- * @returns {Object} embed 
+ * @param {CommandoMessage} msg
+ * @returns {Object} embed
  */
 function seekEmbed(template, msg) {
   const queue = msg.guild.queue;
@@ -22,7 +22,7 @@ function seekEmbed(template, msg) {
     }
     totalTime += queue[i].seconds;
   }
-  let embed = {
+  const embed = {
     color: parseInt(randomHex(), 16),
     title: queue[indexQ].title,
     url: queue[indexQ].link,
@@ -31,7 +31,7 @@ function seekEmbed(template, msg) {
     footer: {
       text: `Estimated time played is ${toTimestamp(Math.floor(totalTime))}`,
     },
-  }
+  };
   return embed;
 }
 
@@ -58,7 +58,7 @@ module.exports = class SeekCommand extends Command {
           default: '',
         }
       ]
-    })
+    });
   }
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
@@ -67,7 +67,7 @@ module.exports = class SeekCommand extends Command {
     if (!msg.guild.me.voice.connection) {
       return;
     } else if (!msg.guild.me.voice.connection.dispatcher) {
-      return msg.say('I\'m currently not playing any track')
+      return msg.say('I\'m currently not playing any track');
     }
 
     // convert timestamp
@@ -85,10 +85,10 @@ module.exports = class SeekCommand extends Command {
 
 
     const queue = msg.guild.queue;
-    const indexQ = msg.guild.indexQueue
+    const indexQ = msg.guild.indexQueue;
 
-    
-    const songLength = queue[indexQ].seconds
+
+    const songLength = queue[indexQ].seconds;
     if (timestamp) {
       // handler
       if (songLength <= timestamp) {
@@ -102,22 +102,22 @@ module.exports = class SeekCommand extends Command {
       }
 
       play(msg, { seek: timestamp });
-      return msg.say(`Playing ${queue[indexQ].title} at **${toTimestamp(timestamp)}**`)
+      return msg.say(`Playing ${queue[indexQ].title} at **${toTimestamp(timestamp)}**`);
     }
-    
+
     const seekTime = queue[indexQ].seekTime ? queue[indexQ].seekTime : 0;
     const currentTime = Math.floor(msg.guild.me.voice.connection.dispatcher.streamTime / 1000) + seekTime;
     const percentage = currentTime / songLength * 100; // percentage of the time played
-    let template = ['**', '**', '❥'];
+    const template = ['**', '**', '❥'];
 
     for (let i = 0; i < percentage / 2; i++) {
       template.splice(1, 0, '-');
     }
     for (let i = 0; i < (49 - percentage / 2); i++) {
-      template.push('-')
+      template.push('-');
     }
 
-    return msg.embed(seekEmbed(template, msg))
+    return msg.embed(seekEmbed(template, msg));
   }
 
   async onBlock(msg, reason, data) {
@@ -131,5 +131,5 @@ module.exports = class SeekCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};
 

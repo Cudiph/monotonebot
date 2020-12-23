@@ -21,7 +21,7 @@ module.exports = class PauseCommand extends Command {
           default: false,
         },
       ]
-    })
+    });
   }
 
   async run(msg, { silencePause }) {
@@ -43,4 +43,4 @@ module.exports = class PauseCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

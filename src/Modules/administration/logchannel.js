@@ -42,7 +42,7 @@ module.exports = class LogChannelCommand extends Command {
         return msg.reply(`Logchannel is unsetted successfully.`);
       }
       if (guildSettings && guildSettings.logChannelId) {
-        return msg.reply(`Current log channel is <#${guildSettings.logChannelId}>`)
+        return msg.reply(`Current log channel is <#${guildSettings.logChannelId}>`);
       } else {
         return msg.reply(`Log channel is not yet assigned, use \`${msg.guild.commandPrefix}logchannel <channelName>\` to set a new one`);
       }
@@ -55,7 +55,7 @@ module.exports = class LogChannelCommand extends Command {
       const newGuildSettings = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
         logChannelId: channel.id,
       }, { new: true, upsert: true });
-      return msg.say(`Assignment successful, new log channel is <#${newGuildSettings.logChannelId}>`)
+      return msg.say(`Assignment successful, new log channel is <#${newGuildSettings.logChannelId}>`);
     } catch (err) {
       logger.log('error', err.stack);
       return msg.channel.send(`Can't update new log channel.`);

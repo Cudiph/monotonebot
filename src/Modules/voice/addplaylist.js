@@ -33,7 +33,7 @@ module.exports = class AddPlaylistCommand extends Command {
           type: 'string',
         }
       ]
-    })
+    });
   }
 
   async run(msg, { listId }) {
@@ -44,12 +44,12 @@ module.exports = class AddPlaylistCommand extends Command {
     }
 
     if (msg.member.voice.channel) {
-      let link = listId.match(/(?:.*)?list=([\w+|-]+)(?:.*)?/);
+      const link = listId.match(/(?:.*)?list=([\w+|-]+)(?:.*)?/);
       if (link) {
         try {
-          let playlist = await ytpl(link[1]);
+          const playlist = await ytpl(link[1]);
           // list of videos in the playlist
-          const videos = playlist.items
+          const videos = playlist.items;
           videos.forEach(async video => {
             if (msg.guild.queue && msg.guild.queue.length >= 150) {
               return;
@@ -70,7 +70,7 @@ module.exports = class AddPlaylistCommand extends Command {
           }
           return msg.say(`Added playlist **${playlist.title}**. `);
         } catch (err) {
-          logger.log('error', err)
+          logger.log('error', err);
           return msg.say(stripIndents`An error Occured.
             Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all
             Error : \`${err}\`
@@ -78,8 +78,8 @@ module.exports = class AddPlaylistCommand extends Command {
         }
       } else {
         try {
-          let playlist = await ytpl(listId);
-          const videos = playlist.items
+          const playlist = await ytpl(listId);
+          const videos = playlist.items;
           videos.forEach(async video => {
             if (msg.guild.queue && msg.guild.queue.length >= 150) {
               return;
@@ -100,7 +100,7 @@ module.exports = class AddPlaylistCommand extends Command {
           }
           return msg.say(`Added playlist **${playlist.title}**. `);
         } catch (err) {
-          logger.log('error', err)
+          logger.log('error', err);
           return msg.say(stripIndents`An error Occured.
             Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all
             Error : \`${err}\`
@@ -122,5 +122,5 @@ module.exports = class AddPlaylistCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};
 

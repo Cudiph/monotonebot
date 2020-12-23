@@ -35,14 +35,14 @@ async function playStream(msg, seek = 0) {
         delete msg.guild.queue;
         delete msg.guild.indexQueue;
         delete msg.guild.played;
-      })
+      });
     }
     if (seek) {
       msg.guild.queue[indexQ].seekTime = seek;
     }
     // start typing indicator to notice user
     msg.channel.startTyping();
-    const url = `https://www.youtube.com/watch?v=${queue[indexQ].videoId}`
+    const url = `https://www.youtube.com/watch?v=${queue[indexQ].videoId}`;
     const stream = await ytdl(queue[indexQ].link || url, {
       filter: queue[indexQ].isLive ? 'audio' : 'audioonly',
       quality: queue[indexQ].isLive ? [91, 92, 93, 94] : 'highest',
@@ -50,8 +50,8 @@ async function playStream(msg, seek = 0) {
       opusEncoded: true,
       encoderArgs: ['-af', 'bass=g=10,dynaudnorm=f=200'],
       seek: seek,
-    })
-    let dispatcher = await connection.play(stream, {
+    });
+    const dispatcher = await connection.play(stream, {
       type: 'opus',
       volume: msg.guild.volume || 0.5,
       highWaterMark: 200,
@@ -61,7 +61,7 @@ async function playStream(msg, seek = 0) {
 
     // give data when dispatcher start
     dispatcher.on('start', async () => {
-      let nowPlaying = await msg.say({ embed: await setEmbedPlaying(msg) });
+      const nowPlaying = await msg.say({ embed: await setEmbedPlaying(msg) });
       // assign now playing embed message id to the queue object
       msg.guild.queue[indexQ].embedId = nowPlaying.id;
       msg.channel.stopTyping(true);
@@ -72,7 +72,7 @@ async function playStream(msg, seek = 0) {
       // delete the now playing embed when the track is finished
       if (msg.guild.queue && msg.guild.queue[indexQ]) {
         msg.channel.messages.delete(msg.guild.queue[indexQ].embedId)
-          .catch(e => e)
+          .catch(e => e);
       }
       msg.guild.indexQueue++;
       return play(msg);
@@ -101,8 +101,8 @@ async function playStream(msg, seek = 0) {
  * @returns {any}
  */
 async function fetchAutoplay(msg) {
-  let queue = msg.guild.queue;
-  let indexQ = msg.guild.indexQueue;
+  const queue = msg.guild.queue;
+  const indexQ = msg.guild.indexQueue;
   if (queue && queue.length > 150) {
     return msg.say(oneLine`
       You reached maximum number of track.
@@ -124,7 +124,7 @@ async function fetchAutoplay(msg) {
       return msg.channel.send(stripIndents`
         No related video were found. You can request again with \`${msg.guild.commandPrefix}skip\` command. 
         Videos with a duration longer than 40 minutes will not be listed.
-      `)
+      `);
     }
   } catch (err) {
     logger.log('error', err.stack);
@@ -141,7 +141,7 @@ async function fetchAutoplay(msg) {
     author: `Autoplay`,
     videoId: related[randTrack].id,
     isLive: related[randTrack].isLive,
-  }
+  };
   msg.guild.queue.push(construction);
   return play(msg);
 }
@@ -149,7 +149,7 @@ async function fetchAutoplay(msg) {
 /**
  * Handler to voice stream related command
  * @async
- * @returns {any} 
+ * @returns {any}
  * @param {import("discord.js-commando").CommandoMessage} msg - message from textchannel
  * @param {boolean} msg.guild.autoplay - the state of the autoplay
  * @param {number} msg.guild.indexQueue - current playing track
@@ -161,7 +161,7 @@ async function play(msg, options = {}) {
   if (typeof options !== 'object') throw new TypeError('INVALID_TYPE');
   const { seek = 0 } = options;
 
-  let queue = msg.guild.queue;
+  const queue = msg.guild.queue;
   let indexQ = msg.guild.indexQueue;
 
   // handle the indexQueue
@@ -242,7 +242,7 @@ async function player(data = {}, msg, fromPlaylist = false) {
     return msg.say(oneLine`
     You reached maximum number of track.
     Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
-    `)
+    `);
   }
   const construction = {
     title: data.title,
@@ -252,7 +252,7 @@ async function player(data = {}, msg, fromPlaylist = false) {
     seconds: parseInt(data.seconds),
     author: `${msg.author.username}#${msg.author.discriminator}`,
     isLive: data.isLive,
-  }
+  };
   if (!msg.guild.queue) {
     try {
       msg.guild.queue = [];
@@ -269,7 +269,7 @@ async function player(data = {}, msg, fromPlaylist = false) {
     msg.guild.queue.push(construction);
     if (!fromPlaylist) {
       msg.channel.send(`${data.title} has been added to the queue.`)
-        .then(msg => msg.delete({ timeout: 8000 }))
+        .then(resMsg => resMsg.delete({ timeout: 8000 }))
         .catch(e => e);
     }
     // if in the end of queue and the song is stopped then play the track
@@ -282,4 +282,4 @@ async function player(data = {}, msg, fromPlaylist = false) {
 module.exports = {
   play,
   player,
-}
+};

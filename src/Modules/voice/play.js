@@ -34,10 +34,10 @@ module.exports = class PlayCommand extends Command {
           type: 'string',
         }
       ]
-    })
+    });
   }
 
-  /** @param {CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(message, { queryOrUrl }) {
     // if not in voice channel
     if (!message.member.voice.channel) {
@@ -49,20 +49,20 @@ module.exports = class PlayCommand extends Command {
       // check if author send a youtube link or video Id
       if (ytdl.validateURL(queryOrUrl) || ytdl.validateID(queryOrUrl)) {
         const vidId = ytdl.getVideoID(queryOrUrl);
-        let data = await ytdl.getBasicInfo(vidId);
-        let dataConstructor = {
+        const data = await ytdl.getBasicInfo(vidId);
+        const dataConstructor = {
           title: data.videoDetails.title,
           url: data.videoDetails.video_url,
           videoId: vidId,
           author: data.videoDetails.author.name ? data.videoDetails.author : { name: data.videoDetails.ownerChannelName },
           seconds: data.videoDetails.lengthSeconds,
           isLive: data.videoDetails.isLiveContent,
-        }
+        };
         return player(dataConstructor, message);
       }
 
       message.channel.startTyping(); // start type indicator cuz it'll be a while
-      let { videos } = await yts(queryOrUrl) // fetch yt vid using yt-search module
+      const { videos } = await yts(queryOrUrl); // fetch yt vid using yt-search module
       if (!videos.length) {
         message.channel.stopTyping(true); // stop typing indicator
         return message.say('No video found');
@@ -70,10 +70,10 @@ module.exports = class PlayCommand extends Command {
 
       let page = 0; // for page
       let music = 0; // for choosing music index
-      let itemsPerPage = 5; // set items showed per page
+      const itemsPerPage = 5; // set items showed per page
 
-      let Embed = setEmbedPlayCmd(videos, music, page, message, itemsPerPage);
-      let emojiNeeded = [emoji[1], emoji[2], emoji[3], emoji[4], emoji[5], emoji.leftA, emoji.rightA, emoji.x];
+      const Embed = setEmbedPlayCmd(videos, music, page, message, itemsPerPage);
+      const emojiNeeded = [emoji[1], emoji[2], emoji[3], emoji[4], emoji[5], emoji.leftA, emoji.rightA, emoji.x];
 
       message.channel.send({ embed: Embed }).then(async msg => {
         msg.channel.stopTyping(true); // stop typing indicator
@@ -107,26 +107,26 @@ module.exports = class PlayCommand extends Command {
             }
           }
           if (collected.emoji.name === '➡' || collected.emoji.name === '⬅') {
-            let embed2 = setEmbedPlayCmd(videos, music, page, message, itemsPerPage);
+            const embed2 = setEmbedPlayCmd(videos, music, page, message, itemsPerPage);
             return msg.edit({ embed: embed2 });
           }
 
           if (emojiNeeded.slice(0, 5).includes(collected.emoji.name)) {
-            let reversed = Object.keys(emoji).find(key => emoji[key] === collected.emoji.name);
+            const reversed = Object.keys(emoji).find(key => emoji[key] === collected.emoji.name);
             const intEmoji = parseInt(reversed);
             if ((music + intEmoji) > videos.length) {
               // return if user choose more than the available song
               msg.delete();
               return message.reply(`Please choose the correct number.`);
             }
-            let data = videos[music + intEmoji - 1];
+            const data = videos[music + intEmoji - 1];
             if (data.seconds === 0) {
               data.isLive = (await ytdl.getBasicInfo(data.videoId)).videoDetails.isLiveContent;
             }
             msg.delete();
             return player(data, message);
           }
-        })
+        });
 
         for (let i = 0; i < emojiNeeded.length; i++) {
           if (msg) {
@@ -153,5 +153,5 @@ module.exports = class PlayCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};
 

@@ -27,7 +27,7 @@ module.exports = class AniSafeCommand extends Command {
           default: '',
         }
       ],
-    })
+    });
   }
 
   // Thanks to nekos.life for the service
@@ -36,20 +36,20 @@ module.exports = class AniSafeCommand extends Command {
     const safeTag = [
       'meow', 'avatar', 'fox_girl', 'gecg', 'kemonomimi', 'holo',
       'wallpaper', 'neko', 'waifu', 'erokemo'
-    ]
+    ];
     if (tag !== '' && !safeTag.includes(tag.toLowerCase())) {
       return msg.reply(oneLine`
         Invalid tag, you can see available tag in \`${msg.guild.commandPrefix}help hentai\`
-      `).then(msg => msg.delete({ timeout: 8000 }));
+      `).then(resMsg => resMsg.delete({ timeout: 8000 }));
     }
 
     const getRandomTag = safeTag[Math.floor(Math.random() * safeTag.length)];
     try {
-      let res = await axios.get(`https://nekos.life/api/v2/img/${tag ? tag : getRandomTag}`);
+      const res = await axios.get(`https://nekos.life/api/v2/img/${tag ? tag : getRandomTag}`);
       return msg.say(res.data.url);
     } catch (err) {
-      logger.log('error', err.stack)
+      logger.log('error', err.stack);
       msg.reply(`There was an error when requesting the image. Please try again later`);
     }
   }
-}
+};

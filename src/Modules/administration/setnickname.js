@@ -1,6 +1,4 @@
 const { Command } = require('discord.js-commando');
-const { getUserMention, isUserId } = require('../../library/users/get-cache.js')
-
 
 module.exports = class SetNicknameCommand extends Command {
   constructor(client) {
@@ -49,7 +47,7 @@ module.exports = class SetNicknameCommand extends Command {
       .then(() => msg.say('Nickname succesfully changed'))
       .catch(err => {
         logger.log('error', err);
-        return msg.say('An error occured, possibly because missing permission').then(msg => msg.delete({ timeout: 6000 }));
+        return msg.say('An error occured, possibly because missing permission').then(resMsg => resMsg.delete({ timeout: 6000 }));
       });
   }
 
@@ -65,6 +63,4 @@ module.exports = class SetNicknameCommand extends Command {
       .catch(e => e); // do nothing
   }
 };
-
-
 

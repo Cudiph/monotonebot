@@ -46,13 +46,15 @@ client.on('message', async msg => {
  * Function to update user data
  * @param {CommandoMessage} msg - Commando Message
  * @async
- * @returns {void} 
+ * @returns {void}
  */
 async function updateUser(msg) {
   try {
     await userDataSchema.findOneAndUpdate({ userId: msg.author.id }, {
       $inc: { exp: 1, money: msg.content.length * 5 },
     }, { upsert: true, setDefaultsOnInsert: true, new: true });
-    
-  } catch (e) { }
+
+  } catch (e) {
+    return e;
+  }
 }

@@ -31,7 +31,7 @@ module.exports = class DanbooruCommand extends Command {
           default: '',
         }
       ],
-    })
+    });
   }
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
@@ -47,7 +47,7 @@ module.exports = class DanbooruCommand extends Command {
     const splittedTags = tag.split(/\s+/);
     const cencoredTags = ['loli', 'shota', 'toddlercon'];
     if (splittedTags.some((e) => cencoredTags.includes(e))) {
-      return msg.reply(`You have entered tags that are not allowed. Please try another one.`)
+      return msg.reply(`You have entered tags that are not allowed. Please try another one.`);
     }
     if (splittedTags.length > 2) {
       return msg.reply(`Maximum tags is 2, but ${splittedTags.length} is given`);
@@ -77,7 +77,7 @@ module.exports = class DanbooruCommand extends Command {
       }
 
       const imgListUrl = `https://danbooru.donmai.us/posts.json?tags=${encodedTags}&limit=${limit}&page=${page}`;
-      let imageList = await axios.get(imgListUrl).then(res => res.data);
+      const imageList = await axios.get(imgListUrl).then(res => res.data);
       const randStart = Math.floor(Math.random() * (limit / numOfImages)); // randomize starting point of image to be sent
       for (let i = randStart * numOfImages; i < ((randStart * numOfImages) + numOfImages); i++) {
         if (imageList[i].large_file_url) {
@@ -85,8 +85,8 @@ module.exports = class DanbooruCommand extends Command {
         }
       }
     } catch (err) {
-      logger.log('error', err.stack)
+      logger.log('error', err.stack);
       msg.reply(`There was an error when requesting the image. Please try again later`);
     }
   }
-}
+};

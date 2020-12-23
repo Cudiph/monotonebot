@@ -13,7 +13,7 @@ module.exports = class LeaveCommand extends Command {
   }
 
   run(msg) {
-    return msg.say("`Bye`").then(msg => msg.guild.leave());
+    return msg.say("`Bye`").then(byeMsg => byeMsg.guild.leave());
   }
 
   async onBlock(msg, reason, data) {

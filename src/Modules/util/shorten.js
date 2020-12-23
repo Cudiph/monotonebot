@@ -35,7 +35,7 @@ module.exports = class ShortenCommand extends Command {
         },
 
       ]
-    })
+    });
   }
 
   async run(msg, { longUrl, customUrl }) {
@@ -68,7 +68,7 @@ module.exports = class ShortenCommand extends Command {
           }
         ]
       }
-    })
+    });
 
   }
 
@@ -83,4 +83,4 @@ module.exports = class ShortenCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

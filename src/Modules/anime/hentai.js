@@ -33,7 +33,7 @@ module.exports = class HentaiCommand extends Command {
           default: '',
         }
       ],
-    })
+    });
   }
 
   // Thanks to nekos.life for the service
@@ -45,21 +45,21 @@ module.exports = class HentaiCommand extends Command {
       'holoero', 'hentai', 'futanari', 'ero', 'solo', 'eron', 'classic', 'les',
       'feetg', 'nsfw_neko_gif', 'kuni', 'pussy', 'spank', 'Random_hentai_gif', 'boobs',
       'solog', 'bj', 'anal', 'pwankg'
-    ]
+    ];
     if (tag !== '' && !nsfwTag.includes(tag.toLowerCase())) {
       return msg.reply(oneLine`
         Invalid tag, you can see available tag in \`${msg.guild.commandPrefix}help hentai\`
-      `).then(msg => msg.delete({ timeout: 8000 }));
+      `).then(helpMsg => helpMsg.delete({ timeout: 8000 }));
     }
 
     const getRandomTag = nsfwTag[Math.floor(Math.random() * nsfwTag.length)];
     try {
-      let res = await axios.get(`https://nekos.life/api/v2/img/${tag ? tag : getRandomTag}`);
+      const res = await axios.get(`https://nekos.life/api/v2/img/${tag ? tag : getRandomTag}`);
       return msg.say(res.data.url);
     } catch (err) {
-      logger.log('error', err.stack)
+      logger.log('error', err.stack);
       msg.reply(`There was an error when requesting the image. Please try again later`);
     }
   }
 
-}
+};

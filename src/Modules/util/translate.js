@@ -37,17 +37,18 @@ module.exports = class AddPlaylistCommand extends Command {
           type: 'string',
         }
       ],
-    })
+    });
   }
 
   async run(msg, { language, words }) {
+    let lang;
     if (language.match(/(?:\w+)>(?:\w+)/)) {
-      var lang = language.split('>');
+      lang = language.split('>');
     } else {
-      var lang = language.split();
+      lang = language.split();
     }
-    let sl = language.match(/(\w+)>(\w+)/) ? lang[0] : 'auto';
-    let tl = language.match(/(\w+)>(\w+)/) ? lang[1] : lang[0];
+    const sl = language.match(/(\w+)>(\w+)/) ? lang[0] : 'auto';
+    const tl = language.match(/(\w+)>(\w+)/) ? lang[1] : lang[0];
     const property = querystring.stringify({
       client: 'gtx',
       sl: sl,
@@ -61,7 +62,7 @@ module.exports = class AddPlaylistCommand extends Command {
       tsel: 0,
       kc: 7,
       q: words.split(/\s+/).join(' '),
-    })
+    });
     // https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ja&hl=ja&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&kc=7&q=i%20love%20you
     let result;
     try {
@@ -73,11 +74,11 @@ module.exports = class AddPlaylistCommand extends Command {
     } catch (err) {
       logger.log('error', err);
       return msg.say('An error occured. It maybe the API request is blocked or the language id is incorrect')
-        .then(msg => msg.delete({ timeout: 10000 }));
+        .then(errMsg => errMsg.delete({ timeout: 10000 }));
     }
 
     let embed;
-    let langId = result[0][0][8] ? result[0][0][8][0][0][1].match(/(?:[a-zA-Z]+_)?(\w{2})_(\w{2})_(?:.*)/) : result[0][0][8] = false;
+    const langId = result[0][0][8] ? result[0][0][8][0][0][1].match(/(?:[a-zA-Z]+_)?(\w{2})_(\w{2})_(?:.*)/) : result[0][0][8] = false;
     // let sourceId = result[0][0][8][0][0][1].substr(0, 2).toUpperCase();
     // let transId = result[0][0][8][0][0][1].substr(3, 2).toUpperCase();
     try {
@@ -91,11 +92,11 @@ module.exports = class AddPlaylistCommand extends Command {
         `,
           icon_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png',
         }
-      }
+      };
     } catch (err) {
       logger.log('error', err);
       return msg.say('Please check again your input')
-        .then(msg => msg.delete({ timeout: 10000 }));;
+        .then(resMsg => resMsg.delete({ timeout: 10000 }));
     }
 
     if (words.split(/\s+/).length == 1 && result[1]) {
@@ -118,8 +119,8 @@ module.exports = class AddPlaylistCommand extends Command {
           name: elem[0],
           value: value,
           inline: true,
-        })
-      })
+        });
+      });
     } else if (words.split(/\s+/).length < 25) {
       embed.fields.push(
         {
@@ -129,16 +130,16 @@ module.exports = class AddPlaylistCommand extends Command {
         {
           name: 'Translated Text',
           value: `${result[0][0][0]}`
-        })
+        });
     } else {
-      embed.title = 'Translated Text'
+      embed.title = 'Translated Text';
       let translated = '';
       result[0].forEach(text => {
         translated += text[0] + '\n\n';
-      })
+      });
       embed.description = trim(translated, 2048);
     }
-    return msg.say({ embed })
+    return msg.say({ embed });
   }
 
   async onBlock(msg, reason, data) {
@@ -152,4 +153,4 @@ module.exports = class AddPlaylistCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

@@ -27,7 +27,7 @@ module.exports = class RemovePlaylistCommand extends Command {
           type: 'integer|string',
         },
       ]
-    })
+    });
   }
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
@@ -35,19 +35,19 @@ module.exports = class RemovePlaylistCommand extends Command {
     const data = await userDataSchema.findOne({ userId: msg.author.id });
 
     if (!data || !data.userPlaylists.length) {
-      return msg.say('You don\'t have any playlist')
+      return msg.say('You don\'t have any playlist');
     } else if (playlistArg < 0 && playlistArg >= data.userPlaylists.length) {
-      return msg.say(`Your current playlist is from 0-${data.userPlaylists.length - 1}`)
+      return msg.say(`Your current playlist is from 0-${data.userPlaylists.length - 1}`);
     }
 
     if (typeof playlistArg === 'number') {
       try {
         // change the name because mongodb can remove based on index
-        const template = `userPlaylists.${playlistArg}.name`
+        const template = `userPlaylists.${playlistArg}.name`;
         const update = {
           $set: { [template]: 'deletethis' }
         };
-        let before = await userDataSchema.findOneAndUpdate({ userId: msg.author.id, }, update)
+        const before = await userDataSchema.findOneAndUpdate({ userId: msg.author.id, }, update);
         // finally delete the renamed playlist
         await userDataSchema.findOneAndUpdate({ userId: msg.author.id, }, {
           $pull: {
@@ -55,19 +55,19 @@ module.exports = class RemovePlaylistCommand extends Command {
               name: 'deletethis'
             }
           }
-        })
-        msg.say(`Deleted playlist **${before.userPlaylists[playlistArg].name}**`)
+        });
+        msg.say(`Deleted playlist **${before.userPlaylists[playlistArg].name}**`);
       } catch (err) {
         logger.log('error', err.stack);
         return msg.reply(`Can't remove the playlist`);
       }
     } else {
-      const data = await userDataSchema.findOneAndUpdate({ userId: msg.author.id }, {
+      const data2 = await userDataSchema.findOneAndUpdate({ userId: msg.author.id }, {
         $pull: { userPlaylists: { name: playlistArg } }
       });
       let counter = 0;
-      for (let i = 0; i < data.userPlaylists.length; i++) {
-        if (data.userPlaylists[i].name === playlistArg) {
+      for (let i = 0; i < data2.userPlaylists.length; i++) {
+        if (data2.userPlaylists[i].name === playlistArg) {
           counter++;
         }
       }
@@ -83,4 +83,4 @@ module.exports = class RemovePlaylistCommand extends Command {
     }
 
   }
-}
+};

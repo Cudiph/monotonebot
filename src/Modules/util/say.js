@@ -24,7 +24,7 @@ module.exports = class SayCommand extends Command {
           key: 'words',
           prompt: 'What do you want to say?',
           type: 'string',
-          isEmpty: function (val, msg, arg) {
+          isEmpty: function(val, msg) {
             const splittedMsg = msg.content.split(/\s+/);
             if (splittedMsg[1].match(/^<#\d+>$/) && !splittedMsg[2]) {
               return true;
@@ -41,14 +41,14 @@ module.exports = class SayCommand extends Command {
   async run(msg, { textChannel, words }) {
     let channel;
     if (typeof textChannel == 'object') {
-      channel = textChannel
+      channel = textChannel;
     }
 
     // embeded msg
     let embedMsg = {
       description: words,
       color: 0xff548e,
-    }
+    };
 
     // check if user mention a channel if not send all args in that channel
     if (!channel) {
@@ -71,4 +71,4 @@ module.exports = class SayCommand extends Command {
     });
 
   }
-}
+};

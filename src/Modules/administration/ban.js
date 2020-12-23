@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando')
+const { Command } = require('discord.js-commando');
 const Discord = require('discord.js');
 const { sendtoLogChan } = require('../../library/helper/embed.js');
 
@@ -65,9 +65,7 @@ module.exports = class BanCommand extends Command {
         logger.log('error', e.stack);
       }
 
-    }
-    // Otherwise, if no user was mentioned
-    else {
+    } else { // Otherwise, if no user was mentioned
       msg.reply("You didn't mention the user to ban!");
     }
   }
@@ -84,6 +82,4 @@ module.exports = class BanCommand extends Command {
       .catch(e => e); // do nothing
   }
 };
-
-
 

@@ -22,9 +22,10 @@ module.exports = class UrbandictCommand extends Command {
           type: 'string',
         }
       ]
-    })
+    });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(message, args) {
     if (!args) {
       return message.channel.send('You need to supply a search term!');
@@ -40,9 +41,9 @@ module.exports = class UrbandictCommand extends Command {
 
     // trim words if too long
     const trim = (str, max) => ((str.length > max) ? `${str.slice(0, max - 3)}...` : str);
-    let counter = 0
+    let counter = 0;
 
-    let embed = {
+    const embed = {
       color: 0xff548e,
       title: list[counter].word,
       url: list[counter].permalink,
@@ -72,11 +73,11 @@ module.exports = class UrbandictCommand extends Command {
       footer: {
         text: `${counter + 1}/${list.length}`
       }
-    }
+    };
 
     message.channel.send({ embed: embed })
       .then(async msg => {
-        let emojiNeeded = ['⬅', '➡', '🇽']
+        const emojiNeeded = ['⬅', '➡', '🇽'];
 
         const filter = (reaction, user) => {
           return emojiNeeded.includes(reaction.emoji.name) && user.id === message.author.id;
@@ -96,7 +97,7 @@ module.exports = class UrbandictCommand extends Command {
             counter++;
             if (counter >= list.length) counter = list.length - 1;
           }
-          var embed2 = {
+          const embed2 = {
             color: 0xff548e,
             title: list[counter].word,
             url: list[counter].permalink,
@@ -126,9 +127,9 @@ module.exports = class UrbandictCommand extends Command {
             footer: {
               text: `${counter + 1}/${list.length}`
             }
-          }
+          };
           msg.edit({ embed: embed2 });
-        })
+        });
         // on remove the same as above
         collector.on('remove', async collected => {
           if (collected.emoji.name === '⬅') {
@@ -140,7 +141,7 @@ module.exports = class UrbandictCommand extends Command {
             counter++;
             if (counter >= list.length) counter = list.length - 1;
           }
-          var embed2 = {
+          const embed2 = {
             color: 0xff548e,
             title: list[counter].word,
             url: list[counter].permalink,
@@ -170,10 +171,10 @@ module.exports = class UrbandictCommand extends Command {
             footer: {
               text: `${counter + 1}/${list.length}`
             }
-          }
+          };
 
           msg.edit({ embed: embed2 });
-        })
+        });
 
         // react to the msg
         for (let i = 0; i < emojiNeeded.length; i++) {
@@ -195,4 +196,4 @@ module.exports = class UrbandictCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

@@ -45,20 +45,20 @@ module.exports = class PurgeCommand extends Command {
     }
 
     try {
-      let messages = await msg.channel.messages.fetch({ limit: total })
-      msg.channel.bulkDelete(messages).then(messages => {
-        const response = `Bulk deleted **${messages.size}** messages on <#${msg.channel.id}>`;
-        return sendtoLogChan(msg, { strMsg: response })
+      const messages = await msg.channel.messages.fetch({ limit: total });
+      msg.channel.bulkDelete(messages).then(deletedMessages => {
+        const response = `Bulk deleted **${deletedMessages.size}** messages on <#${msg.channel.id}>`;
+        return sendtoLogChan(msg, { strMsg: response });
       }).catch(err => {
         logger.log('error', err);
         msg.channel.send(stripIndents`
         Unable to delete messages
         It's likely because you are trying to delete messages that are under 14 days old.
-      `).then(msg => msg.delete({ timeout: 7000 }));
+      `).then(resMsg => resMsg.delete({ timeout: 7000 }));
       });
     } catch (err) {
       logger.log('error', err);
-      msg.channel.send(`Unable to delete messages`)
+      msg.channel.send(`Unable to delete messages`);
     }
 
   }

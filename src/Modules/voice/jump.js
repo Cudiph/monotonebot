@@ -30,7 +30,7 @@ module.exports = class JumpCommand extends Command {
           default: 1,
         },
       ],
-    })
+    });
   }
 
   async run(msg, { numberToJump }) {
@@ -49,7 +49,7 @@ module.exports = class JumpCommand extends Command {
       msg.guild.me.voice.connection.dispatcher.end();
       return;
     }
-    
+
     msg.guild.indexQueue++;
     play(msg);
 
@@ -66,4 +66,4 @@ module.exports = class JumpCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

@@ -1,5 +1,5 @@
 const fs = require('fs');
-const mergeImg = require('merge-img')
+const mergeImg = require('merge-img');
 const { Command } = require('discord.js-commando');
 const { oneLine } = require('common-tags');
 
@@ -30,7 +30,7 @@ module.exports = class DiceCommand extends Command {
           default: 2
         },
       ],
-    })
+    });
   }
 
   async run(msg, { numberOfDice }) {
@@ -53,9 +53,9 @@ module.exports = class DiceCommand extends Command {
 
     // Making list of image to push
     const imageList = [];
-    var totalValue = 0;
+    let totalValue = 0;
     for (let i = 0; i < numberOfDice; i++) {
-      let roll = Math.ceil(Math.random() * 6);
+      const roll = Math.ceil(Math.random() * 6);
       totalValue += roll;
       imageList.push(`./src/images/dice/${roll}.png`);
     }
@@ -67,10 +67,10 @@ module.exports = class DiceCommand extends Command {
 
     // get the file name so it won't reproduce the same file
     // if the dice made a 3 + 4 + 2 consecutively, then the filename is 342.png
-    function getName(imageList) {
-      var name = '';
-      imageList.forEach(dir => {
-        let onlyName = dir.split('/').slice(-1);
+    function getName(imgList) {
+      let name = '';
+      imgList.forEach(dir => {
+        const onlyName = dir.split('/').slice(-1);
         name += onlyName[0].slice(0, 1);
       });
       return name;
@@ -95,7 +95,7 @@ module.exports = class DiceCommand extends Command {
       // }
       return msg.channel.send(`The total value of the dice is ${totalValue}`, {
         files: [imageFile]
-      })
+      });
     }
 
     const imageFile = `./src/images/dice/${getName(imageList)}.png`;
@@ -129,4 +129,4 @@ module.exports = class DiceCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

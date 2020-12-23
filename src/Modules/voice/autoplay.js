@@ -23,7 +23,7 @@ module.exports = class AutoPlayCommand extends Command {
           default: ''
         }
       ]
-    })
+    });
   }
 
   async run(msg, { turnOn }) {
@@ -32,9 +32,9 @@ module.exports = class AutoPlayCommand extends Command {
     } else {
       msg.guild.autoplay = turnOn;
     }
-    let embed = {
+    const embed = {
       description: `Set \`autoplay\` to **${msg.guild.autoplay ? 'True' : 'False'}**`
-    }
+    };
     if (msg.guild.autoplay) {
       embed.color = 0x11ff00;
     } else {
@@ -58,4 +58,4 @@ module.exports = class AutoPlayCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

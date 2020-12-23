@@ -23,18 +23,18 @@ module.exports = class RemoveNumberCommand extends Command {
           min: 0,
         }
       ]
-    })
+    });
   }
 
   async run(msg, { rangeIndex }) {
     // remove zero or more white space
-    let args = rangeIndex.split(/\s*-\s{0,}/);
+    const args = rangeIndex.split(/\s*-\s{0,}/);
     if (!msg.guild.queue || !msg.guild.queue.length) {
       return msg.say('There are no songs to remove');
     } else if (isNaN(args[0]) || args[1] && isNaN(args[1])) {
-      return msg.say('Weird character appeared on argument').then(msg => msg.delete({ timeout: 9000 }));
+      return msg.say('Weird character appeared on argument').then(resMsg => resMsg.delete({ timeout: 9000 }));
     } else if (parseInt(args[0]) > parseInt(args[1])) {
-      return msg.say('Bad calculation').then(msg => msg.delete({ timeout: 9000 }));
+      return msg.say('Bad calculation').then(resMsg => resMsg.delete({ timeout: 9000 }));
     }
 
     if (args < 0 || args >= msg.guild.queue.length) {
@@ -47,11 +47,11 @@ module.exports = class RemoveNumberCommand extends Command {
     } else {
       end = args[1] - args[0] + 1;
     }
-    let removed = msg.guild.queue.splice(args[0], end);
+    const removed = msg.guild.queue.splice(args[0], end);
     if (msg.guild.indexQueue >= args[0]) {
       msg.guild.indexQueue -= removed.length;
     }
-    msg.say('Removed succesfully').then(msg => msg.delete({ timeout: 7000 }));
+    msg.say('Removed succesfully').then(resMsg => resMsg.delete({ timeout: 7000 }));
   }
 
   async onBlock(msg, reason, data) {
@@ -65,4 +65,4 @@ module.exports = class RemoveNumberCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

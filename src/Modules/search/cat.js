@@ -14,7 +14,7 @@ module.exports = class CatCommand extends Command {
         usages: 5,
         duration: 10,
       },
-    })
+    });
   }
 
   async run(msg) {
@@ -40,4 +40,4 @@ module.exports = class CatCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

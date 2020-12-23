@@ -26,7 +26,7 @@ module.exports = class QueueCommand extends Command {
           max: 18,
         }
       ]
-    })
+    });
   }
 
   async run(msg, { itemsPerPage }) {
@@ -35,7 +35,7 @@ module.exports = class QueueCommand extends Command {
     }
 
     // variabel to store data :)
-    let queue = msg.guild.queue;
+    const queue = msg.guild.queue;
     let page = 0;
     let index = 0;
     // let itemsPerPage = 9;
@@ -43,7 +43,7 @@ module.exports = class QueueCommand extends Command {
     // send embed
     msg.channel.send({ embed: setEmbedQueueCmd(queue, index, page, msg, itemsPerPage) })
       .then(async embedMsg => {
-        let emojiNeeded = ['⬅', '➡', '🇽'];
+        const emojiNeeded = ['⬅', '➡', '🇽'];
 
         const filter = (reaction, user) => {
           return emojiNeeded.includes(reaction.emoji.name) && user.id === msg.author.id;
@@ -78,7 +78,7 @@ module.exports = class QueueCommand extends Command {
             return embedMsg.edit({ embed: setEmbedQueueCmd(queue, index, page, msg, itemsPerPage) });
           }
 
-        })
+        });
 
         // reacting the message
         if ((page + 1) !== Math.ceil(queue.length / itemsPerPage)) {
@@ -88,7 +88,7 @@ module.exports = class QueueCommand extends Command {
         } else {
           embedMsg.react(emoji.x);
         }
-      })
+      });
   }
 
   async onBlock(msg, reason, data) {
@@ -102,4 +102,4 @@ module.exports = class QueueCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

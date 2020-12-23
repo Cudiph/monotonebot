@@ -18,20 +18,20 @@ module.exports = class EightBallCommand extends Command {
         usages: 4,
         duration: 10,
       },
-    })
+    });
   }
 
-  async run(msg, {question}) {
+  async run(msg, { question }) {
     if (!question.length) {
       return msg.reply(`You didn't provide any arguments`);
     }
     const answers = require('../../data/gamesdata/8ball.json');
-    const answer = answers.response[Math.floor(Math.random() * Math.floor(answers.response.length))]
+    const answer = answers.response[Math.floor(Math.random() * Math.floor(answers.response.length))];
     const embedMsg = new Discord.MessageEmbed()
       .setColor('#f0568a')
       .addField(`:question: Question`, question)
       .addField(':speech_balloon: Answer', answer)
-      .setFooter(`${msg.author.username}#${msg.author.discriminator}`)
+      .setFooter(`${msg.author.username}#${msg.author.discriminator}`);
 
     msg.channel.send(embedMsg);
   }
@@ -47,4 +47,4 @@ module.exports = class EightBallCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

@@ -8,7 +8,7 @@ const { emoji, toTimestamp } = require('../../library/helper/discord-item.js');
 // copied from setEmbedQueue
 function setEmbedPlaylist(userPlaylists, indexPage, page, msg, itemsPerPage) {
   const listLength = userPlaylists.length;
-  let embed = {
+  const embed = {
     color: parseInt(randomHex(), 16),
     author: {
       name: `Playlist of ${msg.author.username}#${msg.author.discriminator}`,
@@ -21,7 +21,7 @@ function setEmbedPlaylist(userPlaylists, indexPage, page, msg, itemsPerPage) {
         • Received ${listLength} ${listLength > 1 ? 'Playlists' : 'Playlist'}
       `,
     },
-  }
+  };
 
   if (page === Math.floor(listLength / itemsPerPage)) {
     for (let i = indexPage; i < listLength; i++) {
@@ -58,7 +58,7 @@ function setEmbedPlaylist(userPlaylists, indexPage, page, msg, itemsPerPage) {
 function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
   const listLength = playlist.videoList.length;
   const videoList = playlist.videoList;
-  let embed = {
+  const embed = {
     color: parseInt(randomHex(), 16),
     title: `Content of **${playlist.name}*** playlist`,
     description: playlist.description,
@@ -67,7 +67,7 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
     footer: {
       text: `${page + 1}/${Math.ceil(listLength / itemsPerPage)}`,
     },
-  }
+  };
 
   // if page is the last page then exec this code
   if (page === Math.floor(listLength / itemsPerPage)) {
@@ -77,12 +77,12 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
         embed.fields.push({
           name: `[${i}] ${videoList[i].title}`,
           value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        })
+        });
       } else {
         embed.fields.push({
           name: `=> [${i}] ${videoList[i].title}`,
           value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        })
+        });
       }
 
     }
@@ -92,12 +92,12 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
         embed.fields.push({
           name: `[${i}] ${videoList[i].title}`,
           value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        })
+        });
       } else {
         embed.fields.push({
           name: `=> [${i}] ${videoList[i].title}`,
           value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        })
+        });
       }
     }
   }
@@ -120,7 +120,7 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
       value: `${playlist.timestamps.toUTCString()}`,
       inline: true,
     },
-  )
+  );
 
   return embed;
 }
@@ -153,7 +153,7 @@ module.exports = class ShowPlaylistCommand extends Command {
           default: '',
         }
       ]
-    })
+    });
   }
 
   // copied from queue.js
@@ -171,13 +171,13 @@ module.exports = class ShowPlaylistCommand extends Command {
       if (!playlist.length) {
         throw 'user playlist is null';
       } else if (playlistId !== '' && playlistId < 0 || playlistId >= playlist.length) {
-        return msg.say(`Your current playlist is from 0-${playlist.length - 1}`)
+        return msg.say(`Your current playlist is from 0-${playlist.length - 1}`);
       }
     } catch (e) {
       return msg.say(oneLine`
       Can't fetch playlists. Please create a new one if
       you don't have any playlist.
-      `)
+      `);
     }
 
     let embed; // embed to send / update
@@ -197,7 +197,7 @@ module.exports = class ShowPlaylistCommand extends Command {
     // send embed
     msg.say({ embed: embed(list, index, page, msg, itemsPerPage) })
       .then(async embedMsg => {
-        let emojiNeeded = ['⬅', '➡', '🇽'];
+        const emojiNeeded = ['⬅', '➡', '🇽'];
 
         const filter = (reaction, user) => {
           return emojiNeeded.includes(reaction.emoji.name) && user.id === msg.author.id;
@@ -232,7 +232,7 @@ module.exports = class ShowPlaylistCommand extends Command {
             return embedMsg.edit({ embed: embed(list, index, page, msg, itemsPerPage) });
           }
 
-        })
+        });
 
         // reacting the message
         if ((page + 1) !== Math.ceil(listLength / itemsPerPage)) {
@@ -242,8 +242,8 @@ module.exports = class ShowPlaylistCommand extends Command {
         } else {
           embedMsg.react(emoji.x);
         }
-      })
+      });
   }
 
-}
+};
 

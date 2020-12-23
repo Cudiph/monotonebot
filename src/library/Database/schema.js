@@ -1,14 +1,9 @@
 const mongoose = require('mongoose');
 
-const reqNumber = {
-  type: Number,
-  required: true,
-}
-
 const reqStr = {
   type: String,
   required: true,
-}
+};
 
 const guildSettings = new mongoose.Schema({
   guildId: reqStr, // guild id
@@ -28,7 +23,7 @@ const guildSettings = new mongoose.Schema({
     default: '..'
   },
   volume: Number,
-})
+});
 
 const userData = new mongoose.Schema({
   userId: reqStr, // member id
@@ -47,7 +42,7 @@ const userData = new mongoose.Schema({
     }],
     timestamps: { type: Date, default: new Date() },
   }]
-})
+});
 
 const guildSettingsSchema = mongoose.model('guildSettings', guildSettings);
 const userDataSchema = mongoose.model('userData', userData);
@@ -56,4 +51,4 @@ const userDataSchema = mongoose.model('userData', userData);
 module.exports = {
   guildSettingsSchema,
   userDataSchema,
-}
+};

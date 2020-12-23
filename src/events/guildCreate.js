@@ -21,4 +21,4 @@ client.on('guildDelete', async guild => {
   } catch (err) {
     logger.log('error', err.stack);
   }
-})
+});

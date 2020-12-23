@@ -1,5 +1,5 @@
 const { stripIndents, oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando')
+const { Command } = require('discord.js-commando');
 
 module.exports = class HelpCommand extends Command {
   constructor(client) {
@@ -10,9 +10,9 @@ module.exports = class HelpCommand extends Command {
       aliases: ['commands'],
       description: 'Displays a list of available commands, or detailed information for a specified command.',
       details: oneLine`
-				The command may be part of a command name or a whole command name.
-				If it isn't specified, all available commands will be listed.
-			`,
+        The command may be part of a command name or a whole command name.
+        If it isn't specified, all available commands will be listed.
+      `,
       examples: ['help', 'help prefix'],
       guarded: true,
       args: [
@@ -31,7 +31,7 @@ module.exports = class HelpCommand extends Command {
     const groups = this.client.registry.groups;
     const commands = this.client.registry.findCommands(args.command, false, msg);
     const showAll = args.command && args.command.toLowerCase() === 'all';
-    let embed = {
+    const embed = {
       color: 0xff548e,
       fields: [
         {
@@ -39,15 +39,15 @@ module.exports = class HelpCommand extends Command {
           value: `${msg.anyUsage(`${commands[0].name}${commands[0].format ? ` ${commands[0].format}` : ''}`)}`
         }
       ]
-    }
+    };
     if (args.command && !showAll) {
       if (commands.length === 1) {
         embed.description = stripIndents`
-					${oneLine`
-						Command **${commands[0].name}**: ${commands[0].description}
-						${commands[0].guildOnly ? ' (Usable only in servers)' : ''}
-						${commands[0].nsfw ? ' **(NSFW)**' : ''}
-					`}
+          ${oneLine`
+            Command **${commands[0].name}**: ${commands[0].description}
+            ${commands[0].guildOnly ? ' (Usable only in servers)' : ''}
+            ${commands[0].nsfw ? ' **(NSFW)**' : ''}
+          `}
         `;
 
         if (commands[0].aliases.length > 0) embed.fields.push({ name: `:mag_right: **Aliases:** `, value: `${`**${commands[0].aliases.join('**, **')}**`}`, inline: true });
@@ -61,17 +61,19 @@ module.exports = class HelpCommand extends Command {
         });
 
         if (commands[0].details) embed.fields.push({ name: `:scroll: **Details:**`, value: commands[0].details });
-        if (commands[0].examples) embed.fields.push({
-          name: `:pencil: **Examples:**`,
-          value: `- **..${commands[0].examples.map(elem => {
-            const splitted = elem.split(/\s+/);
-            splitted.splice(1, 0, '**');
-            for (let i = 2; i < splitted.length; i += 2) {
-              splitted.splice(i, 0, ' ');
-            }
-            return splitted.join('');
-          }).join('\n- **..')}`
-        });
+        if (commands[0].examples) {
+          embed.fields.push({
+            name: `:pencil: **Examples:**`,
+            value: `- **..${commands[0].examples.map(elem => {
+              const splitted = elem.split(/\s+/);
+              splitted.splice(1, 0, '**');
+              for (let i = 2; i < splitted.length; i += 2) {
+                splitted.splice(i, 0, ' ');
+              }
+              return splitted.join('');
+            }).join('\n- **..')}`
+          });
+        }
 
         const messages = [];
         try {
@@ -84,6 +86,7 @@ module.exports = class HelpCommand extends Command {
       } else if (commands.length > 15) {
         return msg.reply('Multiple commands found. Please be more specific.');
       } else if (commands.length > 1) {
+        // eslint-disable-next-line no-undef
         return msg.reply(disambiguation(commands, 'commands'));
       } else {
         return msg.reply(
@@ -96,36 +99,37 @@ module.exports = class HelpCommand extends Command {
       const messages = [];
       try {
         messages.push(await msg.direct(stripIndents`
-					${oneLine`
-						To run a command in ${msg.guild ? msg.guild.name : 'any server'},
-						use ${Command.usage('command', msg.guild ? msg.guild.commandPrefix : null, this.client.user)}.
-						For example, ${Command.usage('prefix', msg.guild ? msg.guild.commandPrefix : null, this.client.user)}.
-					`}
-					To run a command in this DM, simply use ${Command.usage('command', null, null)} with no prefix.
+          ${oneLine`
+            To run a command in ${msg.guild ? msg.guild.name : 'any server'},
+            use ${Command.usage('command', msg.guild ? msg.guild.commandPrefix : null, this.client.user)}.
+            For example, ${Command.usage('prefix', msg.guild ? msg.guild.commandPrefix : null, this.client.user)}.
+          `}
+          To run a command in this DM, simply use ${Command.usage('command', null, null)} with no prefix.
 
-					Use ${this.usage('<command>', null, null)} to view detailed information about a specific command.
-					Use ${this.usage('all', null, null)} to view a list of *all* commands, not just available ones.
+          Use ${this.usage('<command>', null, null)} to view detailed information about a specific command.
+          Use ${this.usage('all', null, null)} to view a list of *all* commands, not just available ones.
 
-					__${showAll ? 'All commands' : `Available commands in **${msg.guild || 'this DM'}**`}__
+          __${showAll ? 'All commands' : `Available commands in **${msg.guild || 'this DM'}**`}__
 
-					${groups.filter(grp => grp.commands.some(cmd => !cmd.hidden && (showAll || cmd.isUsable(msg))))
-            .map(grp => {
-              let longest = 0;
-              grp.commands.filter(cmd => !cmd.hidden && (showAll || cmd.isUsable(msg))).forEach(cmd => {
-                if (cmd.name.length > longest) longest = cmd.name.length;
-              });
-              return stripIndents`
+          ${groups.filter(grp => grp.commands.some(cmd => !cmd.hidden && (showAll || cmd.isUsable(msg))))
+    .map(grp => {
+      let longest = 0;
+      grp.commands.filter(cmd => !cmd.hidden && (showAll || cmd.isUsable(msg))).forEach(cmd => {
+        if (cmd.name.length > longest) longest = cmd.name.length;
+      });
+      return stripIndents`
                 **${grp.name}**
                 ${grp.commands.filter(cmd => !cmd.hidden && (showAll || cmd.isUsable(msg)))
-                  .map(cmd => {
-                    let cmdIndent = longest + 1 - cmd.name.length;
-                    if (cmdIndent < 0) cmdIndent = 0;
-                    return `**\`- ${cmd.name + ' '.repeat(cmdIndent)}:\`** ${cmd.description}${cmd.nsfw ? ' **(NSFW)**' : ''}`;
-                  }).join('\n')
-                }
-						  `}).join('\n\n')
-          }
-				`, { split: true }));
+    .map(cmd => {
+      let cmdIndent = longest + 1 - cmd.name.length;
+      if (cmdIndent < 0) cmdIndent = 0;
+      return `**\`- ${cmd.name + ' '.repeat(cmdIndent)}:\`** ${cmd.description}${cmd.nsfw ? ' **(NSFW)**' : ''}`;
+    }).join('\n')
+}
+              `;
+    }).join('\n\n')
+}
+        `, { split: true }));
         if (msg.channel.type !== 'dm') messages.push(await msg.reply('Sent you a DM with in formation.'));
       } catch (err) {
         messages.push(await msg.reply('Unable to send you the help DM. You probably have DMs disabled.'));

@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando')
+const { Command } = require('discord.js-commando');
 
 module.exports = class SetStatusCommand extends Command {
   constructor(client) {
@@ -48,6 +48,4 @@ module.exports = class SetStatusCommand extends Command {
       .catch(e => e); // do nothing
   }
 };
-
-
 

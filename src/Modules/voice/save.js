@@ -34,7 +34,7 @@ module.exports = class SaveCommand extends Command {
           default: '-',
         }
       ]
-    })
+    });
   }
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
@@ -50,7 +50,7 @@ module.exports = class SaveCommand extends Command {
     try {
       const condition = {
         userId: msg.author.id,
-      }
+      };
       const update = {
         $push: {
           userPlaylists: {
@@ -60,12 +60,12 @@ module.exports = class SaveCommand extends Command {
             timestamps: new Date(),
           }
         }
-      }
+      };
       await userDataSchema.findOneAndUpdate(condition, update, {
         upsert: true,
         overwrite: false,
         new: true,
-      })
+      });
       msg.say('playlist created successfully');
     } catch (err) {
       logger.log('error', err);
@@ -74,5 +74,5 @@ module.exports = class SaveCommand extends Command {
 
   }
 
-}
+};
 

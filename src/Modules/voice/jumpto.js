@@ -27,7 +27,7 @@ module.exports = class JumpToCommand extends Command {
           type: 'integer',
         },
       ],
-    })
+    });
   }
 
   async run(msg, { indexToPlay }) {
@@ -49,4 +49,4 @@ module.exports = class JumpToCommand extends Command {
 
   }
 
-}
+};

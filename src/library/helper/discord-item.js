@@ -15,7 +15,7 @@ const emoji = {
   like: '👍', dislike: '👎', cloud: '☁',
   rainbow: '🌈', umbrella: '☂', heart: '❤',
   blackHeart: '🖤', ok: '🆗', squaredX: '❎'
-}
+};
 
 function randomHex() {
   return Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
@@ -43,7 +43,7 @@ function toTimestamp(seconds) {
 function toSeconds(timestamp) {
   // reverse the splitted timestamp from 10:00:00 to ['00','00','10']
   // so it start from secs, mins, hours
-  let timeList = timestamp.split(/\s*:\s*/).reverse();
+  const timeList = timestamp.split(/\s*:\s*/).reverse();
   let seconds = 0;
   for (let i = 0; i < timeList.length; i++) {
     if (i === 0) {

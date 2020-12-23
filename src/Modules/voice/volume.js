@@ -26,7 +26,7 @@ module.exports = class VolumeCommand extends Command {
           default: '',
         }
       ]
-    })
+    });
   }
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
@@ -36,8 +36,8 @@ module.exports = class VolumeCommand extends Command {
       return msg.say(`I'm not connected to the voice channel`);
     }
     if (!volume) {
-      let vol = await guildSettingsSchema.findOne({ guildId: msg.guild.id })
-      return msg.say(`Current volume level is ${vol.volume * 100}`)
+      const vol = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
+      return msg.say(`Current volume level is ${vol.volume * 100}`);
     }
 
     try {
@@ -45,7 +45,7 @@ module.exports = class VolumeCommand extends Command {
         volume: volume,
       });
       msg.guild.volume = volume;
-      msg.say(`Change volume level to ${volume * 100}`)
+      msg.say(`Change volume level to ${volume * 100}`);
     } catch (err) {
       logger.log('error', err);
     }
@@ -65,4 +65,4 @@ module.exports = class VolumeCommand extends Command {
       .then(msgParent => msgParent.delete({ timeout: 10000 }))
       .catch(e => e); // do nothing
   }
-}
+};

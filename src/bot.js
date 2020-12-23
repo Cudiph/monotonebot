@@ -47,13 +47,13 @@ client.registry
 // including events folder
 fs.readdir(`./src/events`, (err, files) => {
   if (err) logger.error('error', err);
-  let file = files.filter(file => file.endsWith('.js'));
-  file.forEach(file => {
+  const jsFiles = files.filter(file => file.endsWith('.js'));
+  jsFiles.forEach(file => {
     require(`./events/${file}`);
     logger.log('info', `${file} events loaded`);
-  })
+  });
 });
 
 module.exports = {
   client,
-}
+};

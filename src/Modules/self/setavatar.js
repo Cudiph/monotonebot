@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando')
+const { Command } = require('discord.js-commando');
 
 module.exports = class SetAvatarCommand extends Command {
   constructor(client) {
@@ -21,7 +21,7 @@ module.exports = class SetAvatarCommand extends Command {
   }
 
   async run(msg, { path }) {
-    let isLink = path.match(/(?:https?|\.\/|\w\:(\\|\/)).*(?:png|jpg|jpeg)/);
+    const isLink = path.match(/(?:https?|\.\/|\w:(\\|\/)).*(?:png|jpg|jpeg)/);
     if (!isLink) {
       return msg.say('Please check the path or link');
     }
@@ -45,6 +45,4 @@ module.exports = class SetAvatarCommand extends Command {
       .catch(e => e); // do nothing
   }
 };
-
-
 
