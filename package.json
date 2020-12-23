@@ -5,11 +5,11 @@
   "main": "./src/shard.js",
   "scripts": {
     "start": "yarn node ./src/shard.js",
-    "lint": "yarn run eslint src *.js",
-    "lint:fix": "yarn run eslint --fix src *.js"
+    "lint": "yarn run eslint src/",
+    "lint:fix": "yarn run eslint --fix src/"
   },
   "engines": {
-    "node": ">=12.0.0",
+    "node": "~14.8.0",
     "yarn": "~2.4.0"
   },
   "repository": {
