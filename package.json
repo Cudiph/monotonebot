@@ -4,7 +4,9 @@
   "description": "An EPIC discord bot",
   "main": "./src/shard.js",
   "scripts": {
-    "start": "yarn node ./src/shard.js"
+    "start": "yarn node ./src/shard.js",
+    "lint": "yarn run eslint src *.js",
+    "lint:fix": "yarn run eslint --fix src *.js"
   },
   "engines": {
     "node": ">=12.0.0",
@@ -37,5 +39,9 @@
     "yt-search": "^2.5.1",
     "ytdl-core": "^4.1.6",
     "ytpl": "^2.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.16.0",
+    "eslint-plugin-import": "^2.22.1"
   }
 }
