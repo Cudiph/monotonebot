@@ -57,7 +57,7 @@ module.exports = class DiceCommand extends Command {
     for (let i = 0; i < numberOfDice; i++) {
       const roll = Math.ceil(Math.random() * 6);
       totalValue += roll;
-      imageList.push(`./src/images/dice/${roll}.png`);
+      imageList.push(`${__dirname}/../../images/dice/${roll}.png`);
     }
 
     if ((numberOfDice != 0 && numberOfDice > (6 * numberOfDice)) || (numberOfDice != 0 && numberOfDice < (numberOfDice))) {
@@ -98,7 +98,7 @@ module.exports = class DiceCommand extends Command {
       });
     }
 
-    const imageFile = `./src/images/dice/${getName(imageList)}.png`;
+    const imageFile = `${__dirname}/../../images/dice/${getName(imageList)}.png`;
     // check if the image is exist in image folder
     if (fs.existsSync(imageFile)) {
       isWon();

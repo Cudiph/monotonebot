@@ -8,7 +8,7 @@ const winston = require('winston');
 global.logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: './src/data/logs' }),
+    new winston.transports.File({ filename: `${__dirname}/data/logs` }),
   ],
   format: winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`),
   exitOnError: false,
@@ -20,7 +20,6 @@ const client = new CommandoClient({
   owner: '400240052761788427',
   unknownCommandResponse: false,
 });
-
 // registerng command group
 client.registry
   .registerDefaultTypes()
@@ -45,11 +44,11 @@ client.registry
   .registerCommandsIn(path.join(__dirname, 'Modules'));
 
 // including events folder
-fs.readdir(`./src/events`, (err, files) => {
+fs.readdir(`${__dirname}/events`, (err, files) => {
   if (err) logger.error('error', err);
   const jsFiles = files.filter(file => file.endsWith('.js'));
   jsFiles.forEach(file => {
-    require(`./events/${file}`);
+    require(`${__dirname}/events/${file}`);
     logger.log('info', `${file} events loaded`);
   });
 });
