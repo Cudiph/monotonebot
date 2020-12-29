@@ -457,7 +457,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.21.0":
+"axios@npm:^0.21.0, axios@npm:^0.21.1":
   version: 0.21.1
   resolution: "axios@npm:0.21.1"
   dependencies:
@@ -872,6 +872,13 @@ __metadata:
   dependencies:
     ms: ^2.1.1
   checksum: 9fc1277e666db3af31df89e9e41f5c83da6e9de56d4a95b37e095d47ba1958238b8c7b49d4327b516465d46b6340bee723a97a7b2f28c5c7563f8b0a8fc9458a
+  languageName: node
+  linkType: hard
+
+"decode-uri-component@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "decode-uri-component@npm:0.2.0"
+  checksum: d8cb28c33f7b0a70b159b5fa126aee821ba090396689bd46ad2c423c3a658c504d2743ab18060fd5ed1cae5377bdd3632760a8e98ba920ff49637d43dc6a9687
   languageName: node
   linkType: hard
 
@@ -2605,6 +2612,7 @@ __metadata:
     mongodb: ^3.6.3
     mongoose: ^5.11.8
     node-fetch: ^2.6.1
+    node-gtrans: ^1.1.1
     winston: ^3.3.3
     yt-search: ^2.5.1
     ytdl-core: ^4.1.6
@@ -2716,6 +2724,16 @@ __metadata:
   bin:
     nfzf: bin/cli.js
   checksum: a25b3a517dafde9fab70f04a20dad9d66a3ca3858017e1b163f7cfd6005e0239faa8a12402f3189b8e7818d55e218ad23d8d6c7676aefc6fb72945004879d811
+  languageName: node
+  linkType: hard
+
+"node-gtrans@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "node-gtrans@npm:1.1.1"
+  dependencies:
+    axios: ^0.21.1
+    query-string: ^6.13.7
+  checksum: 1c06b5fd486f6923ec7fb15536c65bd344b34981277f2b80b41ad236f4eff7ea6befea88d4b332396890f567a761e487cc4ab58f10234d8df3c3f4464eb7fec3
   languageName: node
   linkType: hard
 
@@ -3194,6 +3212,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"query-string@npm:^6.13.7":
+  version: 6.13.7
+  resolution: "query-string@npm:6.13.7"
+  dependencies:
+    decode-uri-component: ^0.2.0
+    split-on-first: ^1.0.0
+    strict-uri-encode: ^2.0.0
+  checksum: b6d9ef79b77640456e764dcb427591e6079616141aa68f1dae444387864cbc44f945d766085a1ebef1e0fa1b0f8faa8925a96eaebf933119b97bacc12c5d22e5
+  languageName: node
+  linkType: hard
+
 "rc@npm:^1.2.8":
   version: 1.2.8
   resolution: "rc@npm:1.2.8"
@@ -3553,6 +3582,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"split-on-first@npm:^1.0.0":
+  version: 1.1.0
+  resolution: "split-on-first@npm:1.1.0"
+  checksum: 2ef26fee62665be9547e8035734b856e658b08fd13e70271a2f258147f29d1f18e12b5cb7f7670d83e113c172a9c5fe3d87d9d7c02a1d3d57824818d75d942ab
+  languageName: node
+  linkType: hard
+
 "sprintf-js@npm:~1.0.2":
   version: 1.0.3
   resolution: "sprintf-js@npm:1.0.3"
@@ -3610,6 +3646,13 @@ __metadata:
   version: 0.2.2
   resolution: "stream-to@npm:0.2.2"
   checksum: 681abd4cf13fd66a7ada5ef57a7b7ab7cb3c25c5885a5b8297922f0b9014fe4ee4aa6eb697fea9dcfc41e28daaf3ebc5644a3d51c0782d84339a7addbfe538ff
+  languageName: node
+  linkType: hard
+
+"strict-uri-encode@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "strict-uri-encode@npm:2.0.0"
+  checksum: 775012e88b9d8dff939d514bf376d615a15e8228a5dd587a94ac3c71fce41aa3635cd808aa796e2c1cd33f3f2fe2fbf89b74ee18a504a1905efa1854311e04bb
   languageName: node
   linkType: hard
 
