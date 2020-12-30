@@ -101,6 +101,10 @@ module.exports = class SeekCommand extends Command {
         return msg.reply('Please provide a correct format for the timestamp');
       }
 
+      if (timestamp > 600) {
+        return msg.reply(`Currenty seeking is support up to 10 minutes due to performance issue`);
+      }
+
       play(msg, { seek: timestamp });
       return msg.say(`Playing ${queue[indexQ].title} at **${toTimestamp(timestamp)}**`);
     }
