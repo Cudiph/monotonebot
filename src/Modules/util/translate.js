@@ -1,7 +1,6 @@
-const { oneLine } = require('common-tags');
+const { oneLine, stripIndents } = require('common-tags');
 const { Command } = require('discord.js-commando');
-const axios = require('axios').default;
-const querystring = require('querystring');
+const gtrans = require('node-gtrans');
 
 const trim = (str, max) => ((str.length > max) ? `${str.slice(0, max - 3)}...` : str);
 
@@ -11,7 +10,7 @@ module.exports = class AddPlaylistCommand extends Command {
       name: 'translate',
       group: 'util',
       memberName: 'translate',
-      aliases: ['trans'],
+      aliases: ['trans', 't'],
       description: 'Translate any word',
       examples: ['translate en>id I love you', 'trans ru putin is the best'],
       argsType: 'multiple',
@@ -49,96 +48,116 @@ module.exports = class AddPlaylistCommand extends Command {
     }
     const sl = language.match(/(\w+)>(\w+)/) ? lang[0] : 'auto';
     const tl = language.match(/(\w+)>(\w+)/) ? lang[1] : lang[0];
-    const property = querystring.stringify({
-      client: 'gtx',
-      sl: sl,
-      tl: tl,
-      hl: tl,
-      dt: ['at', 'bd', 'ex', 'ld', 'md', 'qca', 'rw', 'rm', 'ss', 't'],
-      ie: 'UTF-8',
-      oe: 'UTF-8',
-      otf: 1,
-      ssel: 0,
-      tsel: 0,
-      kc: 7,
-      q: words.split(/\s+/).join(' '),
-    });
-    // https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ja&hl=ja&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&kc=7&q=i%20love%20you
+
     let result;
+    const newWords = words.split(/ +/).join(' ');
     try {
-      result = await axios.get(`https://translate.googleapis.com/translate_a/single?${property}`)
+      result = await gtrans(newWords, { from: sl, to: tl })
         .then(response => response.data);
       if (!result) {
         return;
       }
     } catch (err) {
       logger.log('error', err);
-      return msg.say('An error occured. It maybe the API request is blocked or the language id is incorrect')
-        .then(errMsg => errMsg.delete({ timeout: 10000 }));
+      return msg.say('An error occured. It maybe the API request is blocked or the language id is incorrect. Please try again later')
+        .then(errMsg => errMsg.delete({ timeout: 10000 })).catch(e => e);
     }
 
-    let embed;
-    const langId = result[0][0][8] ? result[0][0][8][0][0][1].match(/(?:[a-zA-Z]+_)?(\w{2})_(\w{2})_(?:.*)/) : result[0][0][8] = false;
-    // let sourceId = result[0][0][8][0][0][1].substr(0, 2).toUpperCase();
-    // let transId = result[0][0][8][0][0][1].substr(3, 2).toUpperCase();
-    try {
-      embed = {
-        color: 0x53bcfc,
-        fields: [],
-        footer: {
-          text: oneLine`Translated from
-        ${words.split(/\s+/).length == 1 && result[1] ? sl.toUpperCase() : result[0][0][8] ? langId[1].toUpperCase() : sl.toUpperCase()}
-        to ${words.split(/\s+/).length == 1 && result[1] ? tl.toUpperCase() : result[0][0][8] ? langId[2].toUpperCase() : tl.toUpperCase()}
-        `,
-          icon_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png',
-        }
-      };
-    } catch (err) {
-      logger.log('error', err);
-      return msg.say('Please check again your input')
-        .then(resMsg => resMsg.delete({ timeout: 10000 }));
-    }
+    const embed = {
+      color: 0x53bcfc,
+      fields: [],
+      footer: {
+        text: `Translated from ${result.from} to ${result.to}`,
+        icon_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png',
+      }
+    };
 
-    if (words.split(/\s+/).length == 1 && result[1]) {
-      embed.fields.push(
-        {
-          name: 'Source Text',
-          value: `${result[0][0][1]}`
-        },
-        {
-          name: 'Translated Text',
-          value: `${result[0][0][0]}`
-        });
-      result[1].forEach(elem => {
-        let value = '';
-        if (elem[1]) {
-          elem[1].forEach(elem2 => value += elem2 + ', ');
-        }
-
-        embed.fields.push({
-          name: elem[0],
-          value: value,
-          inline: true,
-        });
-      });
-    } else if (words.split(/\s+/).length < 25) {
-      embed.fields.push(
-        {
-          name: 'Source Text',
-          value: `${result[0][0][1]}`
-        },
-        {
-          name: 'Translated Text',
-          value: `${result[0][0][0]}`
-        });
+    if (newWords.length > 1024) {
+      embed.title = `Translated Text`;
+      embed.description = trim(result.translated, 2048);
     } else {
-      embed.title = 'Translated Text';
-      let translated = '';
-      result[0].forEach(text => {
-        translated += text[0] + '\n\n';
-      });
-      embed.description = trim(translated, 2048);
+      embed.fields.push(
+        {
+          name: 'Source Text',
+          value: `${trim(newWords, 1024)}`,
+          inline: newWords.length < 20 ? true : false,
+        },
+        {
+          name: 'Translated Text',
+          value: `${trim(result.translated, 1024)}`,
+          inline: newWords.length < 20 ? true : false,
+        });
     }
+
+    if (result.pronunciation) {
+      embed.fields.push({
+        name: `pronunciation`,
+        value: `${result.pronunciation}`,
+        inline: true,
+      });
+    }
+
+    if (result.isCorrected) {
+      embed.fields.push({
+        name: `Corrected text`,
+        value: `${trim(result.corrected, 1024)}`
+      });
+    }
+
+    if (result.translations) {
+      for (const key in result.translations) {
+        const translationsArray = [];
+        for (const iter of result.translations[key]) {
+          if (iter.frequency === 'rare') break;
+          translationsArray.push(oneLine`
+              **${iter.word}:** ${iter.translations.join(', ')} *${iter.frequency}*
+            `);
+        }
+        embed.fields.push({
+          name: `Alternate Translation in ${key}`,
+          value: translationsArray.join('\n'),
+        });
+      }
+    }
+
+    if (result.synonyms) {
+      for (const key in result.synonyms) {
+        const commonSyns = result.synonyms[key].map(elem => {
+          return elem[0];
+        });
+        embed.fields.push({
+          name: `Top synonyms for ${key}`,
+          value: `${commonSyns.join(', ')}`
+        });
+      }
+    }
+
+    if (result.definitions) {
+      for (const key in result.definitions) {
+        const defArray = [];
+        // const thisLength = result.definitions[key].length > 3 ? 3 : result.definitions[key].length;
+        for (let i = 0; i < 1; i++) {
+          const synonyms = result.definitions[key][i].synonyms.slice(0, 3).join(', ');
+          defArray.push(stripIndents`
+              __Definition:__ ${result.definitions[key][i].definition}
+              ${result.definitions[key][i].example ? `__Example:__ "${result.definitions[key][i].example}"` : ''}
+              ${synonyms ? `__Synonyms:__ ${synonyms}` : ''}
+            `);
+        }
+        embed.fields.push({
+          name: `Definitions in ${key}`,
+          value: defArray.join('\n\n'),
+        });
+      }
+    }
+
+    if (result.related) {
+      embed.fields.push({
+        name: `Related`,
+        value: `${result.related}`
+      });
+    }
+
     return msg.say({ embed });
   }
 
