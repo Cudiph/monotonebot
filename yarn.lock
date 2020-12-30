@@ -457,7 +457,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.21.0, axios@npm:^0.21.1":
+"axios@npm:^0.21.1":
   version: 0.21.1
   resolution: "axios@npm:0.21.1"
   dependencies:
@@ -2574,9 +2574,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:5.11.8, mongoose@npm:^5.11.8":
-  version: 5.11.8
-  resolution: "mongoose@npm:5.11.8"
+"mongoose@npm:5.11.9, mongoose@npm:^5.11.9":
+  version: 5.11.9
+  resolution: "mongoose@npm:5.11.9"
   dependencies:
     "@types/mongodb": ^3.5.27
     bson: ^1.1.4
@@ -2590,7 +2590,7 @@ __metadata:
     safe-buffer: 5.2.1
     sift: 7.0.1
     sliced: 1.0.1
-  checksum: 67b920d534124e6b56189e676751f6c8dfea80f602c94e3113fc35df639827e3c6196c70a4b28f63bad410b3f09ed205e4ede4a4e4b786fe9fef4e92f54411fe
+  checksum: c5c637091d3fc5ce04407bc6c65949d211ccd38cf2b740bfb23413feb0650662a3e841867ed84b9fcdaf941d23c24d09ba2b8aedb2d6fe99de5452b96a5bc092
   languageName: node
   linkType: hard
 
@@ -2599,7 +2599,7 @@ __metadata:
   resolution: "monotone@workspace:."
   dependencies:
     "@discordjs/opus": ^0.3.3
-    axios: ^0.21.0
+    axios: ^0.21.1
     common-tags: ^1.8.0
     discord-ytdl-core: ^5.0.0
     discord.js: ^12.5.1
@@ -2610,13 +2610,13 @@ __metadata:
     ffmpeg-static: ^4.2.7
     merge-img: ^2.1.3
     mongodb: ^3.6.3
-    mongoose: ^5.11.8
+    mongoose: ^5.11.9
     node-fetch: ^2.6.1
-    node-gtrans: ^1.1.1
+    node-gtrans: ^1.2.0
     winston: ^3.3.3
     yt-search: ^2.5.1
-    ytdl-core: ^4.1.6
-    ytpl: ^2.0.3
+    ytdl-core: ^4.2.1
+    ytpl: ^2.0.4
   languageName: unknown
   linkType: soft
 
@@ -2727,13 +2727,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gtrans@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "node-gtrans@npm:1.1.1"
+"node-gtrans@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "node-gtrans@npm:1.2.0"
   dependencies:
     axios: ^0.21.1
     query-string: ^6.13.7
-  checksum: 1c06b5fd486f6923ec7fb15536c65bd344b34981277f2b80b41ad236f4eff7ea6befea88d4b332396890f567a761e487cc4ab58f10234d8df3c3f4464eb7fec3
+  checksum: a069d65455356ad388866e829caa16b02307d01ad5c9eec79f25de8acd8de4d7a4d27800235fe082aec60791a9123d16e592cc8d777877c9c0d88b55df460c2a
   languageName: node
   linkType: hard
 
@@ -4169,7 +4169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ytdl-core@npm:^4.1.6":
+"ytdl-core@npm:^4.2.1":
   version: 4.2.1
   resolution: "ytdl-core@npm:4.2.1"
   dependencies:
@@ -4180,11 +4180,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ytpl@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "ytpl@npm:2.0.3"
+"ytpl@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "ytpl@npm:2.0.4"
   dependencies:
     miniget: ^4.1.0
-  checksum: 1e3cc2a2b5eb032187c3106282f2ef763347f08c29c3065aaca821502022c2c2d5bf593c726cf758dc1add3217fcbee76a541993c0fa335a452877e01f4494f0
+  checksum: e0f8dbcb463cebbf3c289e2fd6b29808cdc82442187e588577cc1193322e16d079e6e68a4ecb24fa2006fefa646d45d5c7c5d294a3ce42d15f667dd150db0be1
   languageName: node
   linkType: hard
