@@ -26,7 +26,7 @@ module.exports = class PlayCommand extends Command {
         usages: 2,
         duration: 15,
       },
-      clientPermissions: ['CONNECT', 'SPEAK'],
+      clientPermissions: ['CONNECT', 'SPEAK', 'ADD_REACTIONS'],
       args: [
         {
           key: 'queryOrUrl',
@@ -75,68 +75,64 @@ module.exports = class PlayCommand extends Command {
       const Embed = setEmbedPlayCmd(videos, music, page, message, itemsPerPage);
       const emojiNeeded = [emoji[1], emoji[2], emoji[3], emoji[4], emoji[5], emoji.leftA, emoji.rightA, emoji.x];
 
-      message.channel.send({ embed: Embed }).then(async msg => {
-        msg.channel.stopTyping(true); // stop typing indicator
+      const msg = await message.say({ embed: Embed });
+      msg.channel.stopTyping(true); // stop typing indicator
 
-        const filter = (reaction, user) => {
-          return emojiNeeded.includes(reaction.emoji.name) && user.id === message.author.id;
-        };
-        const collector = msg.createReactionCollector(filter, { time: 60000, dispose: true });
+      const filter = (reaction, user) => {
+        return emojiNeeded.includes(reaction.emoji.name) && user.id === message.author.id;
+      };
+      const collector = msg.createReactionCollector(filter, { time: 60000, dispose: true });
 
-        collector.on('collect', async collected => {
-          if (collected.emoji.name === emoji.x) {
-            msg.delete();
-          } else if (collected.emoji.name === '⬅') {
-            // decrement index for list
-            page--;
+      collector.on('collect', async collected => {
+        if (collected.emoji.name === emoji.x) {
+          msg.delete();
+        } else if (collected.emoji.name === '⬅') {
+          // decrement index for list
+          page--;
+          music -= itemsPerPage;
+          if (page < 0) {
+            page = 0;
+            music = 0;
+            return;
+          }
+        } else if (collected.emoji.name === '➡') {
+          // increment index for list
+          page++;
+          music += itemsPerPage;
+          // when page exceed the max of video length
+          if (page + 1 > Math.ceil(videos.length / itemsPerPage)) {
+            page = (Math.ceil(videos.length / itemsPerPage)) - 1;
             music -= itemsPerPage;
-            if (page < 0) {
-              page = 0;
-              music = 0;
-              return;
-            }
-          } else if (collected.emoji.name === '➡') {
-            // increment index for list
-            page++;
-            music += itemsPerPage;
-            // when page exceed the max of video length
-            if (page + 1 > Math.ceil(videos.length / itemsPerPage)) {
-              page = (Math.ceil(videos.length / itemsPerPage)) - 1;
-              music -= itemsPerPage;
-              return;
-            }
-          }
-          if (collected.emoji.name === '➡' || collected.emoji.name === '⬅') {
-            const embed2 = setEmbedPlayCmd(videos, music, page, message, itemsPerPage);
-            return msg.edit({ embed: embed2 });
-          }
-
-          if (emojiNeeded.slice(0, 5).includes(collected.emoji.name)) {
-            const reversed = Object.keys(emoji).find(key => emoji[key] === collected.emoji.name);
-            const intEmoji = parseInt(reversed);
-            if ((music + intEmoji) > videos.length) {
-              // return if user choose more than the available song
-              msg.delete();
-              return message.reply(`Please choose the correct number.`);
-            }
-            const data = videos[music + intEmoji - 1];
-            if (data.seconds === 0) {
-              data.isLive = (await ytdl.getBasicInfo(data.videoId)).videoDetails.isLiveContent;
-            }
-            msg.delete();
-            return player(data, message);
-          }
-        });
-
-        for (let i = 0; i < emojiNeeded.length; i++) {
-          if (msg) {
-            await msg.react(emojiNeeded[i]);
+            return;
           }
         }
-      }).catch(err => {
-        message.channel.stopTyping(true);
-        return err;
-      }); // cuz error is normal in this case
+        if (collected.emoji.name === '➡' || collected.emoji.name === '⬅') {
+          const embed2 = setEmbedPlayCmd(videos, music, page, message, itemsPerPage);
+          return msg.edit({ embed: embed2 });
+        }
+
+        if (emojiNeeded.slice(0, 5).includes(collected.emoji.name)) {
+          const reversed = Object.keys(emoji).find(key => emoji[key] === collected.emoji.name);
+          const intEmoji = parseInt(reversed);
+          if ((music + intEmoji) > videos.length) {
+            // return if user choose more than the available song
+            msg.delete();
+            return message.reply(`Please choose the correct number.`);
+          }
+          const data = videos[music + intEmoji - 1];
+          if (data.seconds === 0) {
+            data.isLive = (await ytdl.getBasicInfo(data.videoId)).videoDetails.isLiveContent;
+          }
+          msg.delete();
+          return player(data, message);
+        }
+      });
+
+      for (let i = 0; i < emojiNeeded.length; i++) {
+        if (msg) {
+          await msg.react(emojiNeeded[i]).catch(e => e);
+        }
+      }
 
     }
 
