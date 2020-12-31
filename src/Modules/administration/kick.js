@@ -31,6 +31,7 @@ module.exports = class KickCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { member, reason }) {
     // // Manual method
     // let member = await isUserId(args[0], msg);

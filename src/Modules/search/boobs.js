@@ -27,6 +27,7 @@ module.exports = class UrbandictCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { count }) {
     const random = Math.random();
     let res;

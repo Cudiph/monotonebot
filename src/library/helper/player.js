@@ -82,7 +82,7 @@ async function playStream(msg, seek = 0) {
     dispatcher.on('error', err => {
       msg.channel.stopTyping(true);
       logger.log('error', err.stack);
-      msg.channel.send(`An error occured. **Track #${msg.guild.indexQueue}** will be skipped`);
+      msg.say(`An error occured. **Track #${msg.guild.indexQueue}** will be skipped`);
       msg.guild.indexQueue++;
       return play(msg);
     });
@@ -121,7 +121,7 @@ async function fetchAutoplay(msg) {
       .filter(video => video.length_seconds < 2000);
     // if no related video then stop and give the message
     if (!related.length) {
-      return msg.channel.send(stripIndents`
+      return msg.say(stripIndents`
         No related video were found. You can request again with \`${msg.guild.commandPrefix}skip\` command. 
         Videos with a duration longer than 40 minutes will not be listed.
       `);
@@ -173,7 +173,7 @@ async function play(msg, options = {}) {
 
   // check if the queue is empty
   if (!queue || !queue.length) {
-    return msg.channel.send('Stopped Playing...');
+    return msg.say('Stopped Playing...');
   }
 
   // loop
@@ -210,7 +210,7 @@ async function play(msg, options = {}) {
     if (msg.guild.autoplay) {
       return fetchAutoplay(msg);
     }
-    return msg.channel.send(`Stopped Playing...`);
+    return msg.say(`Stopped Playing...`);
   }
 
   return await playStream(msg, seek);
@@ -260,7 +260,7 @@ async function player(data = {}, msg, fromPlaylist = false) {
       await msg.guild.queue.push(construction);
       return await play(msg);
     } catch (err) {
-      msg.channel.send('Something went wrong');
+      msg.say('Something went wrong');
       delete msg.guild.queue;
       logger.log('error', err);
     }
@@ -268,7 +268,7 @@ async function player(data = {}, msg, fromPlaylist = false) {
     const oldLength = msg.guild.queue.length;
     msg.guild.queue.push(construction);
     if (!fromPlaylist) {
-      msg.channel.send(`${data.title} has been added to the queue.`)
+      msg.say(`**${data.title}** has been added to the queue.`)
         .then(resMsg => resMsg.delete({ timeout: 8000 }))
         .catch(e => e);
     }

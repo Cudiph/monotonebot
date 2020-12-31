@@ -30,6 +30,7 @@ module.exports = class SetNicknameCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { member, newNick }) {
     // // old method
     // let member = await isUserId(args[0], msg);

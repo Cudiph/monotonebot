@@ -40,7 +40,7 @@ module.exports = class AddPlaylistCommand extends Command {
     // if not in voice channel
     if (!msg.member.voice.channel) {
       // send msg if author not connected to voice channel
-      return msg.channel.send("You're not connected to any voice channel");
+      return msg.reply("You're not connected to any voice channel");
     }
 
     if (msg.member.voice.channel) {

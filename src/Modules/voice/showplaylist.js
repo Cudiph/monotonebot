@@ -156,7 +156,7 @@ module.exports = class ShowPlaylistCommand extends Command {
     });
   }
 
-  // copied from queue.js
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { playlistId }) {
     // variabel to store data :)
     let page = 0;

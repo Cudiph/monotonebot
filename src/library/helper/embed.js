@@ -39,7 +39,7 @@ async function setEmbedPlaying(msg) {
  * @param {DataList} dataList - array of music fetched from yt-search
  * @param {number} indexPage - A number from indexes to choose between list of object
  * @param {number} page - number of page now
- * @param {CommandoMessage} msg - message from textchannel
+ * @param {import("discord.js-commando").CommandoMessage} msg - message from textchannel
  * @param {number} itemsPerPage - number of items to be showed in one page of embed
  */
 function setEmbedPlayCmd(dataList, indexPage, page, msg, itemsPerPage) {
@@ -81,7 +81,7 @@ function setEmbedPlayCmd(dataList, indexPage, page, msg, itemsPerPage) {
  * @param {DataList} dataList - array of music queue from message.guild.queue
  * @param {number} indexPage - number for indexing queue items
  * @param {number} page - for showing current page in embed
- * @param {CommandoMessage} msg - message from user
+ * @param {import("discord.js-commando").CommandoMessage} msg - message from user
  * @param {number} itemsPerPage - number of items to be showed in one page of embed
  */
 function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
@@ -158,11 +158,11 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
 
 /**
  * Log to logchannel for moderation commands
- * @param {CommandoMessage} msg msg
+ * @param {import("discord.js-commando").CommandoMessage} msg msg
  * @param {Object} options options
  * @param {import("discord.js").MessageEmbed} [options.embedMsg] embed msg to sent
  * @param {string} [options.strMsg] raw string to sent
- * @returns {MessageChannel}
+ * @returns {import('discord.js').TextChannel}
  */
 async function sendtoLogChan(msg, options = {}) {
   const { embedMsg, strMsg } = options;
@@ -170,17 +170,17 @@ async function sendtoLogChan(msg, options = {}) {
   const logChan = await msg.guild.channels.cache.get(guildSetting.logChannelId);
   if (embedMsg) {
     if (guildSetting.logChannelId && logChan) {
-      return logChan.send({ embed: embedMsg });
+      logChan.send({ embed: embedMsg });
     } else {
-      return msg.channel.send({
+      return msg.say({
         embed: embedMsg
       });
     }
   } else if (strMsg) {
     if (guildSetting.logChannelId && logChan) {
-      return logChan.send(strMsg);
+      logChan.send(strMsg);
     } else {
-      return msg.channel.send(strMsg);
+      return msg.say(strMsg);
     }
   }
 

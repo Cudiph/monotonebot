@@ -30,6 +30,7 @@ module.exports = class JumpToCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { indexToPlay }) {
     if (!msg.guild.me.voice.connection) {
       return;

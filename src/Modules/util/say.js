@@ -55,7 +55,7 @@ module.exports = class SayCommand extends Command {
       embedMsg = new Discord.MessageEmbed()
         .setColor('#ff548e')
         .setDescription(textChannel.concat(' ', words ? words : ''));
-      return msg.channel.send(embedMsg);
+      return msg.say(embedMsg);
     }
 
     // check if the user have perm to send the message

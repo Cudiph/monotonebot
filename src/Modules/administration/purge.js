@@ -51,14 +51,14 @@ module.exports = class PurgeCommand extends Command {
         return sendtoLogChan(msg, { strMsg: response });
       }).catch(err => {
         logger.log('error', err);
-        msg.channel.send(stripIndents`
+        msg.say(stripIndents`
         Unable to delete messages
         It's likely because you are trying to delete messages that are under 14 days old.
       `).then(resMsg => resMsg.delete({ timeout: 7000 }));
       });
     } catch (err) {
       logger.log('error', err);
-      msg.channel.send(`Unable to delete messages`);
+      msg.say(`Unable to delete messages`);
     }
 
   }

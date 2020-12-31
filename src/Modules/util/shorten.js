@@ -38,6 +38,7 @@ module.exports = class ShortenCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { longUrl, customUrl }) {
     let shortUrl;
     try {

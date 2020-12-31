@@ -26,6 +26,7 @@ module.exports = class RemoveNumberCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { rangeIndex }) {
     // remove zero or more white space
     const args = rangeIndex.split(/\s*-\s{0,}/);

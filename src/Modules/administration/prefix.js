@@ -16,7 +16,7 @@ async function writePrefix(newPrefix, msg) {
     if (result) return result.prefix; else return client.commandPrefix;
   } catch (err) {
     logger.log('error', err);
-    msg.channel.send(`Can't update the prefix.`);
+    msg.reply(`Can't update the prefix.`);
     return 'error';
   }
 }
@@ -79,7 +79,7 @@ module.exports = class PrefixCommand extends Command {
       if (msg.guild) msg.guild.commandPrefix = null; else this.client.commandPrefix = null;
       const current = this.client.commandPrefix ? `\`\`${this.client.commandPrefix}\`\`` : 'no prefix';
       response = `Reset the command prefix to the default (currently ${current}).`;
-      msg.channel.send(response);
+      await msg.say(response);
     } else {
       const oldPrefix = await writePrefix(prefix, msg);
       if (msg.guild) msg.guild.commandPrefix = prefix; else this.client.commandPrefix = prefix;
@@ -89,8 +89,8 @@ module.exports = class PrefixCommand extends Command {
         .addField('From', `**${oldPrefix}**`, true)
         .addField('To', `**${args.prefix}**`, true)
         .addField('Usage', `${msg.anyUsage('command')}`);
-      // send embed
-      return sendtoLogChan(msg, { embedMsg: embed });
+      // send embed to log channel if exist
+      sendtoLogChan(msg, { embedMsg: embed });
     }
     return null;
   }

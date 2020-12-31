@@ -25,18 +25,19 @@ module.exports = class AvatarCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { user }) {
     // let user = args[0].match(/^<@!?\d+>$/);
     // get user in guild
     if (!user) {
-      msg.channel.send(msg.author.displayAvatarURL());
+      msg.say(msg.author.displayAvatarURL());
       return;
     } else if (user && msg.guild) {
       // const users = getUserMention(args[0], msg);
-      msg.channel.send(user.displayAvatarURL());
+      msg.say(user.displayAvatarURL());
       return;
     } else {
-      msg.channel.send('requesting avatar with mentioning in dm channel is not supported yet');
+      msg.say('requesting avatar with mentioning in dm channel is not supported yet');
     }
   }
 

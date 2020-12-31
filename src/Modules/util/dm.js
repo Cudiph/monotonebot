@@ -52,9 +52,9 @@ module.exports = class DmCommand extends Command {
         .setFooter(`Sent by ${msg.author.username}#${msg.author.discriminator} at guild '${msg.channel.guild.name}'`, msg.author.displayAvatarURL());
     }
     user.send(EmbedMsg).then(() => {
-      msg.channel.send('Message sent successfully');
+      msg.say('Message sent successfully');
     }).catch(err => {
-      msg.channel.send('There was a problem during the delivery');
+      msg.say('There was a problem during the delivery');
       logger.log('error', err);
     });
 

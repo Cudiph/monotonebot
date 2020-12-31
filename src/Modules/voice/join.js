@@ -19,7 +19,7 @@ module.exports = class JoinCommand extends Command {
   async run(msg) {
     if (!msg.member.voice.channel) {
       // send message if author not connected to voice channel
-      return msg.channel.send("You're not connected to any voice channel");
+      return msg.reply("You're not connected to any voice channel");
     }
     await msg.member.voice.channel.join();
   }

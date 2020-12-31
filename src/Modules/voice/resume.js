@@ -16,6 +16,7 @@ module.exports = class ResumeCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg) {
     if (!msg.guild.me.voice.connection) {
       return msg.say(`I'm not connected to the voice channel`);

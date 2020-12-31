@@ -33,6 +33,7 @@ module.exports = class JumpCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { numberToJump }) {
     // return if not connected
     if (!msg.guild.me.voice.connection) {

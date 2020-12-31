@@ -33,6 +33,7 @@ module.exports = class DiceCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { numberOfDice }) {
     // set default dice throwed
     // if (!args.length) {
@@ -47,7 +48,7 @@ module.exports = class DiceCommand extends Command {
 
     // set maximum size of dice throws
     if (numberOfDice > 10) { // chanage from intArg2
-      msg.channel.send(`i'm sorry I don't have enough dice`);
+      msg.say(`i'm sorry I don't have enough dice`);
       return;
     }
 
@@ -62,7 +63,7 @@ module.exports = class DiceCommand extends Command {
 
     if ((numberOfDice != 0 && numberOfDice > (6 * numberOfDice)) || (numberOfDice != 0 && numberOfDice < (numberOfDice))) {
       // old : if ((numberOfDice != 0 && numberOfDice > (6 * intArg2)) || (numberOfDice != 0 && numberOfDice < (intArg2)));
-      return msg.channel.send('Your guess doesn\'t fall into any range of the dice you want to roll.');
+      return msg.say('Your guess doesn\'t fall into any range of the dice you want to roll.');
     }
 
     // get the file name so it won't reproduce the same file
@@ -79,21 +80,21 @@ module.exports = class DiceCommand extends Command {
     function isWon() {
       // if (totalValue === numberOfDice && args[1] != '0') {
       //   let reward = intArg1 * intArg2 * 5;
-      //   return msg.channel.send(`You won here is your reward : ${reward} \n` +
+      //   return msg.say(`You won here is your reward : ${reward} \n` +
       //     `The total value of the dice is ${totalValue}`, {
       //     files: [imageFile]
       //   });
       // } else if (args[0] != '0' && args[1] != '0') {
-      //   return msg.channel.send(`The total value of the dice is ${totalValue}\n` +
+      //   return msg.say(`The total value of the dice is ${totalValue}\n` +
       //     `Better luck next time`, {
       //     files: [imageFile]
       //   });
       // } else {
-      //   return msg.channel.send(`The total value of the dice is ${totalValue}`, {
+      //   return msg.say(`The total value of the dice is ${totalValue}`, {
       //     files: [imageFile]
       //   })
       // }
-      return msg.channel.send(`The total value of the dice is ${totalValue}`, {
+      return msg.say(`The total value of the dice is ${totalValue}`, {
         files: [imageFile]
       });
     }

@@ -7,7 +7,7 @@ module.exports = class LogChannelCommand extends Command {
       name: 'logchannel',
       group: 'administration',
       memberName: 'logchannel',
-      aliases: ['setlogchannel'],
+      aliases: ['setlogchannel', 'logchan'],
       description: 'Set log channel where all the log is sent',
       examples: ['logchannel #log', 'logchannel', 'logchannel unset'],
       guildOnly: true,
@@ -31,7 +31,7 @@ module.exports = class LogChannelCommand extends Command {
       guildSettings = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
     } catch (err) {
       logger.log('error', err.stack);
-      return msg.channel.send(`Can't load the playlist`);
+      return msg.reply(`Can't load the playlist`);
     }
     // show current log channel if no argument
     if (typeof channel !== 'object') {
@@ -48,17 +48,17 @@ module.exports = class LogChannelCommand extends Command {
       }
     }
     if (!channel.permissionsFor(msg.guild.me.id).has('SEND_MESSAGES')) {
-      return msg.reply(`I don't have a permission for sending messages to that channel`);
+      return msg.reply(`I don't have a permission for sending messages to that channel. Please change the permission first`);
     }
     // set a new one
     try {
       const newGuildSettings = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
         logChannelId: channel.id,
       }, { new: true, upsert: true });
-      return msg.say(`Assignment successful, new log channel is <#${newGuildSettings.logChannelId}>`);
+      return msg.reply(`Assignment successful, new log channel is <#${newGuildSettings.logChannelId}>`);
     } catch (err) {
       logger.log('error', err.stack);
-      return msg.channel.send(`Can't update new log channel.`);
+      return msg.reply(`Can't update new log channel.`);
     }
   }
 

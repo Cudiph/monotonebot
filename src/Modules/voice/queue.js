@@ -29,6 +29,7 @@ module.exports = class QueueCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { itemsPerPage }) {
     if (!msg.guild.queue) {
       return msg.say(`There is no queue.`);
@@ -41,7 +42,7 @@ module.exports = class QueueCommand extends Command {
     // let itemsPerPage = 9;
 
     // send embed
-    msg.channel.send({ embed: setEmbedQueueCmd(queue, index, page, msg, itemsPerPage) })
+    msg.say({ embed: setEmbedQueueCmd(queue, index, page, msg, itemsPerPage) })
       .then(async embedMsg => {
         const emojiNeeded = ['⬅', '➡', '🇽'];
 

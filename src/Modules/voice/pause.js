@@ -24,6 +24,7 @@ module.exports = class PauseCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { silencePause }) {
     if (!msg.guild.me.voice.connection) {
       return msg.say(`I'm not connected to the voice channel`);

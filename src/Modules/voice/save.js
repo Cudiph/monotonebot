@@ -66,10 +66,10 @@ module.exports = class SaveCommand extends Command {
         overwrite: false,
         new: true,
       });
-      msg.say('playlist created successfully');
+      msg.reply('playlist created successfully');
     } catch (err) {
       logger.log('error', err);
-      return msg.channel.send(`Can't save the playlist`);
+      return msg.reply(`Can't save the playlist`);
     }
 
   }

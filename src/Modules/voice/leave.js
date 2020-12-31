@@ -20,7 +20,7 @@ module.exports = class LeaveCommand extends Command {
 
     if (!msg.member.voice.channel || msg.member.voice.channel.id !== msg.guild.me.voice.channel.id) {
       // send msg if author not connected to the same voice channel
-      return msg.channel.send("You must join to my voice channel");
+      return msg.reply("You must join to my voice channel");
     }
 
     // delete queue

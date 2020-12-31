@@ -16,18 +16,19 @@ module.exports = class DogCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg) {
     // get the data
     try {
       const response = await axios.get('https://dog.ceo/api/breeds/image/random');
-      msg.channel.send(response.data.message);
+      msg.say(response.data.message);
     } catch (err) {
       logger.log('error', err);
       msg.say(`Something went wrong, please try again later.\n Error : \`${err}\``)
         .then(theMsg => theMsg.delete({ timeout: 7000 }));
     }
     const response = await axios.get('https://dog.ceo/api/breeds/image/random');
-    msg.channel.send(response.message);
+    msg.say(response.message);
   }
 
   async onBlock(msg, reason, data) {

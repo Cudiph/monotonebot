@@ -39,6 +39,7 @@ module.exports = class AddPlaylistCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { language, words }) {
     let lang;
     if (language.match(/(?:\w+)>(?:\w+)/)) {

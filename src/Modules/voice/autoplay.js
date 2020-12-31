@@ -26,6 +26,7 @@ module.exports = class AutoPlayCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { turnOn }) {
     if (turnOn === '') {
       msg.guild.autoplay = !msg.guild.autoplay;

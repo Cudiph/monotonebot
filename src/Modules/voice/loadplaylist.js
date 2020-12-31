@@ -36,7 +36,7 @@ module.exports = class LoadPlaylistCommand extends Command {
   /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { playlistArg }) {
     if (!msg.member.voice.channel) {
-      return msg.channel.send("You're not connected to any voice channel");
+      return msg.reply("You're not connected to any voice channel");
     }
     if (msg.guild.queue && msg.guild.queue.length > 150) {
       return msg.say(oneLine`

@@ -17,11 +17,12 @@ module.exports = class CatCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg) {
     // get the data
     try {
       const response = await axios.get('https://aws.random.cat/meow');
-      msg.channel.send(response.data.file);
+      msg.say(response.data.file);
     } catch (err) {
       logger.log('error', err);
       msg.say(`Something went wrong, please try again later.\n Error : \`${err}\``)

@@ -21,6 +21,7 @@ module.exports = class EightBallCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} message */
   async run(msg, { question }) {
     if (!question.length) {
       return msg.reply(`You didn't provide any arguments`);
@@ -33,7 +34,7 @@ module.exports = class EightBallCommand extends Command {
       .addField(':speech_balloon: Answer', answer)
       .setFooter(`${msg.author.username}#${msg.author.discriminator}`);
 
-    msg.channel.send(embedMsg);
+    msg.say(embedMsg);
   }
 
   async onBlock(msg, reason, data) {
