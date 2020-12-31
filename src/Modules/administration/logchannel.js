@@ -31,7 +31,7 @@ module.exports = class LogChannelCommand extends Command {
       guildSettings = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
     } catch (err) {
       logger.log('error', err.stack);
-      return msg.reply(`Can't load the playlist`);
+      return msg.reply(`Can't load the data, please assign a new one if it's not already set`);
     }
     // show current log channel if no argument
     if (typeof channel !== 'object') {

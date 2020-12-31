@@ -40,7 +40,7 @@ module.exports = class UrbandictCommand extends Command {
           msg.say(url);
         }
       } catch (err) {
-        logger.log('error', err + ' at boobs.js');
+        logger.log('error', err.stack);
         return msg.say('There was an error when requesting an image, please try again later');
       }
     } else {

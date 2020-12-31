@@ -62,7 +62,6 @@ module.exports = class KickCommand extends Command {
     } catch (e) {
       // due to missing permissions or role hierarchy
       msg.reply('I was unable to kick the member');
-      logger.log('error', e.stack);
     }
 
   }

@@ -75,113 +75,110 @@ module.exports = class UrbandictCommand extends Command {
       }
     };
 
-    message.channel.send({ embed: embed })
-      .then(async msg => {
-        const emojiNeeded = ['⬅', '➡', '🇽'];
+    const msg = await message.say({ embed: embed });
 
-        const filter = (reaction, user) => {
-          return emojiNeeded.includes(reaction.emoji.name) && user.id === message.author.id;
+    const emojiNeeded = ['⬅', '➡', '🇽'];
 
-        };
-        const collector = msg.createReactionCollector(filter, { time: 40000, dispose: true });
-        // when reeaction are collected
-        collector.on('collect', async collected => {
-          if (collected.emoji.name === '🇽') {
-            return msg.delete();
-          } else if (collected.emoji.name === '⬅') {
-            // decrement index for list
-            counter--;
-            if (counter < 0) counter = 0;
-          } else if (collected.emoji.name === '➡') {
-            // increment index for list
-            counter++;
-            if (counter >= list.length) counter = list.length - 1;
+    const filter = (reaction, user) => {
+      return emojiNeeded.includes(reaction.emoji.name) && user.id === message.author.id;
+    };
+    const collector = msg.createReactionCollector(filter, { time: 40000, dispose: true });
+    // when reeaction are collected
+    collector.on('collect', async collected => {
+      if (collected.emoji.name === '🇽') {
+        return msg.delete();
+      } else if (collected.emoji.name === '⬅') {
+        // decrement index for list
+        counter--;
+        if (counter < 0) counter = 0;
+      } else if (collected.emoji.name === '➡') {
+        // increment index for list
+        counter++;
+        if (counter >= list.length) counter = list.length - 1;
+      }
+      const embed2 = {
+        color: 0xff548e,
+        title: list[counter].word,
+        url: list[counter].permalink,
+        author: {
+          name: `Author : ${list[counter].author}`
+        },
+        fields: [
+          {
+            name: 'Definition',
+            value: trim(list[counter].definition, 1024)
+          },
+          {
+            name: 'Example',
+            value: trim(list[counter].example, 1024)
+          },
+          {
+            name: 'Rating',
+            value: `👍 ${list[counter].thumbs_up}`,
+            inline: true
+          },
+          {
+            name: '\u200b',
+            value: `👎 ${list[counter].thumbs_down}`,
+            inline: true
           }
-          const embed2 = {
-            color: 0xff548e,
-            title: list[counter].word,
-            url: list[counter].permalink,
-            author: {
-              name: `Author : ${list[counter].author}`
-            },
-            fields: [
-              {
-                name: 'Definition',
-                value: trim(list[counter].definition, 1024)
-              },
-              {
-                name: 'Example',
-                value: trim(list[counter].example, 1024)
-              },
-              {
-                name: 'Rating',
-                value: `👍 ${list[counter].thumbs_up}`,
-                inline: true
-              },
-              {
-                name: '\u200b',
-                value: `👎 ${list[counter].thumbs_down}`,
-                inline: true
-              }
-            ],
-            footer: {
-              text: `${counter + 1}/${list.length}`
-            }
-          };
-          msg.edit({ embed: embed2 });
-        });
-        // on remove the same as above
-        collector.on('remove', async collected => {
-          if (collected.emoji.name === '⬅') {
-            // decrement index for list
-            counter--;
-            if (counter < 0) counter = 0;
-          } else if (collected.emoji.name === '➡') {
-            // increment index for list
-            counter++;
-            if (counter >= list.length) counter = list.length - 1;
-          }
-          const embed2 = {
-            color: 0xff548e,
-            title: list[counter].word,
-            url: list[counter].permalink,
-            author: {
-              name: `Author : ${list[counter].author}`
-            },
-            fields: [
-              {
-                name: 'Definition',
-                value: trim(list[counter].definition, 1024)
-              },
-              {
-                name: 'Example',
-                value: trim(list[counter].example, 1024)
-              },
-              {
-                name: 'Rating',
-                value: `👍 ${list[counter].thumbs_up}`,
-                inline: true
-              },
-              {
-                name: '\u200b',
-                value: `👎 ${list[counter].thumbs_down}`,
-                inline: true
-              }
-            ],
-            footer: {
-              text: `${counter + 1}/${list.length}`
-            }
-          };
-
-          msg.edit({ embed: embed2 });
-        });
-
-        // react to the msg
-        for (let i = 0; i < emojiNeeded.length; i++) {
-          await msg.react(emojiNeeded[i]);
+        ],
+        footer: {
+          text: `${counter + 1}/${list.length}`
         }
+      };
+      msg.edit({ embed: embed2 });
+    });
+    // on remove the same as above
+    collector.on('remove', async collected => {
+      if (collected.emoji.name === '⬅') {
+        // decrement index for list
+        counter--;
+        if (counter < 0) counter = 0;
+      } else if (collected.emoji.name === '➡') {
+        // increment index for list
+        counter++;
+        if (counter >= list.length) counter = list.length - 1;
+      }
+      const embed2 = {
+        color: 0xff548e,
+        title: list[counter].word,
+        url: list[counter].permalink,
+        author: {
+          name: `Author : ${list[counter].author}`
+        },
+        fields: [
+          {
+            name: 'Definition',
+            value: trim(list[counter].definition, 1024)
+          },
+          {
+            name: 'Example',
+            value: trim(list[counter].example, 1024)
+          },
+          {
+            name: 'Rating',
+            value: `👍 ${list[counter].thumbs_up}`,
+            inline: true
+          },
+          {
+            name: '\u200b',
+            value: `👎 ${list[counter].thumbs_down}`,
+            inline: true
+          }
+        ],
+        footer: {
+          text: `${counter + 1}/${list.length}`
+        }
+      };
 
-      }).catch(err => logger.log('error', err));
+      msg.edit({ embed: embed2 });
+    });
+
+    // react to the msg
+    for (let i = 0; i < emojiNeeded.length; i++) {
+      await msg.react(emojiNeeded[i]);
+    }
 
   }
 

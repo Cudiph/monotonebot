@@ -40,7 +40,7 @@ module.exports = class AniSafeCommand extends Command {
     if (tag !== '' && !safeTag.includes(tag.toLowerCase())) {
       return msg.reply(oneLine`
         Invalid tag, you can see available tag in \`${msg.guild.commandPrefix}help hentai\`
-      `).then(resMsg => resMsg.delete({ timeout: 8000 }));
+      `).then(resMsg => resMsg.delete({ timeout: 8000 })).catch(e => e);
     }
 
     const getRandomTag = safeTag[Math.floor(Math.random() * safeTag.length)];

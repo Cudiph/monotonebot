@@ -25,7 +25,8 @@ module.exports = class DogCommand extends Command {
     } catch (err) {
       logger.log('error', err);
       msg.say(`Something went wrong, please try again later.\n Error : \`${err}\``)
-        .then(theMsg => theMsg.delete({ timeout: 7000 }));
+        .then(theMsg => theMsg.delete({ timeout: 7000 }))
+        .catch(e => e);
     }
     const response = await axios.get('https://dog.ceo/api/breeds/image/random');
     msg.say(response.message);
