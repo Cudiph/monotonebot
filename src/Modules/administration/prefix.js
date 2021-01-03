@@ -3,7 +3,6 @@ const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
 const { oneLine, stripIndents } = require('common-tags');
-const { client } = require('../../bot.js');
 const { sendtoLogChan } = require('../../library/helper/embed.js');
 
 async function writePrefix(newPrefix, msg) {
@@ -13,7 +12,7 @@ async function writePrefix(newPrefix, msg) {
       guildId: msg.guild.id,
       prefix: newPrefix,
     }, { upsert: true });
-    if (result) return result.prefix; else return client.commandPrefix;
+    if (result) return result.prefix; else return msg.client.commandPrefix;
   } catch (err) {
     logger.log('error', err);
     msg.reply(`Can't update the prefix.`);

@@ -43,9 +43,9 @@ client.registry
   })
   .registerCommandsIn(path.join(__dirname, 'Modules'));
 
-// including events folder
+// run events folder
 fs.readdir(`${__dirname}/events`, (err, files) => {
-  if (err) logger.error('error', err);
+  if (err) logger.error(err);
   const jsFiles = files.filter(file => file.endsWith('.js'));
   jsFiles.forEach(file => {
     require(`${__dirname}/events/${file}`);
