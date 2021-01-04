@@ -43,7 +43,7 @@ async function playStream(msg, seek = 0) {
     // start typing indicator to notice user
     msg.channel.startTyping();
     const url = `https://www.youtube.com/watch?v=${queue[indexQ].videoId}`;
-    const stream = await ytdl(queue[indexQ].link || url, {
+    const stream = ytdl(queue[indexQ].link || url, {
       filter: queue[indexQ].isLive ? 'audio' : 'audioonly',
       quality: queue[indexQ].isLive ? [91, 92, 93, 94] : 'highest',
       dlChunkSize: 0,
@@ -51,7 +51,7 @@ async function playStream(msg, seek = 0) {
       encoderArgs: ['-af', 'bass=g=10,dynaudnorm=f=200'],
       seek: seek,
     });
-    const dispatcher = await connection.play(stream, {
+    const dispatcher = connection.play(stream, {
       type: 'opus',
       volume: msg.guild.volume || 0.5,
       highWaterMark: 200,
