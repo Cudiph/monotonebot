@@ -36,10 +36,15 @@ module.exports = class LogChannelCommand extends Command {
     // show current log channel if no argument
     if (typeof channel !== 'object') {
       if (channel.toLowerCase() === 'unset') {
-        await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
-          $unset: { logChannelId: '' },
-        });
-        return msg.reply(`Logchannel is unsetted successfully.`);
+        try {
+          await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+            $unset: { logChannelId: '' },
+          });
+          return msg.reply(`Logchannel is unsetted successfully.`);
+        } catch (e) {
+          return msg.reply(`Can't remove log channel, please try again.`);
+        }
+
       }
       if (guildSettings && guildSettings.logChannelId) {
         return msg.reply(`Current log channel is <#${guildSettings.logChannelId}>`);
