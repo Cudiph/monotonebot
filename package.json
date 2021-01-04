@@ -9,19 +9,19 @@
     "lint:fix": "yarn run eslint --fix src/"
   },
   "engines": {
-    "node": "~14.8.0",
+    "node": "~14.15.3",
     "yarn": "~2.4.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/Cudiph/monotonebot.git"
+    "url": "https://github.com/Cudiph/monotonebot.git"
   },
   "author": "Dwi Asmoro (https://github.com/Cudiph)",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://gitlab.com/Cudiph/monotonebot/issues"
+    "url": "https://github.com/Cudiph/monotonebot/issues"
   },
-  "homepage": "https://gitlab.com/Cudiph/monotonebot#readme",
+  "homepage": "https://github.com/Cudiph/monotonebot#readme",
   "dependencies": {
     "@discordjs/opus": "^0.3.3",
     "axios": "^0.21.1",
