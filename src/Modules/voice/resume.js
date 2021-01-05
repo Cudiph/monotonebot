@@ -10,7 +10,7 @@ module.exports = class ResumeCommand extends Command {
       examples: ['resume'],
       guildOnly: true,
       throttling: {
-        usages: 3,
+        usages: 2,
         duration: 10,
       },
     });

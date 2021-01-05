@@ -10,7 +10,7 @@ module.exports = class JoinCommand extends Command {
       examples: ['join'],
       guildOnly: true,
       throttling: {
-        usages: 2,
+        usages: 1,
         duration: 10,
       },
     });

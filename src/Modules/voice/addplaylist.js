@@ -17,19 +17,19 @@ module.exports = class AddPlaylistCommand extends Command {
       guildOnly: true,
       details: oneLine`
       Take a playlist from youtube and add all of the video to
-      the queue. The cooldown is 600 seconds so please careful when
-      using this command.
+      the queue. If the playlist contain more than 100 videos, only
+      the first 100 that will be pushed to the queue.
       `,
       throttling: {
-        usages: 2,
-        duration: 600,
+        usages: 1,
+        duration: 60,
       },
       clientPermissions: ['CONNECT', 'SPEAK'],
-      format: '["Video Id"/"Full url"]',
+      format: '<VideoId/FullUrl>',
       args: [
         {
           key: 'listId',
-          prompt: 'What playlist you want to add? (list id or full url, broken url can be tolerated)',
+          prompt: 'What playlist you want to add? (broken url can be tolerated, as long as the argument has playlist Id)',
           type: 'string',
         }
       ]
@@ -54,7 +54,7 @@ module.exports = class AddPlaylistCommand extends Command {
             if (msg.guild.queue && msg.guild.queue.length >= 150) {
               return;
             }
-            await player({
+            player({
               title: video.title,
               url: `https://youtube.com/watch?v=${video.id}`,
               videoId: video.id,
@@ -80,11 +80,11 @@ module.exports = class AddPlaylistCommand extends Command {
         try {
           const playlist = await ytpl(listId);
           const videos = playlist.items;
-          videos.forEach(async video => {
+          videos.forEach(video => {
             if (msg.guild.queue && msg.guild.queue.length >= 150) {
               return;
             }
-            await player({
+            player({
               title: video.title,
               url: `https://youtube.com/watch?v=${video.id}`,
               videoId: video.id,

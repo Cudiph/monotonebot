@@ -10,7 +10,7 @@ module.exports = class LoopCommand extends Command {
       examples: ['loop', 'loop false'],
       guildOnly: true,
       throttling: {
-        usages: 1,
+        usages: 2,
         duration: 10,
       },
       args: [

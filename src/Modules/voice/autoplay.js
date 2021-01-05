@@ -12,7 +12,7 @@ module.exports = class AutoPlayCommand extends Command {
       guildOnly: true,
       argsType: 'multiple',
       throttling: {
-        usages: 1,
+        usages: 2,
         duration: 10,
       },
       args: [

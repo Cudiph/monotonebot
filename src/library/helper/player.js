@@ -237,7 +237,7 @@ async function play(msg, options = {}) {
  * @param {boolean} fromPlaylist - whether player is called from playlist.js or called multiple times
  * @returns {play}
  */
-async function player(data = {}, msg, fromPlaylist = false) {
+function player(data = {}, msg, fromPlaylist = false) {
   if (msg.guild.queue && msg.guild.queue.length > 150) {
     return msg.say(oneLine`
     You reached maximum number of track.
@@ -257,8 +257,8 @@ async function player(data = {}, msg, fromPlaylist = false) {
     try {
       msg.guild.queue = [];
       msg.guild.indexQueue = 0;
-      await msg.guild.queue.push(construction);
-      return await play(msg);
+      msg.guild.queue.push(construction);
+      return play(msg);
     } catch (err) {
       msg.say('Something went wrong');
       delete msg.guild.queue;

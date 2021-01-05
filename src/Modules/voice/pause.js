@@ -10,8 +10,8 @@ module.exports = class PauseCommand extends Command {
       examples: ['pause'],
       guildOnly: true,
       throttling: {
-        usages: 1,
-        duration: 10,
+        usages: 2,
+        duration: 15,
       },
       args: [
         {

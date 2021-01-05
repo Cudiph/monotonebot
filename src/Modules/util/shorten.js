@@ -18,7 +18,7 @@ module.exports = class ShortenCommand extends Command {
       characters and underscores (case sensitive).
       `,
       throttling: {
-        usages: 2,
+        usages: 3,
         duration: 20,
       },
       args: [

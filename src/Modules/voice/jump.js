@@ -19,7 +19,7 @@ module.exports = class JumpCommand extends Command {
       track #5. Put a dash (-) before number if you want to go backward.
       `,
       throttling: {
-        usages: 1,
+        usages: 2,
         duration: 10,
       },
       args: [

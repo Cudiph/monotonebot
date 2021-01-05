@@ -20,7 +20,7 @@ module.exports = class LoadPlaylistCommand extends Command {
       guildOnly: true,
       throttling: {
         usages: 3,
-        duration: 300,
+        duration: 120,
       },
       args: [
         {

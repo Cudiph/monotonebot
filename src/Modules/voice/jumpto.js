@@ -17,7 +17,7 @@ module.exports = class JumpToCommand extends Command {
       \`..jumpto 3\` then it'll play the track #3.
       `,
       throttling: {
-        usages: 1,
+        usages: 2,
         duration: 10,
       },
       args: [

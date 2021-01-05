@@ -13,7 +13,7 @@ module.exports = class HelpCommand extends Command {
         The command may be part of a command name or a whole command name.
         If it isn't specified, all available commands will be listed.
       `,
-      examples: ['help', 'help prefix'],
+      examples: ['help', 'help addplaylist'],
       guarded: true,
       args: [
         {
@@ -23,6 +23,10 @@ module.exports = class HelpCommand extends Command {
           default: ''
         }
       ],
+      throttling: {
+        usages: 3,
+        duration: 15
+      },
     });
   }
 

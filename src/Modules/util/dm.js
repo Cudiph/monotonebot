@@ -10,7 +10,7 @@ module.exports = class DmCommand extends Command {
       memberName: 'dm',
       description: 'dm someone with mentioning in a server',
       throttling: {
-        usages: 1,
+        usages: 2,
         duration: 30,
       },
       examples: ['dm @epicgamers Hello;Nice too meet you', 'email @0xDeadBeef Title;Desc'],
@@ -31,6 +31,7 @@ module.exports = class DmCommand extends Command {
     });
   }
 
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { user, words }) {
     // spliting args
     const content = words.split(/\s*;\s*/);

@@ -20,6 +20,10 @@ module.exports = class LogChannelCommand extends Command {
           default: '',
         },
       ],
+      throttling: {
+        usages: 2,
+        duration: 30,
+      }
     });
   }
 

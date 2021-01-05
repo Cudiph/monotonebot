@@ -10,7 +10,7 @@ module.exports = class PingCommand extends Command {
       memberName: 'ping',
       description: 'Show HeartBeat and Round-Trip Time latency',
       throttling: {
-        usages: 3,
+        usages: 5,
         duration: 10,
       },
     });

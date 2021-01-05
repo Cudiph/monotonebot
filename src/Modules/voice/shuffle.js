@@ -10,7 +10,7 @@ module.exports = class ShuffleCommand extends Command {
       examples: ['shuffle', 'shuffle true'],
       guildOnly: true,
       throttling: {
-        usages: 1,
+        usages: 2,
         duration: 10,
       },
       args: [

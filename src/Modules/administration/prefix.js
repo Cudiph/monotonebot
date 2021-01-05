@@ -46,7 +46,11 @@ module.exports = class PrefixCommand extends Command {
         }
       ],
       guildOnly: true,
-      userPermissions: ['ADMINISTRATOR']
+      userPermissions: ['ADMINISTRATOR'],
+      throttling: {
+        usages: 2,
+        duration: 30,
+      }
     });
   }
 
