@@ -68,7 +68,7 @@ module.exports = class AddPlaylistCommand extends Command {
       color: 0x53bcfc,
       fields: [],
       footer: {
-        text: `Translated from ${result.from} to ${result.to}`,
+        text: `Translated from **${result.from}** to **${result.to}**`,
         icon_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png',
       }
     };
