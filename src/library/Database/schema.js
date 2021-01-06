@@ -23,7 +23,7 @@ const guildSettings = new mongoose.Schema({
     default: '..'
   },
   volume: Number,
-});
+}, { timestamps: true });
 
 const userData = new mongoose.Schema({
   userId: reqStr, // member id
@@ -42,7 +42,7 @@ const userData = new mongoose.Schema({
     }],
     timestamps: { type: Date, default: new Date() },
   }]
-});
+}, { timestamps: true });
 
 const guildSettingsSchema = mongoose.model('guildSettings', guildSettings);
 const userDataSchema = mongoose.model('userData', userData);
