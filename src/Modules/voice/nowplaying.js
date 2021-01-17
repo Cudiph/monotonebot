@@ -25,6 +25,8 @@ module.exports = class NowPlayingCommand extends Command {
     const indexQ = msg.guild.indexQueue;
     if (!queue || !queue.length) {
       return msg.say(`There is no queue.`);
+    } else if (indexQ >= queue.length) {
+      return msg.reply(`Currently not playing any track`);
     }
 
     const trackInfo = await ytdl.getInfo(queue[indexQ].link);
