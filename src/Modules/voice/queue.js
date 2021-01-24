@@ -10,13 +10,20 @@ module.exports = class QueueCommand extends Command {
       aliases: ['q'],
       memberName: 'queue',
       description: 'Show queue',
-      examples: ['queue', 'q'],
+      examples: ['queue 4', 'q 3 14'],
       guildOnly: true,
       throttling: {
         usages: 1,
         duration: 10,
       },
       args: [
+        {
+          key: 'toPage',
+          prompt: 'Which page to show?',
+          type: 'integer',
+          default: 1,
+          min: 1,
+        },
         {
           key: 'itemsPerPage',
           prompt: 'How many track per page do you want to show?',
@@ -30,16 +37,21 @@ module.exports = class QueueCommand extends Command {
   }
 
   /** @param {import('discord.js-commando').CommandoMessage} message */
-  async run(msg, { itemsPerPage }) {
+  async run(msg, { toPage, itemsPerPage }) {
     if (!msg.guild.queue) {
       return msg.say(`There is no queue.`);
     }
 
-    // variabel to store data :)
+    // navigation vars
     const queue = msg.guild.queue;
-    let page = 0;
-    let index = 0;
+    let page = toPage - 1;
     // let itemsPerPage = 9;
+    let index = page * itemsPerPage;
+
+    if (page + 1 >= Math.ceil(queue.length / itemsPerPage)) {
+      page = Math.ceil(queue.length / itemsPerPage) - 1;
+      index = page * itemsPerPage;
+    }
 
     // send embed
     msg.say({ embed: setEmbedQueueCmd(queue, index, page, msg, itemsPerPage) })
@@ -82,7 +94,7 @@ module.exports = class QueueCommand extends Command {
         });
 
         // reacting the message
-        if ((page + 1) !== Math.ceil(queue.length / itemsPerPage)) {
+        if (queue.length > itemsPerPage) {
           for (let i = 0; i < emojiNeeded.length; i++) {
             await embedMsg.react(emojiNeeded[i]);
           }
