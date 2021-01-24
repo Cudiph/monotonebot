@@ -103,9 +103,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/eslintrc@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "@eslint/eslintrc@npm:0.2.2"
+"@eslint/eslintrc@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@eslint/eslintrc@npm:0.3.0"
   dependencies:
     ajv: ^6.12.4
     debug: ^4.1.1
@@ -114,10 +114,10 @@ __metadata:
     ignore: ^4.0.6
     import-fresh: ^3.2.1
     js-yaml: ^3.13.1
-    lodash: ^4.17.19
+    lodash: ^4.17.20
     minimatch: ^3.0.4
     strip-json-comments: ^3.1.1
-  checksum: 049c98898934100aa5ad4912242ecbec136454787c00776a236e5321c73176dbc813917445a3d50d230a5a84531a99ec0e2885dd7a6838be68b46b6720fa1459
+  checksum: 00e87c194672eb85dcea22ba749fb3cabdd9768e952e748b2c727940f06691c873369d75cf3bddb239301eca8c38de6e098b0de4839fa7c16a2062e536e8ff5a
   languageName: node
   linkType: hard
 
@@ -944,18 +944,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord.js-commando@github:discordjs/Commando":
-  version: 0.11.0-dev
-  resolution: "discord.js-commando@https://github.com/discordjs/Commando.git#commit=198d7604e3725ee88dceab9b5f296edb1b7580a5"
+"discord.js-commando@https://github.com/discordjs/Commando.git#commit=9c2e5405fdb9a1006e6eb7554e18d0861a4c857f":
+  version: 0.11.1
+  resolution: "discord.js-commando@https://github.com/discordjs/Commando.git#commit=9c2e5405fdb9a1006e6eb7554e18d0861a4c857f"
   dependencies:
     common-tags: ^1.8.0
+    emoji-regex: ^9.2.0
+    is-promise: ^4.0.0
     require-all: ^3.0.0
-  peerDependencies:
-    "@types/better-sqlite3": ^5.0.0
-    better-sqlite3: ^5.0.0
-    discord.js: ^12.0.0
-    sqlite: ^3.0.0
-  checksum: 5dbfef64a653114ab5f4e65b8c24683874c4da2212736ea5db7d4cbc38f7e011f82dc19729492ea8d2e930cd2987b05802047791053355476d410cbfdded0441
+  checksum: bf8ca20c7140f3633d75e7783135995ab6da7e424499e6c66761dd5b5bbb6738f64af83bb5998d3bb40c65e4a60f8f7e43ba16482c2b67fe037fdb15abe5112d
   languageName: node
   linkType: hard
 
@@ -1085,6 +1082,13 @@ __metadata:
   version: 8.0.0
   resolution: "emoji-regex@npm:8.0.0"
   checksum: 87cf3f89efb8ba028075b3dc1713e2c5609af94cbc129b1f00c3113d01dbe4bf85c9d971e75a98bf8a8508131727682ce929e4bd70e9022af4fd47d75e9507de
+  languageName: node
+  linkType: hard
+
+"emoji-regex@npm:^9.2.0":
+  version: 9.2.0
+  resolution: "emoji-regex@npm:9.2.0"
+  checksum: 0ccee5f5e8ffcfe084e1a7499398b1ddb3b2f0e395a9bd5711ff136fc4606f24ca8bad930d60f5a12d4b2ce38dbb2b8cd0fd3e20a0d291770123b1e12bba9f04
   languageName: node
   linkType: hard
 
@@ -1318,12 +1322,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.17.0":
-  version: 7.17.0
-  resolution: "eslint@npm:7.17.0"
+"eslint@npm:^7.18.0":
+  version: 7.18.0
+  resolution: "eslint@npm:7.18.0"
   dependencies:
     "@babel/code-frame": ^7.0.0
-    "@eslint/eslintrc": ^0.2.2
+    "@eslint/eslintrc": ^0.3.0
     ajv: ^6.10.0
     chalk: ^4.0.0
     cross-spawn: ^7.0.2
@@ -1347,7 +1351,7 @@ __metadata:
     js-yaml: ^3.13.1
     json-stable-stringify-without-jsonify: ^1.0.1
     levn: ^0.4.1
-    lodash: ^4.17.19
+    lodash: ^4.17.20
     minimatch: ^3.0.4
     natural-compare: ^1.4.0
     optionator: ^0.9.1
@@ -1361,7 +1365,7 @@ __metadata:
     v8-compile-cache: ^2.0.3
   bin:
     eslint: bin/eslint.js
-  checksum: 12b09a972eb0b81fabf9c1b38b3e9ada0cc051a22ee5022e31852e7babde6fe02a0135be3027451ee02c9ff4a6f738b55205d2953f98eb16a43350ad73070b27
+  checksum: 5c6f6ca0eb6c3738a0d14d3441a23f045ef9e7f73aaba4848aea0877c5fd50ec42937ccdaf53fb9107694f5700a9989bca55334b7b17e5d3be2f6e69a42241fa
   languageName: node
   linkType: hard
 
@@ -2017,6 +2021,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-promise@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "is-promise@npm:4.0.0"
+  checksum: 7085bdc4eaff389c5730a1d54f014880e90ca1e4b7f0a49de9f3c5f5d2fb9e0c3a878ac226d3aa9190bfe4a78400e66d911427ef4812455756293cdb02fb05cf
+  languageName: node
+  linkType: hard
+
 "is-regex@npm:^1.1.1":
   version: 1.1.1
   resolution: "is-regex@npm:1.1.1"
@@ -2358,7 +2369,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.19, lodash@npm:^4.17.20":
+"lodash@npm:^4.17.20":
   version: 4.17.20
   resolution: "lodash@npm:4.17.20"
   checksum: c62101d2500c383b5f174a7e9e6fe8098149ddd6e9ccfa85f36d4789446195f5c4afd3cfba433026bcaf3da271256566b04a2bf2618e5a39f6e67f8c12030cb6
@@ -2574,23 +2585,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:5.11.9, mongoose@npm:^5.11.9":
-  version: 5.11.9
-  resolution: "mongoose@npm:5.11.9"
+"mongoose@npm:5.11.13, mongoose@npm:^5.11.13":
+  version: 5.11.13
+  resolution: "mongoose@npm:5.11.13"
   dependencies:
     "@types/mongodb": ^3.5.27
     bson: ^1.1.4
     kareem: 2.3.2
     mongodb: 3.6.3
     mongoose-legacy-pluralize: 1.0.2
-    mpath: 0.8.1
+    mpath: 0.8.3
     mquery: 3.2.3
     ms: 2.1.2
     regexp-clone: 1.0.0
     safe-buffer: 5.2.1
     sift: 7.0.1
     sliced: 1.0.1
-  checksum: c5c637091d3fc5ce04407bc6c65949d211ccd38cf2b740bfb23413feb0650662a3e841867ed84b9fcdaf941d23c24d09ba2b8aedb2d6fe99de5452b96a5bc092
+  checksum: 739e41dae71232cdc490dc1fc59c189d41655762911fc732fc806dfb3a224c769768a9e97b40a3fcf6c68f57956a6c2eb1f4d63b78e9fd5c3f2cc321ccd1f6fd
   languageName: node
   linkType: hard
 
@@ -2603,27 +2614,27 @@ __metadata:
     common-tags: ^1.8.0
     discord-ytdl-core: ^5.0.0
     discord.js: ^12.5.1
-    discord.js-commando: "github:discordjs/Commando"
+    discord.js-commando: "https://github.com/discordjs/Commando.git#commit=9c2e5405fdb9a1006e6eb7554e18d0861a4c857f"
     dotenv: ^8.2.0
-    eslint: ^7.17.0
+    eslint: ^7.18.0
     eslint-plugin-import: ^2.22.1
     ffmpeg-static: ^4.2.7
     merge-img: ^2.1.3
     mongodb: ^3.6.3
-    mongoose: ^5.11.9
+    mongoose: ^5.11.13
     node-fetch: ^2.6.1
-    node-gtrans: ^1.4.0
+    node-gtrans: ^1.5.1
     winston: ^3.3.3
-    yt-search: ^2.5.1
-    ytdl-core: ^4.4.0
+    yt-search: ^2.5.2
+    ytdl-core: ^4.4.4
     ytpl: ^2.0.4
   languageName: unknown
   linkType: soft
 
-"mpath@npm:0.8.1":
-  version: 0.8.1
-  resolution: "mpath@npm:0.8.1"
-  checksum: b2f1bafaaaadfd4306de79d6eb0ba8115063f65415539173c088f820550ab6b00c0a9f29a261aba6c64e63de23c745d379ac36764400e86f77330f3d09758065
+"mpath@npm:0.8.3":
+  version: 0.8.3
+  resolution: "mpath@npm:0.8.3"
+  checksum: 6c129da222169bcf2eb28ae73abca2a8a32c3c659748efd496308aed21c7dca7a9a923de53a5a1df3d898f5eba74c704fdf352ca68e5ecb602d2352a9d5ab90e
   languageName: node
   linkType: hard
 
@@ -2727,13 +2738,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gtrans@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "node-gtrans@npm:1.4.0"
+"node-gtrans@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "node-gtrans@npm:1.5.1"
   dependencies:
     axios: ^0.21.1
     query-string: ^6.13.7
-  checksum: 2ab1cb9f3264bdb9da9ef2c4b4177c045c03eece5f592a53ee0787387672337976f45eb96186572b9d94468b38251956f8725a833a5ea7d47aaaa62e0749d658
+  checksum: 25204cb844cd0bafeeb87a465f358276fd797eb5cfdf0b2729ca0d3ca176ec190831998a74d4b09bae8b977a3014c51574f593f8bb172b9dfe5cfc44f624e0e0
   languageName: node
   linkType: hard
 
@@ -4149,9 +4160,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yt-search@npm:^2.5.1":
-  version: 2.5.1
-  resolution: "yt-search@npm:2.5.1"
+"yt-search@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "yt-search@npm:2.5.2"
   dependencies:
     async.parallellimit: ~0.5.2
     boolstring: ~1.0.2
@@ -4165,18 +4176,18 @@ __metadata:
     yt-search: bin/cli.js
     yt-search-audio: bin/mpv_audio.sh
     yt-search-video: bin/mpv_video.sh
-  checksum: 353629c0ad77c05e07cf7b6c36a8f39c3e16c6a36f1bac4633d489a9a83007015c66c282eed201c6d30d2faa46802af1e7deb1132e5e8feb619dcacd02ef56c0
+  checksum: a8bb262fcc0980f03260b1ec2901b62b56fed782d6c11504d55836463d04757cf77f1593308b6447141d8fab593f543d96312154d053441235311356b0c59960
   languageName: node
   linkType: hard
 
-"ytdl-core@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "ytdl-core@npm:4.4.0"
+"ytdl-core@npm:^4.4.4":
+  version: 4.4.4
+  resolution: "ytdl-core@npm:4.4.4"
   dependencies:
     m3u8stream: ^0.8.3
     miniget: ^4.0.0
     sax: ^1.1.3
-  checksum: 297eba2350ee877d864eaef2c177ed78effe563be28e58a7ec638d4c185055c03b9440d16a201225c8640b02eaeffe50aa7b479a0974eec79421e955037c49f4
+  checksum: 512549acac50eeed73130e92e06b10f1ce2df230e569fa459aa70aad2220a52fd4d48a47a733b4fb4e938fca9992b702a2f8948c8ec0b7b8dd1c5acd90f494d6
   languageName: node
   linkType: hard
 
