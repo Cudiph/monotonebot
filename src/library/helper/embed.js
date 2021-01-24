@@ -93,12 +93,12 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
     fields: [],
     timestamp: new Date(),
     footer: {
-      text: `${page + 1}/${Math.ceil(listLength / itemsPerPage)}`,
+      text: `${page}/${Math.ceil(listLength / itemsPerPage)}`,
     },
   };
 
   // if page is the last page then exec this code
-  if (page === Math.floor(listLength / itemsPerPage)) {
+  if (page === Math.ceil(listLength / itemsPerPage)) {
     for (let i = indexPage; i < listLength; i++) {
       // add => sign to current playing
       if (i !== msg.guild.indexQueue) {
