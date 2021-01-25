@@ -1,0 +1,96 @@
+const { stripIndents } = require('common-tags');
+const { Command } = require('discord.js-commando');
+const { guildSettingsSchema } = require('../../library/Database/schema.js');
+
+
+module.exports = class WelcomeCommand extends Command {
+  constructor(client) {
+    super(client, {
+      name: 'setgoodbye',
+      group: 'administration',
+      memberName: 'setgoodbye',
+      description: 'Set a goodbye message to your new member',
+      details: stripIndents`
+        Custom Variable are:
+        \`{{@user}}\` to mention the user
+        \`{{user}}\` in the message will be replaced to "username#discrimantor"
+        \`{{guild}}\` to return guild name
+        Put the variable in the goodbyeMsg arg
+      `,
+      examples: ['setgoodbye #arrival "So long {{user}}"'],
+      guildOnly: true,
+      clientPermissions: ['SEND_MESSAGES'],
+      userPermissions: ['ADMINISTRATOR'],
+      args: [
+        {
+          key: 'channel',
+          prompt: 'Which channel will the goodbye message be sent?',
+          type: 'text-channel|string',
+        },
+        {
+          key: 'goodbyeMsg',
+          prompt: 'What message do you want to leave for the old member?',
+          type: 'string',
+          isEmpty: function(_val, msg) {
+            const splittedMsg = msg.content.split(/\s+/);
+            if (splittedMsg[1].match(/^<#\d+>$/) && !splittedMsg[2]) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        }
+      ],
+    });
+  }
+
+  /** @param {import("discord.js-commando").CommandoMessage} msg */
+  async run(msg, { channel, goodbyeMsg }) {
+    if (typeof channel !== 'string' && !channel.permissionsFor(msg.guild.me.id).has('SEND_MESSAGES')) {
+      return msg.reply(`I don't have a permission for sending messages to that channel. Please change the permission first`);
+    }
+
+    if (channel === 'unset') {
+      try {
+        await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+          $unset: {
+            goodbyeMessage: '',
+          }
+        });
+        return msg.reply(`Successfully reset the welcome message.`);
+      } catch (e) {
+        return msg.reply(`Can't unset the goodbye message, please try again later`);
+      }
+    } else if (typeof channel === 'string') {
+      return msg.reply(`Please mention a valid channel`);
+    }
+
+    let guildSettings;
+    try {
+      guildSettings = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+        goodbyeMessage: {
+          channel: channel.id,
+          strMsg: goodbyeMsg
+        }
+      }, { upsert: true, new: true });
+      msg.reply(`Successfully set new goodbye message to <#${guildSettings.goodbyeMessage.channel}> `);
+    } catch (e) {
+      logger.error(e.stack);
+      msg.reply(`Can't set goodbye message, pleast try again later`);
+    }
+
+  }
+
+  async onBlock(msg, reason, data) {
+    super.onBlock(msg, reason, data)
+      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
+      .catch(e => e); // do nothing
+  }
+
+  onError(err, message, args, fromPattern, result) {
+    super.onError(err, message, args, fromPattern, result)
+      .then(msgParent => msgParent.delete({ timeout: 10000 }))
+      .catch(e => e); // do nothing
+  }
+};
+

@@ -11,12 +11,12 @@ const guildSettings = new mongoose.Schema({
   autoAssignRoleId: String,
   logChannelId: String,
   welcomeMessage: {
-    Channel: String,
-    Message: String
+    channel: String,
+    strMsg: String,
   },
   goodbyeMessage: {
-    Channel: String,
-    Message: String
+    channel: String,
+    strMsg: String,
   },
   prefix: {
     type: String,
