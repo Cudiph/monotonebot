@@ -65,15 +65,15 @@ module.exports = class WelcomeCommand extends Command {
       return msg.reply(`Please mention a valid channel`);
     }
 
-    let guildSettings;
+    let guildSetting;
     try {
-      guildSettings = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+      guildSetting = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
         welcomeMessage: {
           channel: channel.id,
           strMsg: greeting
         }
       }, { upsert: true, new: true });
-      msg.reply(`Successfully set new welcome message to <#${guildSettings.welcomeMessage.channel}> `);
+      msg.reply(`Successfully set new welcome message to <#${guildSetting.welcomeMessage.channel}> `);
     } catch (e) {
       logger.error(e.stack);
       msg.reply(`Can't set welcome message, pleast try again later`);

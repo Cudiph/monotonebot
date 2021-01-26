@@ -65,15 +65,15 @@ module.exports = class WelcomeCommand extends Command {
       return msg.reply(`Please mention a valid channel`);
     }
 
-    let guildSettings;
+    let guildSetting;
     try {
-      guildSettings = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+      guildSetting = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
         goodbyeMessage: {
           channel: channel.id,
           strMsg: goodbyeMsg
         }
       }, { upsert: true, new: true });
-      msg.reply(`Successfully set new goodbye message to <#${guildSettings.goodbyeMessage.channel}> `);
+      msg.reply(`Successfully set new goodbye message to <#${guildSetting.goodbyeMessage.channel}> `);
     } catch (e) {
       logger.error(e.stack);
       msg.reply(`Can't set goodbye message, pleast try again later`);

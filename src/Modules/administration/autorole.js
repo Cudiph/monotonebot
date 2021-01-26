@@ -32,9 +32,9 @@ module.exports = class AutoRoleCommand extends Command {
   /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { role }) {
     // fetch data
-    let guildSettings;
+    let guildSetting;
     try {
-      guildSettings = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
+      guildSetting = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
     } catch (err) {
       logger.log('error', err.stack);
       return msg.reply(`Can't load the data, please assign a new one if it's not already set`);
@@ -53,8 +53,8 @@ module.exports = class AutoRoleCommand extends Command {
         }
 
       }
-      if (guildSettings.autoAssignRoleId) {
-        return msg.reply(`Current auto role is <@&${guildSettings.autoAssignRoleId}>`);
+      if (guildSetting && guildSetting.autoAssignRoleId) {
+        return msg.reply(`Current auto role is <@&${guildSetting.autoAssignRoleId}>`);
       } else {
         return msg.reply(`Auto role is not yet assigned, use \`${msg.guild.commandPrefix}aar <mentionRole>\` to set a new one`);
       }

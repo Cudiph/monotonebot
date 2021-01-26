@@ -167,9 +167,9 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
 async function sendtoLogChan(msg, options = {}) {
   const { embedMsg, strMsg } = options;
   const guildSetting = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
-  const logChan = msg.guild.channels.cache.get(guildSetting.logChannelId);
+  const logChan = guildSetting ? msg.guild.channels.cache.get(guildSetting.logChannelId) : false;
   if (embedMsg) {
-    if (guildSetting.logChannelId && logChan && logChan.permissionsFor(msg.guild.me.id).has('SEND_MESSAGES')) {
+    if (logChan && logChan.permissionsFor(msg.guild.me.id).has('SEND_MESSAGES')) {
       logChan.send({ embed: embedMsg });
     } else {
       return msg.say({
@@ -177,7 +177,7 @@ async function sendtoLogChan(msg, options = {}) {
       });
     }
   } else if (strMsg) {
-    if (guildSetting.logChannelId && logChan && logChan.permissionsFor(msg.guild.me.id).has('SEND_MESSAGES')) {
+    if (logChan && logChan.permissionsFor(msg.guild.me.id).has('SEND_MESSAGES')) {
       logChan.send(strMsg);
     } else {
       return msg.say(strMsg);

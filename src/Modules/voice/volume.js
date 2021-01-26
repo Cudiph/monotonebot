@@ -32,12 +32,11 @@ module.exports = class VolumeCommand extends Command {
   /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { volume }) {
     volume /= 100;
+    if (!volume) {
+      return msg.say(`Current volume level is ${msg.guild.volume * 100}`);
+    }
     if (!msg.guild.me.voice.connection) {
       return msg.say(`I'm not connected to the voice channel`);
-    }
-    if (!volume) {
-      const vol = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
-      return msg.say(`Current volume level is ${vol.volume * 100}`);
     }
 
     try {
@@ -48,6 +47,7 @@ module.exports = class VolumeCommand extends Command {
       msg.say(`Change volume level to ${volume * 100}`);
     } catch (err) {
       logger.log('error', err);
+      msg.say(`Can't update stream volume, please try again later`);
     }
     if (msg.guild.me.voice.connection.dispatcher) {
       msg.guild.me.voice.connection.dispatcher.setVolume(volume);
