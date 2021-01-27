@@ -19,7 +19,8 @@ client.on('guildMemberAdd', async (member) => {
           const logMsg = guildSetting.welcomeMessage.strMsg
             .replace(/{{@user}}/g, member)
             .replace(/{{user}}/g, `${member.user.username}#${member.user.discriminator}`)
-            .replace(/{{guild}}/g, member.guild.name);
+            .replace(/{{guild}}/g, member.guild.name)
+            .replace(/{{members}}/g, member.guild.memberCount);
           memberLogChan.send(logMsg);
 
         } else {
@@ -46,7 +47,8 @@ client.on('guildMemberRemove', async (member) => {
         const logMsg = guildSetting.goodbyeMessage.strMsg
           .replace(/{{@user}}/g, member)
           .replace(/{{user}}/g, `${member.user.username}#${member.user.discriminator}`)
-          .replace(/{{guild}}/g, member.guild.name);
+          .replace(/{{guild}}/g, member.guild.name)
+          .replace(/{{members}}/g, member.guild.memberCount);
         memberLogChan.send(logMsg);
 
       } else {

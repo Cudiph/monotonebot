@@ -15,6 +15,7 @@ module.exports = class WelcomeCommand extends Command {
         \`{{@user}}\` to mention the user
         \`{{user}}\` in the message will be replaced to "username#discrimantor"
         \`{{guild}}\` to return guild name
+        \`{{members}}\` to return guild member count
         Put the variable in the goodbyeMsg arg
       `,
       examples: ['setgoodbye #arrival "So long {{user}}"'],
@@ -93,4 +94,3 @@ module.exports = class WelcomeCommand extends Command {
       .catch(e => e); // do nothing
   }
 };
-
