@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/Cudiph/monotonebot#readme",
   "dependencies": {
-    "@discordjs/opus": "^0.3.3",
+    "@discordjs/opus": "^0.4.0",
     "axios": "^0.21.1",
     "common-tags": "^1.8.0",
     "discord-ytdl-core": "^5.0.0",
@@ -38,7 +38,7 @@
     "node-gtrans": "^1.5.1",
     "winston": "^3.3.3",
     "yt-search": "^2.5.2",
-    "ytdl-core": "^4.4.4",
+    "ytdl-core": "^4.4.5",
     "ytpl": "^2.0.4"
   },
   "devDependencies": {
