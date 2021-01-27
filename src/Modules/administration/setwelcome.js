@@ -16,9 +16,14 @@ module.exports = class WelcomeCommand extends Command {
         \`{{user}}\` to show user "username#discriminator" without mentioning
         \`{{guild}}\` will display guild name
         \`{{members}}\` will display guild member count
-        Put the variable in the greeting arg
+        Put the variable in the greeting arg.
+        To reset this configuration, you can type "unset" after command like in
+        the examples below.
       `,
-      examples: ['setwelcome #arrival "Welcome to the {{guild}} {{@user}}! We now have {{members}} members!"'],
+      examples: [
+        'setwelcome #arrival "Welcome to the {{guild}} {{@user}}! We now have {{members}} members!"',
+        'setwelcome unset'
+      ],
       guildOnly: true,
       clientPermissions: ['SEND_MESSAGES'],
       userPermissions: ['ADMINISTRATOR'],

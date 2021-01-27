@@ -1,3 +1,4 @@
+const { stripIndents } = require('common-tags');
 const { Command } = require('discord.js-commando');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
 
@@ -9,6 +10,12 @@ module.exports = class LogChannelCommand extends Command {
       memberName: 'logchannel',
       aliases: ['setlogchannel', 'logchan'],
       description: 'Set log channel where all the log is sent',
+      details: stripIndents`
+        Use no argument to show current log channel,
+        type unset after command to reset the configuration.
+        List of commands that triggered messages to be sent to the log channel:
+        ['autorole', 'ban', 'kick', 'prefix', 'purge', 'unban']
+      `,
       examples: ['logchannel #log', 'logchannel', 'logchannel unset'],
       guildOnly: true,
       userPermissions: ['ADMINISTRATOR'],

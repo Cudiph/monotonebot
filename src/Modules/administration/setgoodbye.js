@@ -11,14 +11,16 @@ module.exports = class WelcomeCommand extends Command {
       memberName: 'setgoodbye',
       description: 'Set a goodbye message to your new member',
       details: stripIndents`
-        Custom Variable are:
+        Custom variable are:
         \`{{@user}}\` to mention the user
         \`{{user}}\` in the message will be replaced to "username#discrimantor"
         \`{{guild}}\` to return guild name
         \`{{members}}\` to return guild member count
-        Put the variable in the goodbyeMsg arg
+        Put the variable in the goodbyeMsg arg.
+        To reset this configuration, you can type "unset" after command like in
+        the examples below.
       `,
-      examples: ['setgoodbye #arrival "So long {{user}}"'],
+      examples: ['setgoodbye #arrival "So long {{user}}"', 'setgoodbye unset'],
       guildOnly: true,
       clientPermissions: ['SEND_MESSAGES'],
       userPermissions: ['ADMINISTRATOR'],

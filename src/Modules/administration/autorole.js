@@ -9,8 +9,9 @@ module.exports = class AutoRoleCommand extends Command {
       group: 'administration',
       memberName: 'autorole',
       description: 'give the specified role to someone who joined the guild',
+      details: `To reset this configuration you can use \`aar unset\``,
       aliases: ['autoassignrole', 'aar'],
-      examples: ['aar @guild-role'],
+      examples: ['aar @guild-role', 'aar unset'],
       guildOnly: true,
       clientPermissions: ['MANAGE_ROLES'],
       userPermissions: ['MANAGE_ROLES'],
@@ -94,4 +95,3 @@ module.exports = class AutoRoleCommand extends Command {
       .catch(e => e); // do nothing
   }
 };
-
