@@ -44,6 +44,10 @@ module.exports = class WelcomeCommand extends Command {
           }
         }
       ],
+      throttling: {
+        usages: 2,
+        duration: 300,
+      }
     });
   }
 
