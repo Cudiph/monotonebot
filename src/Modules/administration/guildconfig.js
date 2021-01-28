@@ -32,7 +32,7 @@ module.exports = class GuildConfigCommand extends Command {
       color: 0x53bcfc,
       title: `Configuration in ${msg.guild.name}`,
       thumbnail: {
-         url: msg.guild.iconURL({ dynamic: true, size: 2048 }),
+        url: msg.guild.iconURL({ dynamic: true, size: 2048 }),
       },
       fields: [
         {
