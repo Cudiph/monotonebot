@@ -3,7 +3,7 @@ const { Command } = require('discord.js-commando');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
 
 
-module.exports = class WelcomeCommand extends Command {
+module.exports = class GoodbyeCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'setgoodbye',
