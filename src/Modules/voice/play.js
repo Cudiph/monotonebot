@@ -6,6 +6,30 @@ const { oneLine } = require('common-tags');
 const { player } = require('../../library/helper/player.js');
 const { setEmbedPlayCmd } = require('../../library/helper/embed.js');
 
+/**
+ * Modified from ytdl.getURLVideoID to get Video ID from a link
+ * @param {string} link
+ * @return {string|boolean}
+ */
+function myGetVidID(link) {
+  // valid if at least the link has watch?v=VIDEO_ID
+  let id = link.match(/ch?.*v=([a-zA-Z0-9-_]{11})/);
+
+  // valid if at least the link has xxx/VIDEO_ID
+  if (!id && link.match(/(embed|v|\.be)\//)) {
+    const paths = link.split('/');
+    id = paths[paths.length - 1].match(/([a-zA-Z0-9-_]{11})/);
+  }
+  if (!id) {
+    return false;
+  }
+  id = id[1];
+  if (!/^[a-zA-Z0-9-_]{11}$/.test(id)) {
+    return false;
+  }
+  return id;
+}
+
 module.exports = class PlayCommand extends Command {
   constructor(client) {
     super(client, {
@@ -47,18 +71,26 @@ module.exports = class PlayCommand extends Command {
 
     if (message.member.voice.channel) {
       // check if author send a youtube link or video Id
-      if (ytdl.validateURL(queryOrUrl) || ytdl.validateID(queryOrUrl)) {
-        const vidId = ytdl.getVideoID(queryOrUrl);
-        const data = await ytdl.getBasicInfo(vidId);
-        const dataConstructor = {
-          title: data.videoDetails.title,
-          url: data.videoDetails.video_url,
-          videoId: vidId,
-          author: data.videoDetails.author.name ? data.videoDetails.author : { name: data.videoDetails.ownerChannelName },
-          seconds: data.videoDetails.lengthSeconds,
-          isLive: data.videoDetails.isLiveContent,
-        };
-        return player(dataConstructor, message);
+      if (myGetVidID(queryOrUrl) || ytdl.validateID(queryOrUrl)) {
+        const vidId = myGetVidID(queryOrUrl);
+        let data;
+        try {
+          data = await ytdl.getBasicInfo(vidId);
+        } catch (e) {
+          message.reply('No video with that URL or ID found.');
+        }
+        if (data) {
+          const dataConstructor = {
+            title: data.videoDetails.title,
+            url: data.videoDetails.video_url,
+            videoId: vidId,
+            author: data.videoDetails.author.name ? data.videoDetails.author : { name: data.videoDetails.ownerChannelName },
+            seconds: data.videoDetails.lengthSeconds,
+            isLive: data.videoDetails.isLiveContent,
+          };
+          return player(dataConstructor, message);
+        }
+
       }
 
       message.channel.startTyping(); // start type indicator cuz it'll be a while
