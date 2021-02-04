@@ -1,3 +1,4 @@
+const { oneLine } = require('common-tags');
 const { Command } = require('discord.js-commando');
 
 
@@ -9,6 +10,10 @@ module.exports = class RemoveNumberCommand extends Command {
       aliases: ['rmno'],
       memberName: 'removeno',
       description: 'Remove given number from queue list',
+      details: oneLine`
+        When you remove a track while in shuffle mode,
+        the original queue is not affected.
+      `,
       examples: ['removeno 5', 'rmno 2-5'],
       guildOnly: true,
       throttling: {
