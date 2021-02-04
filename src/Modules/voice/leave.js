@@ -23,13 +23,7 @@ module.exports = class LeaveCommand extends Command {
       return msg.reply("You must join to my voice channel");
     }
 
-    // delete queue
-    delete msg.guild.queue;
-    delete msg.guild.playedQueue;
-    msg.guild.autoplay = false;
-    msg.guild.loop = false;
-    // leave the channel
-    return await msg.member.voice.channel.leave();
+    return msg.member.voice.channel.leave();
   }
 
   async onBlock(msg, reason, data) {

@@ -34,7 +34,10 @@ async function playStream(msg, seek = 0) {
         msg.channel.stopTyping(true);
         delete msg.guild.queue;
         delete msg.guild.indexQueue;
-        delete msg.guild.played;
+        delete msg.guild.queueTemp;
+        msg.guild.autoplay = false;
+        msg.guild.loop = false;
+        msg.guild.shuffle = false;
       });
     }
     if (seek) {
@@ -143,6 +146,7 @@ async function fetchAutoplay(msg) {
     isLive: related[randTrack].isLive,
   };
   msg.guild.queue.push(construction);
+  if (msg.guild.queueTemp) msg.guild.queueTemp.push(construction);
   return play(msg);
 }
 
@@ -256,10 +260,10 @@ function player(data = {}, msg, fromPlaylist = false) {
         .catch(e => e);
     }
     // if in the end of queue and the song is stopped then play the track
-    if (msg.guild.indexQueue >= oldLength) {
-      return play(msg);
-    }
+    if (msg.guild.indexQueue >= oldLength) play(msg);
   }
+  if (msg.guild.queueTemp) msg.guild.queueTemp.push(construction);
+
 }
 
 module.exports = {

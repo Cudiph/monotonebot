@@ -58,12 +58,11 @@ module.exports = class LoadPlaylistCommand extends Command {
           msg.guild.queue = playlist.videoList;
           msg.guild.indexQueue = 0;
           play(msg);
-          return msg.say(`Added playlist **${playlist.name}**.`);
-        }
-        const oldLength = msg.guild.queue.length;
-        msg.guild.queue.push(...playlist.videoList);
-        if (msg.guild.indexQueue >= oldLength) {
-          play(msg);
+        } else {
+          const oldLength = msg.guild.queue.length;
+          msg.guild.queue.push(...playlist.videoList);
+          if (msg.guild.queueTemp) msg.guild.queueTemp.push(...playlist.videoList);
+          if (msg.guild.indexQueue >= oldLength) play(msg);
         }
         return msg.say(`Added playlist **${playlist.name}**.`);
       } catch (err) {
@@ -96,12 +95,11 @@ module.exports = class LoadPlaylistCommand extends Command {
           msg.guild.queue = playlist.videoList;
           msg.guild.indexQueue = 0;
           play(msg);
-          return msg.say(`Added playlist **${playlist.name}**.`);
-        }
-        const oldLength = msg.guild.queue.length;
-        msg.guild.queue.push(...playlist.videoList);
-        if (msg.guild.indexQueue >= oldLength) {
-          play(msg);
+        } else {
+          const oldLength = msg.guild.queue.length;
+          msg.guild.queue.push(...playlist.videoList);
+          if (msg.guild.queueTemp) msg.guild.queueTemp.push(...playlist.videoList);
+          if (msg.guild.indexQueue >= oldLength) play(msg);
         }
         return msg.say(`Added playlist **${playlist.name}**.`);
       } catch (err) {
