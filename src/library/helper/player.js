@@ -188,23 +188,6 @@ async function play(msg, options = {}) {
     return playStream(msg, seek);
   }
 
-  // shuffle
-  if (msg.guild.shuffle) {
-    if (!msg.guild.played) {
-      msg.guild.played = [];
-    }
-    if (msg.guild.played.length < queue.length) {
-      let randIndex = Math.floor(Math.random() * queue.length);
-      while (msg.guild.played.includes(randIndex)) {
-        randIndex = Math.floor(Math.random() * queue.length);
-      }
-      msg.guild.indexQueue = randIndex;
-      msg.guild.played.push(randIndex);
-    } else {
-      msg.guild.indexQueue = queue.length;
-    }
-  }
-
   // autoplay
   if (msg.guild.indexQueue === queue.length) {
     if (msg.guild.autoplay) {
