@@ -31,7 +31,6 @@ module.exports = class LoopCommand extends Command {
     } else {
       msg.guild.loop = turnOn;
     }
-    msg.guild.shuffle = msg.guild.loop ? false : msg.guild.shuffle;
     const embed = {
       color: msg.guild.loop ? 0x11ff00 : 0xff1100,
       description: `Set \`loop\` to **${msg.guild.loop ? 'True' : 'False'}**`

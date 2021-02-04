@@ -54,7 +54,7 @@ module.exports = class QueueCommand extends Command {
     }
 
     // send embed
-    const embedMsg = await msg.say({ embed: setEmbedQueueCmd(queue, index, page, msg, itemsPerPage) });
+    const embedMsg = await msg.say({ embed: setEmbedQueueCmd(msg.guild.queue, index, page, msg, itemsPerPage) });
 
     const emojiNeeded = ['⬅', '➡', '🇽'];
 
@@ -88,7 +88,7 @@ module.exports = class QueueCommand extends Command {
         }
       }
       if (collected.emoji.name === '➡' || collected.emoji.name === '⬅') {
-        return embedMsg.edit({ embed: setEmbedQueueCmd(queue, index, page, msg, itemsPerPage) });
+        return embedMsg.edit({ embed: setEmbedQueueCmd(msg.guild.queue, index, page, msg, itemsPerPage) });
       }
 
     });
