@@ -12,7 +12,7 @@ module.exports = class ShuffleCommand extends Command {
         If set to true, the current queue will be randomized but original queue
         still remain in the memory. Set to false to load the original queue.
       `,
-      examples: ['shuffle', 'shuffle true'],
+      examples: ['shuffle'],
       guildOnly: true,
       throttling: {
         usages: 2,

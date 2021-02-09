@@ -8,7 +8,7 @@ module.exports = class BotLogCommand extends Command {
       group: 'self',
       memberName: 'botlog',
       description: 'Get or clear bot\'s log file',
-      examples: ['botlog', 'botlog delete'],
+      examples: ['botlog', 'botlog clear'],
       guarded: true,
       ownerOnly: true,
       args: [

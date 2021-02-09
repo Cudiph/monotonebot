@@ -38,6 +38,7 @@ async function playStream(msg, seek = 0) {
         msg.guild.autoplay = false;
         msg.guild.loop = false;
         msg.guild.shuffle = false;
+        msg.guild.loopQueue = false;
       });
     }
     if (seek) {
@@ -194,13 +195,13 @@ async function play(msg, options = {}) {
 
   // autoplay
   if (msg.guild.indexQueue === queue.length) {
-    if (msg.guild.autoplay) {
-      return fetchAutoplay(msg);
-    }
-    return msg.say(`Stopped Playing...`);
+    // prioritize autoplay over loopqueue
+    if (msg.guild.autoplay) return fetchAutoplay(msg);
+    else if (msg.guild.loopQueue) msg.guild.indexQueue = 0;
+    else return msg.say(`Stopped Playing...`);
   }
 
-  return await playStream(msg, seek);
+  return playStream(msg, seek);
 
 }
 

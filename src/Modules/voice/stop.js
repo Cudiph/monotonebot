@@ -35,11 +35,13 @@ module.exports = class StopCommand extends Command {
       msg.guild.indexQueue = msg.guild.queue.length;
       msg.guild.autoplay = false;
       msg.guild.loop = false;
+      msg.guild.loopQueue = false;
       msg.guild.me.voice.connection.dispatcher.end();
     }
 
     if (deleteQueue) {
       delete msg.guild.queue;
+      delete msg.guild.queueTemp;
     }
   }
 
