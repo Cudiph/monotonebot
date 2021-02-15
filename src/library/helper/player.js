@@ -39,6 +39,7 @@ async function playStream(msg, seek = 0) {
         msg.guild.loop = false;
         msg.guild.shuffle = false;
         msg.guild.loopQueue = false;
+        msg.channel.messages.delete(msg.guild.embedId).catch(e => e);
       });
     }
     if (seek) {
@@ -67,17 +68,14 @@ async function playStream(msg, seek = 0) {
     dispatcher.on('start', async () => {
       const nowPlaying = await msg.say({ embed: await setEmbedPlaying(msg) });
       // assign now playing embed message id to the queue object
-      msg.guild.queue[indexQ].embedId = nowPlaying.id;
+      msg.guild.embedId = nowPlaying.id;
       msg.channel.stopTyping(true);
     });
 
     // play next song when current song is finished
     dispatcher.on('finish', () => {
       // delete the now playing embed when the track is finished
-      if (msg.guild.queue && msg.guild.queue[indexQ]) {
-        msg.channel.messages.delete(msg.guild.queue[indexQ].embedId)
-          .catch(e => e);
-      }
+      msg.channel.messages.delete(msg.guild.embedId).catch(e => e);
       msg.guild.indexQueue++;
       return play(msg);
     });
