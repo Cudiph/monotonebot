@@ -30,15 +30,17 @@ module.exports = class JumpToCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { indexToPlay }) {
-    if (!msg.guild.me.voice.connection) {
-      return;
-    }
+    if (!msg.guild.me.voice.connection) return;
+
     if (indexToPlay < 0 || indexToPlay >= msg.guild.queue.length) {
       return msg.say(`Current total queue is 0-${msg.guild.queue.length - 1}`);
     }
-    msg.guild.indexQueue = indexToPlay;
+
+    if (msg.guild.loop) msg.guild.indexQueue = ++indexToPlay;
+    else msg.guild.indexQueue = indexToPlay;
+
     if (msg.guild.me.voice.connection.dispatcher && msg.guild.me.voice.connection.dispatcher.paused) {
       return play(msg);
     } else if (msg.guild.me.voice.connection.dispatcher) {

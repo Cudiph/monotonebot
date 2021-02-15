@@ -33,15 +33,13 @@ module.exports = class JumpCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { numberToJump }) {
     // return if not connected
-    if (!msg.guild.me.voice.connection) {
-      return;
-    }
+    if (!msg.guild.me.voice.connection) return;
 
-    // now i know why. dispatcher.end() handled it all lol
-    msg.guild.indexQueue += numberToJump - 1;
+    if (msg.guild.loop) msg.guild.indexQueue += numberToJump;
+    else msg.guild.indexQueue += numberToJump - 1;
 
     if (msg.guild.me.voice.connection.dispatcher && msg.guild.me.voice.connection.dispatcher.paused) {
       msg.guild.indexQueue++;
