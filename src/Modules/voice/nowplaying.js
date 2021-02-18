@@ -49,28 +49,28 @@ module.exports = class NowPlayingCommand extends Command {
           inline: true,
         },
         {
-          name: `Likes :thumbsup:`,
+          name: `Likes 👍`,
           value: trackInfo.videoDetails.likes,
           inline: true,
         },
         {
-          name: `Dislikes :thumbsdown:`,
+          name: `Dislikes 👎`,
           value: trackInfo.videoDetails.dislikes,
           inline: true,
         },
         {
           name: `Paused?`,
-          value: msg.guild.me.voice.connection.dispatcher.paused ? ':white_check_mark:' : ':x:',
+          value: msg.guild.me.voice.connection.dispatcher.paused ? '✅' : '❌',
           inline: true,
         },
         {
           name: `Loop?`,
-          value: msg.guild.loop ? ':white_check_mark:' : ':x:',
+          value: msg.guild.loop ? '✅' : '❌',
           inline: true,
         },
         {
-          name: `Shuffle?`,
-          value: msg.guild.shuffle ? ':white_check_mark:' : ':x:',
+          name: `LoopQueue?`,
+          value: msg.guild.loopQueue ? '✅' : '❌',
           inline: true,
         },
         {
@@ -80,7 +80,7 @@ module.exports = class NowPlayingCommand extends Command {
         },
         {
           name: `Autoplay?`,
-          value: msg.guild.autoplay ? ':white_check_mark:' : ':x:',
+          value: msg.guild.autoplay ? '✅' : '❌',
           inline: true,
         },
         {
@@ -96,8 +96,8 @@ module.exports = class NowPlayingCommand extends Command {
 
     let counter = 0;
     const related = [];
-    for (const iter of trackInfo.related_videos) {
-      related.push(`• ${iter.title} by ${iter.author.name}`);
+    for (const track of trackInfo.related_videos) {
+      related.push(`• ${track.title} by ${track.author.name}`);
       if (counter > 3) break;
       counter++;
     }

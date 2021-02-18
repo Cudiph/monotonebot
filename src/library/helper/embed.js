@@ -138,8 +138,8 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
 
   embed.fields.push(
     {
-      name: `Volume`,
-      value: `${msg.guild.volume * 100}`,
+      name: `Total Tracks`,
+      value: `${msg.guild.queue.length}`,
       inline: true,
     },
     {
@@ -148,8 +148,8 @@ function setEmbedQueueCmd(dataList, indexPage, page, msg, itemsPerPage) {
       inline: true,
     },
     {
-      name: `Autoplay`,
-      value: `${msg.guild.autoplay ? 'True' : 'False'}`,
+      name: `Shuffle`,
+      value: `${msg.guild.shuffle ? '✅' : '❌'}`,
       inline: true,
     }
   );
