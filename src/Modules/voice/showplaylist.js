@@ -156,7 +156,7 @@ module.exports = class ShowPlaylistCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { playlistId }) {
     // variabel to store data :)
     let page = 0;

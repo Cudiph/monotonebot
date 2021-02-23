@@ -1,6 +1,5 @@
 const { Command } = require('discord.js-commando');
 const { toSeconds, toTimestamp, randomHex } = require('../../library/helper/discord-item');
-const { play } = require('../../library/helper/player');
 
 
 /**
@@ -12,7 +11,7 @@ const { play } = require('../../library/helper/player');
 function seekEmbed(template, msg) {
   const queue = msg.guild.queue;
   const indexQ = msg.guild.indexQueue;
-  const seekTime = queue[indexQ].seekTime ? queue[indexQ].seekTime : 0;
+  const seekTime = queue[indexQ].seekTime || 0;
   const currentTime = Math.floor(msg.guild.me.voice.connection.dispatcher.streamTime / 1000) + seekTime;
   let totalTime = 0;
   for (let i = 0; i < indexQ + 1; i++) {
@@ -102,10 +101,10 @@ module.exports = class SeekCommand extends Command {
       }
 
       if (timestamp > 600) {
-        return msg.reply(`Currenty seeking is support up to 10 minutes due to performance issue`);
+        return msg.reply(`Currently seeking is support up to 10 minutes due to performance issue`);
       }
 
-      play(msg, { seek: timestamp });
+      msg.guild.play(msg, { seek: timestamp });
       return msg.say(`Playing ${queue[indexQ].title} at **${toTimestamp(timestamp)}**`);
     }
 

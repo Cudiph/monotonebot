@@ -1,5 +1,4 @@
 const { Command } = require('discord.js-commando');
-const { play } = require('../../library/helper/player');
 
 module.exports = class AutoPlayCommand extends Command {
   constructor(client) {
@@ -43,7 +42,7 @@ module.exports = class AutoPlayCommand extends Command {
     }
 
     if (msg.guild.queue && msg.guild.queue.length && (msg.guild.indexQueue >= msg.guild.queue.length)) {
-      play(msg);
+      msg.guild.play(msg);
     }
     return msg.say({ embed });
   }

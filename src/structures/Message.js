@@ -29,44 +29,40 @@ module.exports = Structures.extend('Message', Message => {
 
       // too lazy to make json or whatever it used for i18n
       // A little bit broken when dealing with names because command name and variable name are translated
-      let translated;
       if (content && type !== 'code' && this.guild && this.guild.language !== 'en') {
         const langCacheKey = `${this.guild.language}-${splittedContent[0]}-${content.length}`;
         if (!this.client.langCache.has(langCacheKey)) {
           try {
-            translated = await gtrans(content, { to: this.guild.language, content: ['t'] })
+            content = await gtrans(content, { to: this.guild.language, content: ['t'] })
               .then(res => res.data.translated.replace(/<jhghghggvyty> ?/g, '```').replace(/<defffgghhh>/g, '``'));
-            this.client.langCache.set(langCacheKey, translated);
+            this.client.langCache.set(langCacheKey, content);
           } catch (e) {
-            translated = content;
             logger.error(e);
           }
         } else {
-          translated = this.client.langCache.get(langCacheKey);
+          content = this.client.langCache.get(langCacheKey);
         }
-      } else {
-        translated = content;
       }
 
       switch (type) {
         case 'plain':
-          if (!shouldEdit) return this.channel.send(translated, options);
-          return this.editCurrentResponse(channelIDOrDM(this.channel), { type, translated, options });
+          if (!shouldEdit) return this.channel.send(content, options);
+          return this.editCurrentResponse(channelIDOrDM(this.channel), { type, content, options });
         case 'reply':
-          if (!shouldEdit) return this._originalReply(translated, options);
+          if (!shouldEdit) return this._originalReply(content, options);
           if (options && options.split && !options.split.prepend) options.split.prepend = `${this.author}, `;
-          return this.editCurrentResponse(channelIDOrDM(this.channel), { type, translated, options });
+          return this.editCurrentResponse(channelIDOrDM(this.channel), { type, content, options });
         case 'direct':
-          if (!shouldEdit) return this.author.send(translated, options);
-          return this.editCurrentResponse('dm', { type, translated, options });
+          if (!shouldEdit) return this.author.send(content, options);
+          return this.editCurrentResponse('dm', { type, content, options });
         case 'code':
-          if (!shouldEdit) return this.channel.send(translated, options);
+          if (!shouldEdit) return this.channel.send(content, options);
           if (options && options.split) {
             if (!options.split.prepend) options.split.prepend = `\`\`\`${lang || ''}\n`;
             if (!options.split.append) options.split.append = '\n```';
           }
-          translated = `\`\`\`${lang || ''}\n${escapeMarkdown(translated, true)}\n\`\`\``;
-          return this.editCurrentResponse(channelIDOrDM(this.channel), { type, translated, options });
+          content = `\`\`\`${lang || ''}\n${escapeMarkdown(content, true)}\n\`\`\``;
+          return this.editCurrentResponse(channelIDOrDM(this.channel), { type, content, options });
         default:
           throw new RangeError(`Unknown response type "${type}".`);
       }

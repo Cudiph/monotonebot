@@ -1,7 +1,6 @@
 const { oneLine } = require('common-tags');
 const { Command } = require('discord.js-commando');
 const { userDataSchema } = require('../../library/Database/schema.js');
-const { play } = require('../../library/helper/player.js');
 
 module.exports = class LoadPlaylistCommand extends Command {
   constructor(client) {
@@ -57,12 +56,12 @@ module.exports = class LoadPlaylistCommand extends Command {
         if (!msg.guild.queue) {
           msg.guild.queue = playlist.videoList;
           msg.guild.indexQueue = 0;
-          play(msg);
+          msg.guild.play(msg);
         } else {
           const oldLength = msg.guild.queue.length;
           msg.guild.queue.push(...playlist.videoList);
           if (msg.guild.queueTemp) msg.guild.queueTemp.push(...playlist.videoList);
-          if (msg.guild.indexQueue >= oldLength) play(msg);
+          if (msg.guild.indexQueue >= oldLength) msg.guild.play(msg);
         }
         return msg.say(`Added playlist **${playlist.name}**.`);
       } catch (err) {
@@ -94,12 +93,12 @@ module.exports = class LoadPlaylistCommand extends Command {
         if (!msg.guild.queue) {
           msg.guild.queue = playlist.videoList;
           msg.guild.indexQueue = 0;
-          play(msg);
+          msg.guild.play(msg);
         } else {
           const oldLength = msg.guild.queue.length;
           msg.guild.queue.push(...playlist.videoList);
           if (msg.guild.queueTemp) msg.guild.queueTemp.push(...playlist.videoList);
-          if (msg.guild.indexQueue >= oldLength) play(msg);
+          if (msg.guild.indexQueue >= oldLength) msg.guild.play(msg);
         }
         return msg.say(`Added playlist **${playlist.name}**.`);
       } catch (err) {

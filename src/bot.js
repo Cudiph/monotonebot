@@ -1,8 +1,8 @@
 // importing some required modules / files
 const fs = require('fs');
-const { CommandoClient } = require('discord.js-commando');
 const path = require('path');
 const winston = require('winston');
+const MonoClient = require('./structures/Client');
 
 // winston logger
 global.logger = winston.createLogger({
@@ -15,7 +15,7 @@ global.logger = winston.createLogger({
 });
 
 // declaring some discord.js function
-const client = new CommandoClient({
+const client = new MonoClient({
   commandPrefix: '..',
   owner: '400240052761788427',
   unknownCommandResponse: false,

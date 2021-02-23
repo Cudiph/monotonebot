@@ -36,9 +36,9 @@ module.exports = class QueueCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { toPage, itemsPerPage }) {
-    if (!msg.guild.queue) {
+    if (!msg.guild.queue.length) {
       return msg.say(`There is no queue.`);
     }
 

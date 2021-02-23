@@ -30,7 +30,7 @@ module.exports = class ShuffleCommand extends Command {
     if (msg.guild.shuffle) {
       msg.guild.loop = false;
       msg.guild.queueTemp = msg.guild.queue.slice();
-      shuffleArray(msg.guild.queue);
+      msg.guild.shuffleQueue();
     } else {
       msg.guild.queue = msg.guild.queueTemp.slice();
       delete msg.guild.queueTemp;
@@ -50,10 +50,10 @@ module.exports = class ShuffleCommand extends Command {
  * @see {@link https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array}
  * @param {Array<any>} arr
  */
-function shuffleArray(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
+// function shuffleArray(arr) {
+//   for (let i = arr.length - 1; i > 0; i--) {
+//     const j = Math.floor(Math.random() * (i + 1));
+//     [arr[i], arr[j]] = [arr[j], arr[i]];
+//   }
+//   return arr;
+// }

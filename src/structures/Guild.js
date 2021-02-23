@@ -140,7 +140,7 @@ module.exports = Structures.extend('Guild', Guild => {
 
         // give data when dispatcher start
         dispatcher.on('start', async () => {
-          const nowPlaying = await msg.say({ embed: await setEmbedPlaying(msg) });
+          const nowPlaying = await msg.embed(setEmbedPlaying(msg));
           // assign now playing embed message id to the queue object
           this.playingEmbedID = nowPlaying.id;
           msg.channel.stopTyping(true);

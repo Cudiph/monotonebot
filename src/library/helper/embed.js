@@ -17,7 +17,7 @@ const { guildSettingsSchema } = require('../Database/schema.js');
  * Property for a now playing embed
  * @param {import("discord.js-commando").CommandoMessage} msg message from text channel
  */
-async function setEmbedPlaying(msg) {
+function setEmbedPlaying(msg) {
   const music = msg.guild.queue[msg.guild.indexQueue];
   const embed = {
     color: parseInt(randomHex(), 16),

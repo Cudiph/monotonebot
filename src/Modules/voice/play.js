@@ -3,7 +3,6 @@ const yts = require('yt-search');
 const { emoji } = require('../../library/helper/discord-item.js');
 const { Command } = require('discord.js-commando');
 const { oneLine } = require('common-tags');
-const { player } = require('../../library/helper/player.js');
 const { setEmbedPlayCmd } = require('../../library/helper/embed.js');
 
 /**
@@ -82,13 +81,14 @@ module.exports = class PlayCommand extends Command {
         if (data) {
           const dataConstructor = {
             title: data.videoDetails.title,
-            url: data.videoDetails.video_url,
+            link: data.videoDetails.video_url,
             videoId: vidId,
-            author: data.videoDetails.author.name ? data.videoDetails.author : { name: data.videoDetails.ownerChannelName },
+            uploader: data.videoDetails.author.name || data.videoDetails.ownerChannelName,
             seconds: data.videoDetails.lengthSeconds,
+            author: msg.author.tag,
             isLive: data.videoDetails.isLiveContent,
           };
-          return player(dataConstructor, message);
+          return message.guild.pushToQueue(dataConstructor, message);
         }
 
       }
@@ -156,7 +156,7 @@ module.exports = class PlayCommand extends Command {
             data.isLive = (await ytdl.getBasicInfo(data.videoId)).videoDetails.isLiveContent;
           }
           msg.delete();
-          return player(data, message);
+          return message.guild.pushToQueue(data, message);
         }
       });
 
