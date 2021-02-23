@@ -10,7 +10,7 @@ module.exports = Structures.extend('Message', Message => {
       super(...args);
     }
 
-    async respond({ type = 'reply', content, options, lang, fromEdit = false, noTranslate = false }) {
+    async respond({ type = 'reply', content, options, lang, fromEdit = false }) {
       const shouldEdit = this.responses && !fromEdit;
       if (shouldEdit) {
         if (options && options.split && typeof options.split !== 'object') options.split = {};
@@ -29,7 +29,7 @@ module.exports = Structures.extend('Message', Message => {
 
       // too lazy to make json or whatever it used for i18n
       // A little bit broken when dealing with names because command name and variable name are translated
-      if (!noTranslate && content && type !== 'code' && this.guild && this.guild.language !== 'en') {
+      if (content && type !== 'code' && this.guild && this.guild.language !== 'en') {
         const langCacheKey = `${this.guild.language}-${splittedContent[0]}-${content.length}`;
         if (!this.client.langCache.has(langCacheKey)) {
           try {

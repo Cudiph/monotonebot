@@ -16,6 +16,7 @@ module.exports = {
     'curly': ['error', 'multi-line', 'consistent'],
     "comma-spacing": ["error", { "before": false, "after": true }],
     "dot-location": ["error", "property"],
+    "eol-last": ["error", "always"],
     "indent": ["error", 2],
     "max-nested-callbacks": ["error", { "max": 3 }],
     "max-statements-per-line": ["error", { "max": 2 }],

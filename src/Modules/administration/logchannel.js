@@ -1,5 +1,5 @@
 const { stripIndents } = require('common-tags');
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
 
 module.exports = class LogChannelCommand extends Command {
@@ -78,15 +78,4 @@ module.exports = class LogChannelCommand extends Command {
     }
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

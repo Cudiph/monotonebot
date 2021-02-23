@@ -1,6 +1,6 @@
 const axios = require('axios').default;
 const { oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 
 module.exports = class AniSafeCommand extends Command {
   constructor(client) {

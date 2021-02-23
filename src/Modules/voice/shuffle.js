@@ -1,5 +1,5 @@
 const { oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 
 module.exports = class ShuffleCommand extends Command {
   constructor(client) {

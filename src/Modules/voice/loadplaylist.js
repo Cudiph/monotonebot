@@ -1,5 +1,5 @@
 const { oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const { userDataSchema } = require('../../library/Database/schema.js');
 
 module.exports = class LoadPlaylistCommand extends Command {

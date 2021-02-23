@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const { stripIndents, oneLine } = require('common-tags');
 const { userDataSchema } = require('../../library/Database/schema.js');
 const { randomHex } = require('../../library/helper/discord-item.js');
