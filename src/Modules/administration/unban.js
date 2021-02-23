@@ -1,5 +1,5 @@
 const { Command } = require('discord.js-commando');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+
 
 module.exports = class UnbanCommand extends Command {
   constructor(client) {
@@ -48,7 +48,7 @@ module.exports = class UnbanCommand extends Command {
     msg.guild.members.unban(bannedUser, reason)
       .then(user => {
         const res = `Unbanned **${user.username}#${user.discriminator}** from **${msg.guild.name}**`;
-        return sendtoLogChan(msg, { strMsg: res });
+        return msg.sendtoLogChan({ strMsg: res });
       })
       .catch(err => {
         // due to missing permissions or role hierarchy

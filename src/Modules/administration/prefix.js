@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
 const { oneLine, stripIndents } = require('common-tags');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+
 
 async function writePrefix(newPrefix, msg) {
   // set new prefix for guild
@@ -93,7 +93,7 @@ module.exports = class PrefixCommand extends Command {
         .addField('To', `**${args.prefix}**`, true)
         .addField('Usage', `${msg.anyUsage('command')}`);
       // send embed to log channel if exist
-      sendtoLogChan(msg, { embedMsg: embed });
+      msg.sendtoLogChan({ embedMsg: embed });
     }
     return null;
   }

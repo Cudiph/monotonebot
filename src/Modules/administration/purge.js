@@ -1,6 +1,6 @@
 const { Command } = require('discord.js-commando');
 const { stripIndents } = require('common-tags');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+
 
 module.exports = class PurgeCommand extends Command {
   constructor(client) {
@@ -48,7 +48,7 @@ module.exports = class PurgeCommand extends Command {
       const messages = await msg.channel.messages.fetch({ limit: total });
       msg.channel.bulkDelete(messages).then(deletedMessages => {
         const response = `Bulk deleted **${deletedMessages.size}** messages on <#${msg.channel.id}>`;
-        return sendtoLogChan(msg, { strMsg: response });
+        return msg.sendtoLogChan({ strMsg: response });
       }).catch(err => {
         logger.log('error', err);
         msg.say(stripIndents`

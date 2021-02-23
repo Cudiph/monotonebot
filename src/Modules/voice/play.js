@@ -3,7 +3,6 @@ const yts = require('yt-search');
 const { emoji } = require('../../library/helper/discord-item.js');
 const { Command } = require('discord.js-commando');
 const { oneLine } = require('common-tags');
-const { setEmbedPlayCmd } = require('../../library/helper/embed.js');
 
 /**
  * Modified from ytdl.getURLVideoID to get Video ID from a link
@@ -40,10 +39,10 @@ module.exports = class PlayCommand extends Command {
       argsType: 'multiple',
       guildOnly: true,
       details: oneLine`
-      Play audio from youtube. You can play with query or with a link in
-      argument. If you want to resume your track please use resume instead
-      because if you use play then it'll start over again when paused so use it to restart
-      the player with no argument.
+        Play audio from youtube. You can play with query or with a link in
+        argument. If you want to resume your track please use resume instead
+        because if you use play then it'll start over again when paused so use it to restart
+        the player with no argument.
       `,
       throttling: {
         usages: 2,
@@ -60,15 +59,15 @@ module.exports = class PlayCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
-  async run(message, { queryOrUrl }) {
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
+  async run(msg, { queryOrUrl }) {
     // if not in voice channel
-    if (!message.member.voice.channel) {
+    if (!msg.member.voice.channel) {
       // send message if author not connected to voice channel
-      return message.channel.send("You're not connected to any voice channel");
+      return msg.channel.send("You're not connected to any voice channel");
     }
 
-    if (message.member.voice.channel) {
+    if (msg.member.voice.channel) {
       // check if author send a youtube link or video Id
       if (myGetVidID(queryOrUrl) || ytdl.validateID(queryOrUrl)) {
         const vidId = myGetVidID(queryOrUrl);
@@ -76,7 +75,7 @@ module.exports = class PlayCommand extends Command {
         try {
           data = await ytdl.getBasicInfo(vidId);
         } catch (e) {
-          message.reply('No video with that URL or ID found.');
+          msg.reply('No video with that URL or ID found.');
         }
         if (data) {
           const dataConstructor = {
@@ -85,85 +84,84 @@ module.exports = class PlayCommand extends Command {
             videoId: vidId,
             uploader: data.videoDetails.author.name || data.videoDetails.ownerChannelName,
             seconds: data.videoDetails.lengthSeconds,
-            author: msg.author.tag,
+            author: embedMsg.author.tag,
             isLive: data.videoDetails.isLiveContent,
           };
-          return message.guild.pushToQueue(dataConstructor, message);
+          return msg.guild.pushToQueue(dataConstructor, msg);
         }
 
       }
 
-      message.channel.startTyping(); // start type indicator cuz it'll be a while
+      msg.channel.startTyping(); // start type indicator cuz it'll be a while
       const { videos } = await yts(queryOrUrl); // fetch yt vid using yt-search module
       if (!videos.length) {
-        message.channel.stopTyping(true); // stop typing indicator
-        return message.say('No video found');
+        msg.channel.stopTyping(true); // stop typing indicator
+        return msg.say('No video found');
       }
 
       let page = 0; // for page
-      let music = 0; // for choosing music index
+      let selectIndex = 0; // for choosing music index
       const itemsPerPage = 5; // set items showed per page
 
-      const Embed = setEmbedPlayCmd(videos, music, page, message, itemsPerPage);
       const emojiNeeded = [emoji[1], emoji[2], emoji[3], emoji[4], emoji[5], emoji.leftA, emoji.rightA, emoji.x];
 
-      const msg = await message.say({ embed: Embed });
+      const embedMsg = await msg.embed(msg.createEmbedPlay(videos, selectIndex, page, itemsPerPage));
       msg.channel.stopTyping(true); // stop typing indicator
 
       const filter = (reaction, user) => {
-        return emojiNeeded.includes(reaction.emoji.name) && user.id === message.author.id;
+        return emojiNeeded.includes(reaction.emoji.name) && user.id === msg.author.id;
       };
-      const collector = msg.createReactionCollector(filter, { time: 60000, dispose: true });
+      const collector = embedMsg.createReactionCollector(filter, { time: 60000, dispose: true });
 
       collector.on('collect', async collected => {
         if (collected.emoji.name === emoji.x) {
-          msg.delete();
+          embedMsg.delete();
         } else if (collected.emoji.name === '⬅') {
           // decrement index for list
           page--;
-          music -= itemsPerPage;
+          selectIndex -= itemsPerPage;
           if (page < 0) {
             page = 0;
-            music = 0;
+            selectIndex = 0;
             return;
           }
         } else if (collected.emoji.name === '➡') {
           // increment index for list
           page++;
-          music += itemsPerPage;
+          selectIndex += itemsPerPage;
           // when page exceed the max of video length
           if (page + 1 > Math.ceil(videos.length / itemsPerPage)) {
             page = (Math.ceil(videos.length / itemsPerPage)) - 1;
-            music -= itemsPerPage;
+            selectIndex -= itemsPerPage;
             return;
           }
         }
         if (collected.emoji.name === '➡' || collected.emoji.name === '⬅') {
-          const embed2 = setEmbedPlayCmd(videos, music, page, message, itemsPerPage);
-          return msg.edit({ embed: embed2 });
+          const editedEmbed = embedMsg.createEmbedPlay(videos, selectIndex, page, itemsPerPage);
+          return embedMsg.edit({ embed: editedEmbed });
         }
 
+        // user selecting a track
         if (emojiNeeded.slice(0, 5).includes(collected.emoji.name)) {
           const reversed = Object.keys(emoji).find(key => emoji[key] === collected.emoji.name);
           const intEmoji = parseInt(reversed);
-          if ((music + intEmoji) > videos.length) {
+          if ((selectIndex + intEmoji) > videos.length) {
             // return if user choose more than the available song
-            msg.delete();
-            return message.reply(`Please choose the correct number.`);
+            embedMsg.delete();
+            return msg.reply(`Please choose the correct number.`);
           }
-          const data = videos[music + intEmoji - 1];
-          if (data.seconds === 0) {
-            data.isLive = (await ytdl.getBasicInfo(data.videoId)).videoDetails.isLiveContent;
-          }
-          msg.delete();
-          return message.guild.pushToQueue(data, message);
+          const data = videos[selectIndex + intEmoji - 1];
+          data.link = data.url;
+          data.uploader = data.author.name;
+          data.author = msg.author.tag;
+          data.isLive = data.seconds === 0 ? true : false;
+          embedMsg.delete();
+          return msg.guild.pushToQueue(data, msg);
         }
       });
 
       for (let i = 0; i < emojiNeeded.length; i++) {
-        if (msg) {
-          await msg.react(emojiNeeded[i]).catch(e => e);
-        }
+        if (embedMsg) await embedMsg.react(emojiNeeded[i]).catch(e => e);
       }
 
     }

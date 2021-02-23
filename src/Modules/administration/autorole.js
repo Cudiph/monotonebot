@@ -1,6 +1,6 @@
 const { Command } = require('discord.js-commando');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+
 
 module.exports = class AutoRoleCommand extends Command {
   constructor(client) {
@@ -76,7 +76,7 @@ module.exports = class AutoRoleCommand extends Command {
       const newGuildSettings = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
         autoAssignRoleId: role.id,
       }, { new: true, upsert: true });
-      return sendtoLogChan(msg, { strMsg: `Assignment successful, new auto role is <@&${newGuildSettings.autoAssignRoleId}>` });
+      return msg.sendtoLogChan({ strMsg: `Assignment successful, new auto role is <@&${newGuildSettings.autoAssignRoleId}>` });
     } catch (err) {
       logger.log('error', err.stack);
       return msg.reply(`Can't update new log channel.`);

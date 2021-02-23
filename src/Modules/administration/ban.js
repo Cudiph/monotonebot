@@ -1,6 +1,6 @@
 const { Command } = require('discord.js-commando');
 const Discord = require('discord.js');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+
 
 module.exports = class BanCommand extends Command {
   constructor(client) {
@@ -58,7 +58,7 @@ module.exports = class BanCommand extends Command {
           .setFooter(`Banned by ${msg.author.username}#${msg.author.discriminator}`,
             `${msg.author.displayAvatarURL()}`);
 
-        return sendtoLogChan(msg, { embedMsg: embedMsg });
+        return msg.sendtoLogChan({ embedMsg: embedMsg });
       } catch (e) {
         // due to missing permissions or role hierarchy
         msg.reply(`I was unable to ban the member`);

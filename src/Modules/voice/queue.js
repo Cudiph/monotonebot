@@ -1,5 +1,4 @@
 const { Command } = require('discord.js-commando');
-const { setEmbedQueueCmd } = require('../../library/helper/embed.js');
 const { emoji } = require('../../library/helper/discord-item.js');
 
 module.exports = class QueueCommand extends Command {
@@ -54,7 +53,7 @@ module.exports = class QueueCommand extends Command {
     }
 
     // send embed
-    const embedMsg = await msg.say({ embed: setEmbedQueueCmd(msg.guild.queue, index, page, msg, itemsPerPage) });
+    const embedMsg = await msg.embed(msg.createEmbedQueue(index, page, itemsPerPage));
 
     const emojiNeeded = ['⬅', '➡', '🇽'];
 
@@ -88,7 +87,7 @@ module.exports = class QueueCommand extends Command {
         }
       }
       if (collected.emoji.name === '➡' || collected.emoji.name === '⬅') {
-        return embedMsg.edit({ embed: setEmbedQueueCmd(msg.guild.queue, index, page, msg, itemsPerPage) });
+        return embedMsg.edit({ embed: embedMsg.createEmbedQueue(index, page, itemsPerPage) });
       }
 
     });

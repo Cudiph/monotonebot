@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+
 
 module.exports = class KickCommand extends Command {
   constructor(client) {
@@ -57,7 +57,7 @@ module.exports = class KickCommand extends Command {
         .setFooter(`Kicked by ${msg.author.username}#${msg.author.discriminator}`,
           `${msg.author.displayAvatarURL()}`);
 
-      return sendtoLogChan(msg, { embedMsg: embedMsg });
+      return msg.sendtoLogChan({ embedMsg: embedMsg });
 
     } catch (e) {
       // due to missing permissions or role hierarchy

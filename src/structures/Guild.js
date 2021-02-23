@@ -1,5 +1,4 @@
 const { Structures } = require('discord.js');
-const { setEmbedPlaying } = require('../library/helper/embed.js');
 const ytdl = require('discord-ytdl-core');
 const { oneLine, stripIndents } = require('common-tags');
 
@@ -15,15 +14,8 @@ const { oneLine, stripIndents } = require('common-tags');
   * @property {?number} seekTime - seek value to use in seek command
  */
 
-/**
- * Commando Guild with custom method
- * @extends {import('discord.js-commando').CommandoGuild}
- */
 module.exports = Structures.extend('Guild', Guild => {
 
-  /**
-   * @extends {import('discord.js-commando').CommandoGuild}
-   */
   class MonoGuild extends Guild {
     constructor(...args) {
       super(...args);
@@ -140,7 +132,7 @@ module.exports = Structures.extend('Guild', Guild => {
 
         // give data when dispatcher start
         dispatcher.on('start', async () => {
-          const nowPlaying = await msg.embed(setEmbedPlaying(msg));
+          const nowPlaying = await msg.sendEmbedPlaying();
           // assign now playing embed message id to the queue object
           this.playingEmbedID = nowPlaying.id;
           msg.channel.stopTyping(true);
