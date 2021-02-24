@@ -249,6 +249,15 @@ module.exports = Structures.extend('Message', Message => {
 
     }
 
+    /**
+     * send and delete the message for a short amount of time
+     * @param {ResolvableString} content
+     * @param {MessageOptions} options
+     */
+    said(content, options, timeout = 1e4) {
+      this.say(content, options).then(msg => msg.delete({ timeout })).catch(e => e);
+    }
+
   }
 
   return MonoMessage;

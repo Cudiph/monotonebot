@@ -1,5 +1,6 @@
 const Command = require('../../structures/Command.js');
 const { guildSettingsSchema } = require('../../library/Database/schema.js');
+const gtrans = require('node-gtrans');
 
 
 module.exports = class GuildConfigCommand extends Command {
@@ -41,8 +42,8 @@ module.exports = class GuildConfigCommand extends Command {
           inline: true,
         },
         {
-          name: 'Volume',
-          value: (guildSettings.volume || 0.5) * 100,
+          name: 'Language',
+          value: gtrans.validateLangId(msg.guild.language),
           inline: true,
         },
         {

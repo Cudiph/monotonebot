@@ -24,6 +24,7 @@ client.on('message', async msg => {
         } else {
           msg.guild.commandPrefix = check.prefix;
           msg.guild.volume = check.volume;
+          msg.guild.language = check.language;
         }
 
         if (check) {
@@ -34,7 +35,7 @@ client.on('message', async msg => {
       }
     }
 
-    if (msg.content.startsWith(msg.guild.commandPrefix)) {
+    if (msg.isCommand) {
       updateUser(msg);
     }
 
@@ -53,7 +54,6 @@ async function updateUser(msg) {
     await userDataSchema.findOneAndUpdate({ userId: msg.author.id }, {
       $inc: { exp: 1, money: msg.content.length * 5 },
     }, { upsert: true, setDefaultsOnInsert: true, new: true });
-
   } catch (e) {
     return e;
   }

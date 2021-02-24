@@ -73,6 +73,12 @@ module.exports = Structures.extend('Guild', Guild => {
        * @type {?string}
        */
       this.playingEmbedID = null;
+
+      /**
+       * Cached state
+       * @type {boolean}
+       */
+      this.isCached = false;
     }
 
     resetPlayer() {
