@@ -48,7 +48,7 @@ module.exports = class PurgeCommand extends Command {
       const messages = await msg.channel.messages.fetch({ limit: total });
       msg.channel.bulkDelete(messages).then(deletedMessages => {
         const response = `Bulk deleted **${deletedMessages.size}** messages on <#${msg.channel.id}>`;
-        return msg.sendtoLogChan({ strMsg: response });
+        return msg.sendToLogChan({ strMsg: response });
       }).catch(err => {
         logger.log('error', err);
         msg.say(stripIndents`

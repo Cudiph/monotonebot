@@ -39,7 +39,8 @@ module.exports = Structures.extend('Message', Message => {
                 return res.data.translated
                   .replace(/<jhghghggvyty> ?/g, '```')
                   .replace(/<defffgghhh>/g, '``')
-                  .replace(/\s+(?=[^<]*>)/g, '');
+                  .replace(/\s+(?=[^<]*>)/g, '')
+                  .replace(/(\*+)\s*(.*?)\s*(\*+)/g, '$1$2$3');
               });
             this.client.langCache.set(langCacheKey, content);
           } catch (e) {
@@ -226,23 +227,17 @@ module.exports = Structures.extend('Message', Message => {
     }
 
     /**
-     * Log to logchannel for moderation commands
-     * @param {import("discord.js-commando").CommandoMessage} this msg
-     * @param {Object} options options
-     * @param {import("discord.js").MessageEmbed} [options.embedMsg] embed msg to sent
-     * @param {string} [options.strMsg] raw string to sent
+     * Log to logchannel for moderation commands if any, otherwise send to this channel
+     * @param {Object} [options] - embed or string message
      */
-    async sendtoLogChan(options = {}) {
-      const { embedMsg, strMsg } = options;
+    async sendToLogChan({ embedMsg, strMsg }) {
       const guildSetting = await guildSettingsSchema.findOne({ guildId: this.guild.id });
       const logChan = guildSetting ? this.guild.channels.cache.get(guildSetting.logChannelId) : false;
       if (embedMsg) {
         if (logChan && logChan.permissionsFor(this.guild.me.id).has('SEND_MESSAGES')) {
           logChan.send({ embed: embedMsg });
         } else {
-          return this.say({
-            embed: embedMsg
-          });
+          return this.embed(embedMsg);
         }
       } else if (strMsg) {
         if (logChan && logChan.permissionsFor(this.guild.me.id).has('SEND_MESSAGES')) {

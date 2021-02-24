@@ -58,7 +58,7 @@ module.exports = class BanCommand extends Command {
           .setFooter(`Banned by ${msg.author.username}#${msg.author.discriminator}`,
             `${msg.author.displayAvatarURL()}`);
 
-        return msg.sendtoLogChan({ embedMsg: embedMsg });
+        return msg.sendToLogChan({ embedMsg: embedMsg });
       } catch (e) {
         // due to missing permissions or role hierarchy
         msg.reply(`I was unable to ban the member`);

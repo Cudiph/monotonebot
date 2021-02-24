@@ -57,7 +57,7 @@ module.exports = class KickCommand extends Command {
         .setFooter(`Kicked by ${msg.author.username}#${msg.author.discriminator}`,
           `${msg.author.displayAvatarURL()}`);
 
-      return msg.sendtoLogChan({ embedMsg: embedMsg });
+      return msg.sendToLogChan({ embedMsg: embedMsg });
 
     } catch (e) {
       // due to missing permissions or role hierarchy

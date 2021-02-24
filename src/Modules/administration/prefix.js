@@ -93,7 +93,7 @@ module.exports = class PrefixCommand extends Command {
         .addField('To', `**${args.prefix}**`, true)
         .addField('Usage', `${msg.anyUsage('command')}`);
       // send embed to log channel if exist
-      msg.sendtoLogChan({ embedMsg: embed });
+      msg.sendToLogChan({ embedMsg: embed });
     }
     return null;
   }
