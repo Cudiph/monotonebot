@@ -45,12 +45,12 @@ module.exports = class DmCommand extends Command {
         .setColor('#ff548e')
         .setTitle(`Subject ${title}`)
         .setDescription(value)
-        .setFooter(`Sent by ${msg.author.username}#${msg.author.discriminator} at guild '${msg.channel.guild.name}'`, msg.author.displayAvatarURL());
+        .setFooter(`Sent by ${msg.author.tag} at guild '${msg.channel.guild.name}'`, msg.author.displayAvatarURL());
     } else {
       EmbedMsg = new Discord.MessageEmbed()
         .setColor('#ff548e')
         .setDescription(title)
-        .setFooter(`Sent by ${msg.author.username}#${msg.author.discriminator} at guild '${msg.channel.guild.name}'`, msg.author.displayAvatarURL());
+        .setFooter(`Sent by ${msg.author.tag} at guild '${msg.channel.guild.name}'`, msg.author.displayAvatarURL());
     }
     user.send(EmbedMsg).then(() => {
       msg.say('Message sent successfully');

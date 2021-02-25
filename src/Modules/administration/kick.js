@@ -44,7 +44,7 @@ module.exports = class KickCommand extends Command {
     // } else {
     //   return msg.say('Invalid Id or Argument');
     // }
-    const kickedName = `${member.user.username}#${member.user.discriminator} <${member.user.id}>`;
+    const kickedName = `${member.user.tag} <${member.user.id}>`;
     const kickedimage = `${member.user.displayAvatarURL()}`;
     try {
       await member.kick(reason);
@@ -54,7 +54,7 @@ module.exports = class KickCommand extends Command {
         .setTitle(`Kicked Successfully`)
         .setDescription(`**Member** : ${kickedName}\n` + `**Reason** : ${reason}\n` +
           `**Time** : ${msg.createdAt.toUTCString()}`)
-        .setFooter(`Kicked by ${msg.author.username}#${msg.author.discriminator}`,
+        .setFooter(`Kicked by ${msg.author.tag}`,
           `${msg.author.displayAvatarURL()}`);
 
       return msg.sendToLogChan({ embedMsg: embedMsg });

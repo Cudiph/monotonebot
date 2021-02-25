@@ -32,7 +32,7 @@ module.exports = class EightBallCommand extends Command {
       .setColor('#f0568a')
       .addField(`:question: Question`, question)
       .addField(':speech_balloon: Answer', answer)
-      .setFooter(`${msg.author.username}#${msg.author.discriminator}`);
+      .setFooter(`${msg.author.tag}`);
 
     msg.say(embedMsg);
   }

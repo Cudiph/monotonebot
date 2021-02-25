@@ -31,7 +31,7 @@ module.exports = class PingCommand extends Command {
     if (msg.guild) {
       embed.setFooter(`Region: ${msg.guild.region}`, msg.guild.iconURL());
     } else if (msg.channel.type === 'dm') {
-      embed.setFooter(`${msg.author.username}#${msg.author.discriminator}`, msg.author.displayAvatarURL());
+      embed.setFooter(`${msg.author.tag}`, msg.author.displayAvatarURL());
     }
 
     // set embed color based on average of ping

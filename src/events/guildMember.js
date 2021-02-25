@@ -18,7 +18,7 @@ client.on('guildMemberAdd', async (member) => {
         if (memberLogChan && memberLogChan.permissionsFor(member.guild.me.id).has('SEND_MESSAGES')) {
           const logMsg = guildSetting.welcomeMessage.strMsg
             .replace(/{{@user}}/g, member)
-            .replace(/{{user}}/g, `${member.user.username}#${member.user.discriminator}`)
+            .replace(/{{user}}/g, `${member.user.tag}`)
             .replace(/{{guild}}/g, member.guild.name)
             .replace(/{{members}}/g, member.guild.memberCount);
           memberLogChan.send(logMsg);
@@ -46,14 +46,14 @@ client.on('guildMemberRemove', async (member) => {
       if (memberLogChan && memberLogChan.permissionsFor(member.guild.me.id).has('SEND_MESSAGES')) {
         const logMsg = guildSetting.goodbyeMessage.strMsg
           .replace(/{{@user}}/g, member)
-          .replace(/{{user}}/g, `${member.user.username}#${member.user.discriminator}`)
+          .replace(/{{user}}/g, `${member.user.tag}`)
           .replace(/{{guild}}/g, member.guild.name)
           .replace(/{{members}}/g, member.guild.memberCount);
         memberLogChan.send(logMsg);
 
       } else {
         member.guild.owner.send(guildSetting.goodbyeMessage.strMsg.replace(/{{user}}/g,
-          `${member.user.username}#${member.user.discriminator}`
+          `${member.user.tag}`
         ));
 
       }

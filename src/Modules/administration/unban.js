@@ -47,7 +47,7 @@ module.exports = class UnbanCommand extends Command {
 
     msg.guild.members.unban(bannedUser, reason)
       .then(user => {
-        const res = `Unbanned **${user.username}#${user.discriminator}** from **${msg.guild.name}**`;
+        const res = `Unbanned **${user.tag}** from **${msg.guild.name}**`;
         return msg.sendToLogChan({ strMsg: res });
       })
       .catch(err => {

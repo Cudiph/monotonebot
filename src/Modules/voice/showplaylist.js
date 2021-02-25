@@ -11,7 +11,7 @@ function setEmbedPlaylist(userPlaylists, indexPage, page, msg, itemsPerPage) {
   const embed = {
     color: parseInt(randomHex(), 16),
     author: {
-      name: `Playlist of ${msg.author.username}#${msg.author.discriminator}`,
+      name: `Playlist of ${msg.author.tag}`,
       icon_url: msg.author.displayAvatarURL(),
     },
     description: '',

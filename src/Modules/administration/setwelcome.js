@@ -13,7 +13,7 @@ module.exports = class WelcomeCommand extends Command {
       details: stripIndents`
         Custom variable are:
         \`{{@user}}\` to mention the user
-        \`{{user}}\` to show user "username#discriminator" without mentioning
+        \`{{user}}\` to show the user tag without mentioning
         \`{{guild}}\` will display guild name
         \`{{members}}\` will display guild member count
         Put the variable in the greeting arg.

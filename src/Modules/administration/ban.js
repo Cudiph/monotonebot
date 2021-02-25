@@ -44,7 +44,7 @@ module.exports = class BanCommand extends Command {
     // }
 
     // get the banned data
-    const bannedName = `${member.user.username}#${member.user.discriminator} <${member.user.id}>`;
+    const bannedName = `${member.user.tag} <${member.user.id}>`;
     const bannedImage = `${member.user.displayAvatarURL()}`;
     if (member) {
       try {
@@ -55,7 +55,7 @@ module.exports = class BanCommand extends Command {
           .setTitle(`Banned Successfully`)
           .setDescription(`**Member** : ${bannedName}\n` + `**Reason** : ${reason}\n` +
             `**Time** : ${msg.createdAt.toUTCString()}`)
-          .setFooter(`Banned by ${msg.author.username}#${msg.author.discriminator}`,
+          .setFooter(`Banned by ${msg.author.tag}`,
             `${msg.author.displayAvatarURL()}`);
 
         return msg.sendToLogChan({ embedMsg: embedMsg });
