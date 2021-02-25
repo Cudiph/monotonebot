@@ -97,7 +97,7 @@ module.exports = class NowPlayingCommand extends Command {
     let counter = 0;
     const related = [];
     for (const track of trackInfo.related_videos) {
-      related.push(`• ${track.title} by ${track.author.name}`);
+      related.push(`• **${track.title}** by *${track.author.name}*`);
       if (counter > 3) break;
       counter++;
     }

@@ -105,7 +105,7 @@ module.exports = class SeekCommand extends Command {
       }
 
       msg.guild.play(msg, { seek: timestamp });
-      return msg.say(`Playing ${queue[indexQ].title} at **${toTimestamp(timestamp)}**`);
+      return msg.say(`Playing **${queue[indexQ].title}** at **${toTimestamp(timestamp)}**`);
     }
 
     const seekTime = queue[indexQ].seekTime ? queue[indexQ].seekTime : 0;
