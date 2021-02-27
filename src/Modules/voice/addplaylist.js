@@ -1,7 +1,7 @@
 const ytpl = require('ytpl');
 const Command = require('../../structures/Command.js');
 const { oneLine, stripIndents } = require('common-tags');
-const { toSeconds } = require('../../library/helper/discord-item.js');
+const Util = require('../../util/Util.js');
 
 module.exports = class AddPlaylistCommand extends Command {
   constructor(client) {
@@ -59,7 +59,7 @@ module.exports = class AddPlaylistCommand extends Command {
               link: `https://youtube.com/watch?v=${video.id}`,
               videoId: video.id,
               uploader: video.author.name,
-              seconds: toSeconds(video.duration),
+              seconds: Util.toSeconds(video.duration),
               author: msg.author.tag,
               isLive: video.isLive,
             }, msg, true);
@@ -91,7 +91,7 @@ module.exports = class AddPlaylistCommand extends Command {
               link: `https://youtube.com/watch?v=${video.id}`,
               videoId: video.id,
               uploader: video.author,
-              seconds: toSeconds(video.duration),
+              seconds: Util.toSeconds(video.duration),
               author: msg.author.tag,
               isLive: video.isLive,
             }, msg, true);

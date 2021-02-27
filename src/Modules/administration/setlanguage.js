@@ -1,6 +1,6 @@
 const Command = require('../../structures/Command.js');
 const gtrans = require('node-gtrans');
-const { guildSettingsSchema } = require('../../library/Database/schema.js');
+const { guildSettingsSchema } = require('../../util/schema.js');
 const { oneLine } = require('common-tags');
 
 

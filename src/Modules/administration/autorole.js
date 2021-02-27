@@ -1,5 +1,5 @@
 const Command = require('../../structures/Command.js');
-const { guildSettingsSchema } = require('../../library/Database/schema.js');
+const { guildSettingsSchema } = require('../../util/schema.js');
 
 
 module.exports = class AutoRoleCommand extends Command {

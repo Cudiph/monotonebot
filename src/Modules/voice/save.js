@@ -1,6 +1,6 @@
 const Command = require('../../structures/Command.js');
 const { oneLine } = require('common-tags');
-const { userDataSchema } = require('../../library/Database/schema.js');
+const { userDataSchema } = require('../../util/schema.js');
 
 module.exports = class SaveCommand extends Command {
   constructor(client) {

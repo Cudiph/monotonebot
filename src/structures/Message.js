@@ -1,8 +1,8 @@
 /* eslint-disable indent */
 const { Structures, escapeMarkdown, resolveString, APIMessage } = require('discord.js');
 const gtrans = require('node-gtrans');
-const { guildSettingsSchema } = require('../library/Database/schema.js');
-const { toTimestamp, randomHex } = require('../library/helper/discord-item.js');
+const { guildSettingsSchema } = require('../util/schema.js');
+const Util = require('../util/Util.js');
 
 module.exports = Structures.extend('Message', Message => {
   class MonoMessage extends Message {
@@ -90,7 +90,7 @@ module.exports = Structures.extend('Message', Message => {
     sendEmbedPlaying() {
       const music = this.guild.queue[this.guild.indexQueue];
       const embed = {
-        color: parseInt(randomHex(), 16),
+        color: parseInt(Util.randomHex(), 16),
         fields: [
           {
             name: `Playing track #${this.guild.indexQueue}`,
@@ -98,7 +98,7 @@ module.exports = Structures.extend('Message', Message => {
           }
         ],
         footer: {
-          text: `🔊 ${this.guild.volume * 100} | ${music.isLive ? '• Live' : toTimestamp(music.seconds)} | ${music.author}`
+          text: `🔊 ${this.guild.volume * 100} | ${music.isLive ? '• Live' : Util.toTimestamp(music.seconds)} | ${music.author}`
         }
       };
       return this.embed(embed);
@@ -157,7 +157,7 @@ module.exports = Structures.extend('Message', Message => {
       const queue = this.guild.queue;
       const listLength = queue.length;
       const embed = {
-        color: parseInt(randomHex(), 16),
+        color: parseInt(Util.randomHex(), 16),
         title: `Queue of ${this.guild.name}`,
         description: `Use react to switch between page`,
         fields: [],
@@ -175,13 +175,13 @@ module.exports = Structures.extend('Message', Message => {
             embed.fields.push({
               name: `[${i}] ${queue[i].title}`,
               value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
             });
           } else {
             embed.fields.push({
               name: `=> [${i}] ${queue[i].title}`,
               value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
             });
           }
 
@@ -192,13 +192,13 @@ module.exports = Structures.extend('Message', Message => {
             embed.fields.push({
               name: `[${i}] ${queue[i].title}`,
               value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
             });
           } else {
             embed.fields.push({
               name: `=> [${i}] ${queue[i].title}`,
               value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
             });
           }
         }
@@ -214,7 +214,7 @@ module.exports = Structures.extend('Message', Message => {
         },
         {
           name: `Length`,
-          value: `${toTimestamp(qlength)}`,
+          value: `${Util.toTimestamp(qlength)}`,
           inline: true,
         },
         {

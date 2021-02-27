@@ -1,6 +1,6 @@
 const Command = require('../../structures/Command.js');
 const ytdl = require('discord-ytdl-core');
-const { randomHex } = require('../../library/helper/discord-item');
+const Util = require('../../util/Util');
 
 module.exports = class NowPlayingCommand extends Command {
   constructor(client) {
@@ -32,7 +32,7 @@ module.exports = class NowPlayingCommand extends Command {
     const trackInfo = await ytdl.getInfo(queue[indexQ].link);
 
     const embed = {
-      color: parseInt(randomHex(), 16),
+      color: parseInt(Util.randomHex(), 16),
       title: trackInfo.videoDetails.title,
       url: trackInfo.videoDetails.video_url,
       author: {

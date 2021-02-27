@@ -1,5 +1,5 @@
 const Command = require('../../structures/Command.js');
-const { toSeconds, toTimestamp, randomHex } = require('../../library/helper/discord-item');
+const Util = require('../../util/Util');
 
 
 /**
@@ -22,13 +22,13 @@ function seekEmbed(template, msg) {
     totalTime += queue[i].seconds;
   }
   const embed = {
-    color: parseInt(randomHex(), 16),
+    color: parseInt(Util.randomHex(), 16),
     title: queue[indexQ].title,
     url: queue[indexQ].link,
-    description: `${template.join('')} ${toTimestamp(currentTime)} / ${toTimestamp(queue[indexQ].seconds)}`,
+    description: `${template.join('')} ${Util.toTimestamp(currentTime)} / ${Util.toTimestamp(queue[indexQ].seconds)}`,
     timestamp: new Date(),
     footer: {
-      text: `Estimated time played is ${toTimestamp(Math.floor(totalTime))}`,
+      text: `Estimated time played is ${Util.toTimestamp(Math.floor(totalTime))}`,
     },
   };
   return embed;
@@ -73,7 +73,7 @@ module.exports = class SeekCommand extends Command {
     if (timestamp) {
       if (timestamp.includes(':')) {
         const timestampOnly = timestamp.replace(/\s+/g, '');
-        timestamp = toSeconds(timestampOnly);
+        timestamp = Util.toSeconds(timestampOnly);
       } else if (timestamp.match(/\d+/)) {
         const secondsOnly = timestamp.match(/\d+/);
         timestamp = parseInt(secondsOnly[0]);
@@ -91,7 +91,7 @@ module.exports = class SeekCommand extends Command {
     if (timestamp) {
       // handler
       if (songLength <= timestamp) {
-        return msg.reply(`Current track length is **${songLength}s** or **${toTimestamp(songLength)}**`);
+        return msg.reply(`Current track length is **${songLength}s** or **${Util.toTimestamp(songLength)}**`);
       } else if (songLength - 15 <= timestamp) {
         return msg.reply(`Please provide the time that isn't close to the end of the song`);
       } else if (timestamp < 0) {
@@ -103,7 +103,7 @@ module.exports = class SeekCommand extends Command {
       }
 
       msg.guild.play(msg, { seek: timestamp });
-      return msg.say(`Playing **${queue[indexQ].title}** at **${toTimestamp(timestamp)}**`);
+      return msg.say(`Playing **${queue[indexQ].title}** at **${Util.toTimestamp(timestamp)}**`);
     }
 
     const seekTime = queue[indexQ].seekTime ? queue[indexQ].seekTime : 0;

@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 const Discord = require('discord.js');
 const Command = require('../../structures/Command.js');
-const { guildSettingsSchema } = require('../../library/Database/schema.js');
+const { guildSettingsSchema } = require('../../util/schema.js');
 const { oneLine, stripIndents } = require('common-tags');
 
 

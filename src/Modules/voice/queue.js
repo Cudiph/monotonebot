@@ -1,5 +1,5 @@
 const Command = require('../../structures/Command.js');
-const { emoji } = require('../../library/helper/discord-item.js');
+const Util = require('../../util/Util.js');
 
 module.exports = class QueueCommand extends Command {
   constructor(client) {
@@ -64,7 +64,7 @@ module.exports = class QueueCommand extends Command {
     const collector = embedMsg.createReactionCollector(filter, { time: 60000 });
 
     collector.on('collect', async collected => {
-      if (collected.emoji.name === emoji.x) {
+      if (collected.emoji.name === Util.emoji.x) {
         embedMsg.delete();
       } else if (collected.emoji.name === '⬅') {
         // decrement index for list
@@ -98,7 +98,7 @@ module.exports = class QueueCommand extends Command {
         await embedMsg.react(emojiNeeded[i]);
       }
     } else {
-      embedMsg.react(emoji.x);
+      embedMsg.react(Util.emoji.x);
     }
   }
 

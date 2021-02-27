@@ -1,5 +1,5 @@
 const { client } = require('../bot.js');
-const { guildSettingsSchema } = require('../library/Database/schema.js');
+const { guildSettingsSchema } = require('../util/schema.js');
 
 // event on message
 client.on('guildCreate', async guild => {

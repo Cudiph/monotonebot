@@ -1,15 +1,13 @@
 const Command = require('../../structures/Command.js');
 const { stripIndents, oneLine } = require('common-tags');
-const { userDataSchema } = require('../../library/Database/schema.js');
-const { randomHex } = require('../../library/helper/discord-item.js');
-const { emoji, toTimestamp } = require('../../library/helper/discord-item.js');
-
+const { userDataSchema } = require('../../util/schema.js');
+const Util = require('../../util/Util.js');
 
 // copied from setEmbedQueue
 function setEmbedPlaylist(userPlaylists, indexPage, page, msg, itemsPerPage) {
   const listLength = userPlaylists.length;
   const embed = {
-    color: parseInt(randomHex(), 16),
+    color: parseInt(Util.randomHex(), 16),
     author: {
       name: `Playlist of ${msg.author.tag}`,
       icon_url: msg.author.displayAvatarURL(),
@@ -59,7 +57,7 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
   const listLength = playlist.videoList.length;
   const videoList = playlist.videoList;
   const embed = {
-    color: parseInt(randomHex(), 16),
+    color: parseInt(Util.randomHex(), 16),
     title: `Content of **${playlist.name}*** playlist`,
     description: playlist.description,
     fields: [],
@@ -76,12 +74,12 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
       if ((indexPage + i) !== msg.guild.indexQueue) {
         embed.fields.push({
           name: `[${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
+          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
         });
       } else {
         embed.fields.push({
           name: `=> [${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
+          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
         });
       }
 
@@ -91,12 +89,12 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
       if ((indexPage) !== msg.guild.indexQueue) {
         embed.fields.push({
           name: `[${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
+          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
         });
       } else {
         embed.fields.push({
           name: `=> [${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
+          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
         });
       }
     }
@@ -112,7 +110,7 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
     },
     {
       name: `Length`,
-      value: `${toTimestamp(qlength)}`,
+      value: `${Util.toTimestamp(qlength)}`,
       inline: true,
     },
     {
@@ -206,7 +204,7 @@ module.exports = class ShowPlaylistCommand extends Command {
         const collector = embedMsg.createReactionCollector(filter, { time: 60000, dispose: true });
 
         collector.on('collect', async collected => {
-          if (collected.emoji.name === emoji.x) {
+          if (collected.emoji.name === Util.emoji.x) {
             embedMsg.delete();
           } else if (collected.emoji.name === '⬅') {
             // decrement index for list
@@ -240,7 +238,7 @@ module.exports = class ShowPlaylistCommand extends Command {
             await embedMsg.react(emojiNeeded[i]);
           }
         } else {
-          embedMsg.react(emoji.x);
+          embedMsg.react(Util.emoji.x);
         }
       });
   }

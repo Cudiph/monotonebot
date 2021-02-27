@@ -1,6 +1,6 @@
 const ytdl = require('discord-ytdl-core');
 const yts = require('yt-search');
-const { emoji } = require('../../library/helper/discord-item.js');
+const Util = require('../../util/Util.js');
 const Command = require('../../structures/Command.js');
 const { oneLine } = require('common-tags');
 
@@ -103,7 +103,7 @@ module.exports = class PlayCommand extends Command {
       let selectIndex = 0; // for choosing music index
       const itemsPerPage = 5; // set items showed per page
 
-      const emojiNeeded = [emoji[1], emoji[2], emoji[3], emoji[4], emoji[5], emoji.leftA, emoji.rightA, emoji.x];
+      const emojiNeeded = [Util.emoji[1], Util.emoji[2], Util.emoji[3], Util.emoji[4], Util.emoji[5], Util.emoji.leftA, Util.emoji.rightA, Util.emoji.x];
 
       const embedMsg = await msg.embed(msg.createEmbedPlay(videos, selectIndex, page, itemsPerPage));
       msg.channel.stopTyping(true); // stop typing indicator
@@ -114,7 +114,7 @@ module.exports = class PlayCommand extends Command {
       const collector = embedMsg.createReactionCollector(filter, { time: 60000, dispose: true });
 
       collector.on('collect', async collected => {
-        if (collected.emoji.name === emoji.x) {
+        if (collected.emoji.name === Util.emoji.x) {
           embedMsg.delete();
         } else if (collected.emoji.name === '⬅') {
           // decrement index for list
@@ -143,7 +143,7 @@ module.exports = class PlayCommand extends Command {
 
         // user selecting a track
         if (emojiNeeded.slice(0, 5).includes(collected.emoji.name)) {
-          const reversed = Object.keys(emoji).find(key => emoji[key] === collected.emoji.name);
+          const reversed = Object.keys(Util.emoji).find(key => Util.emoji[key] === collected.emoji.name);
           const intEmoji = parseInt(reversed);
           if ((selectIndex + intEmoji) > videos.length) {
             // return if user choose more than the available song

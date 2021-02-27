@@ -7,6 +7,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2019,
   },
+  parser: "babel-eslint",
   globals: {
     logger: true,
   },

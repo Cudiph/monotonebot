@@ -1,6 +1,6 @@
 const { stripIndents } = require('common-tags');
 const Command = require('../../structures/Command.js');
-const { userDataSchema } = require('../../library/Database/schema');
+const { userDataSchema } = require('../../util/schema');
 
 module.exports = class MyInfoCommand extends Command {
   constructor(client) {

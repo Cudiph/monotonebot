@@ -1,6 +1,6 @@
 const { oneLine } = require('common-tags');
 const Command = require('../../structures/Command.js');
-const { userDataSchema } = require('../../library/Database/schema.js');
+const { userDataSchema } = require('../../util/schema.js');
 
 module.exports = class RemovePlaylistCommand extends Command {
   constructor(client) {
