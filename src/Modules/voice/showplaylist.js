@@ -155,7 +155,7 @@ module.exports = class ShowPlaylistCommand extends Command {
   }
 
   /** @param {import('discord.js-commando').CommandoMessage} msg */
-  async run(msg, { playlistId }) {
+  async run(msg, { playlistID }) {
     // variabel to store data :)
     let page = 0;
     let index = 0;
@@ -168,7 +168,7 @@ module.exports = class ShowPlaylistCommand extends Command {
       playlist = data.userPlaylists;
       if (!playlist.length) {
         throw 'user playlist is null';
-      } else if (playlistId !== '' && playlistId < 0 || playlistId >= playlist.length) {
+      } else if (playlistID !== '' && playlistID < 0 || playlistID >= playlist.length) {
         return msg.say(`Your current playlist is from 0-${playlist.length - 1}`);
       }
     } catch (e) {
@@ -181,9 +181,9 @@ module.exports = class ShowPlaylistCommand extends Command {
     let embed; // embed to send / update
     let list; // list of playlist or videoList
     let listLength; // length of list
-    if (playlistId !== '') {
+    if (playlistID !== '') {
       itemsPerPage = 9;
-      list = playlist[playlistId];
+      list = playlist[playlistID];
       listLength = list.videoList.length;
       embed = setEmbedPlaylistContent;
     } else {
