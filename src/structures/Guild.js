@@ -206,7 +206,7 @@ module.exports = Structures.extend('Guild', Guild => {
         this.indexQueue++;
         return;
       }
-      const randTrack = Math.floor(Math.random() * related.length);
+      const randTrack = related.length >= 5 ? Math.floor(Math.random() * 5) : Math.floor(Math.random() * related.length);
       const construction = {
         title: related[randTrack].title,
         link: `https://youtube.com/watch?v=${related[randTrack].id}`,
