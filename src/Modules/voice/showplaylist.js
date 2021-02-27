@@ -58,7 +58,7 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
   const videoList = playlist.videoList;
   const embed = {
     color: parseInt(Util.randomHex(), 16),
-    title: `Content of **${playlist.name}*** playlist`,
+    title: `Content of **${playlist.name}** playlist`,
     description: playlist.description,
     fields: [],
     timestamp: new Date(),
@@ -70,33 +70,18 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
   // if page is the last page then exec this code
   if (page === Math.floor(listLength / itemsPerPage)) {
     for (let i = indexPage; i < listLength; i++) {
-      // add => sign to current playing
-      if ((indexPage + i) !== msg.guild.indexQueue) {
-        embed.fields.push({
-          name: `[${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        });
-      } else {
-        embed.fields.push({
-          name: `=> [${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        });
-      }
-
+      embed.fields.push({
+        name: `[${i}] ${videoList[i].title}`,
+        value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
+      });
     }
   } else {
     for (let i = indexPage; i < (indexPage + itemsPerPage); i++) {
-      if ((indexPage) !== msg.guild.indexQueue) {
-        embed.fields.push({
-          name: `[${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        });
-      } else {
-        embed.fields.push({
-          name: `=> [${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        });
-      }
+      embed.fields.push({
+        name: `[${i}] ${videoList[i].title}`,
+        value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
+      });
+
     }
   }
   let qlength = 0;
