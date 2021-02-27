@@ -6,6 +6,7 @@ module.exports = class SaveCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'save',
+      aliases: ['savepl', 'saveq', 'savequeue', 'saveplaylist'],
       group: 'voice',
       memberName: 'save',
       description: 'Save queue to database',

@@ -44,16 +44,3 @@ module.exports = class ShuffleCommand extends Command {
 
 
 };
-
-/**
- * Shuffle array using Durstenfeld shuffle
- * @see {@link https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array}
- * @param {Array<any>} arr
- */
-// function shuffleArray(arr) {
-//   for (let i = arr.length - 1; i > 0; i--) {
-//     const j = Math.floor(Math.random() * (i + 1));
-//     [arr[i], arr[j]] = [arr[j], arr[i]];
-//   }
-//   return arr;
-// }

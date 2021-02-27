@@ -9,12 +9,12 @@ module.exports = class MyInfoCommand extends Command {
       group: 'util',
       memberName: 'myinfo',
       aliases: ['mystats'],
-      description: 'myinfo someone with mentioning in a server',
+      description: 'Your info such as your level in the bot database',
       throttling: {
         usages: 1,
         duration: 30,
       },
-      examples: ['myinfo @epicgamers Hello;Nice too meet you', 'email @0xDeadBeef Title;Desc'],
+      examples: ['myinfo'],
     });
   }
 

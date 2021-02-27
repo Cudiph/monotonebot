@@ -8,7 +8,7 @@ module.exports = class LoadPlaylistCommand extends Command {
       name: 'loadplaylist',
       group: 'voice',
       aliases: ['loadpl', 'loadplaylist'],
-      examples: ['loadpl 1', 'loadplaylist 3'],
+      examples: ['loadpl fav_playlist', 'loadplaylist 3'],
       memberName: 'loadplaylist',
       description: 'Load playlist from database',
       details: oneLine`

@@ -9,7 +9,7 @@ module.exports = class GuildConfigCommand extends Command {
       name: 'guildconfig',
       group: 'administration',
       memberName: 'guildconfig',
-      aliases: ['guildsettings'],
+      aliases: ['guildsettings', 'gconfig', 'serverconfig'],
       description: 'Show current guild configuration that stored in the database',
       examples: ['guildconfig'],
       guildOnly: true,

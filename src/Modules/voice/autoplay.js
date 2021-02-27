@@ -5,6 +5,7 @@ module.exports = class AutoPlayCommand extends Command {
     super(client, {
       name: 'autoplay',
       group: 'voice',
+      aliases: ['auto'],
       memberName: 'autoplay',
       description: 'Play related track when in the end of the queue',
       examples: ['autoplay', 'autoplay false'],

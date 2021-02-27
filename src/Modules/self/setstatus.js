@@ -5,7 +5,7 @@ module.exports = class SetStatusCommand extends Command {
     super(client, {
       name: 'setstatus',
       group: 'self',
-      memberName: 'status',
+      memberName: 'setstatus',
       description: 'Set bot status',
       examples: ['setstatus idle'],
       details: 'available status are online, idle, invisible, dnd(do not disturb)',

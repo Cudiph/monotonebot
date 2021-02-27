@@ -6,6 +6,7 @@ module.exports = class JumpToCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'jumpto',
+      aliases: ['skipto'],
       group: 'voice',
       memberName: 'jumpto',
       description: 'Jump to an index',

@@ -147,7 +147,7 @@ module.exports = class ShowPlaylistCommand extends Command {
       },
       args: [
         {
-          key: 'playlistId',
+          key: 'playlistID',
           prompt: 'Which playlist do you want to show it\'s content?',
           type: 'integer',
           default: '',
