@@ -29,7 +29,7 @@ module.exports = class SetAvatarCommand extends Command {
       .then(msg.say(`Avatar will be updated soon`))
       .catch(err => {
         msg.say('Please check your url.\nError : ' + err);
-        logger.log('error', err);
+        logger.error(err.stack);
       });
   }
 

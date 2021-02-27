@@ -11,7 +11,7 @@ client.on('guildCreate', async guild => {
       volume: 1,
     }, { upsert: true });
   } catch (err) {
-    logger.log('error', err.stack);
+    logger.error(err.stack);
   }
 });
 
@@ -19,6 +19,6 @@ client.on('guildDelete', async guild => {
   try {
     guildSettingsSchema.findOneAndDelete({ guildId: guild.id });
   } catch (err) {
-    logger.log('error', err.stack);
+    logger.error(err.stack);
   }
 });

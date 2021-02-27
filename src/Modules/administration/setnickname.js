@@ -47,7 +47,7 @@ module.exports = class SetNicknameCommand extends Command {
     member.setNickname(newNick)
       .then(() => msg.say('Nickname succesfully changed'))
       .catch(err => {
-        logger.log('error', err);
+        logger.error(err.stack);
         return msg.say('An error occured, possibly because missing permission').then(resMsg => resMsg.delete({ timeout: 6000 }));
       });
   }

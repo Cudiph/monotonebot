@@ -155,14 +155,14 @@ module.exports = Structures.extend('Guild', Guild => {
         // skip current track if error occured
         dispatcher.on('error', err => {
           msg.channel.stopTyping(true);
-          logger.log('error', err.stack);
+          logger.error(err.stack);
           msg.say(`An error occured. **Track #${this.indexQueue}** will be skipped`);
           this.indexQueue++;
           return this.play(msg);
         });
       } catch (err) {
         msg.channel.stopTyping(true);
-        logger.log('error', err.stack);
+        logger.error(err.stack);
         msg.say(`Something went wrong. **Track #${this.indexQueue}** will be skipped`);
         this.indexQueue++;
         this.play(msg);
@@ -201,7 +201,7 @@ module.exports = Structures.extend('Guild', Guild => {
           `);
         }
       } catch (err) {
-        logger.log('error', err.stack);
+        logger.error(err.stack);
         msg.say(`Something went wrong. You can try again with \`${this.commandPrefix}skip\` command.`);
         this.indexQueue++;
         return;
@@ -302,7 +302,7 @@ module.exports = Structures.extend('Guild', Guild => {
         } catch (err) {
           msg.say('Something went wrong');
           delete this.queue;
-          logger.log('error', err);
+          logger.error(err.stack);
         }
       } else {
         const oldLength = this.queue.length;

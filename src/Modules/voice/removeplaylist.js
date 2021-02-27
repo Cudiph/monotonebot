@@ -58,7 +58,7 @@ module.exports = class RemovePlaylistCommand extends Command {
         });
         msg.say(`Deleted playlist **${before.userPlaylists[playlistArg].name}**`);
       } catch (err) {
-        logger.log('error', err.stack);
+        logger.error(err.stack);
         return msg.reply(`Can't remove the playlist`);
       }
     } else {

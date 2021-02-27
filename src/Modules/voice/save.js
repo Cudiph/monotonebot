@@ -69,7 +69,7 @@ module.exports = class SaveCommand extends Command {
       });
       msg.reply('playlist created successfully');
     } catch (err) {
-      logger.log('error', err);
+      logger.error(err.stack);
       return msg.reply(`Can't save the playlist`);
     }
 

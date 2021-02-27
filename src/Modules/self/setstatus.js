@@ -32,7 +32,7 @@ module.exports = class SetStatusCommand extends Command {
       .then(msg.say(`Change status to \`${status}\``))
       .catch(err => {
         msg.say('Something went wrong');
-        logger.log('error', err);
+        logger.error(err.stack);
       });
   }
 

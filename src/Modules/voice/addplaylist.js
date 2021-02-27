@@ -72,7 +72,7 @@ module.exports = class AddPlaylistCommand extends Command {
           }
           return msg.say(`Added playlist **${playlist.title}**. `);
         } catch (err) {
-          logger.log('error', err);
+          logger.error(err.stack);
           return msg.say(stripIndents`An error Occured.
             Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all
             Error : \`${err}\`
@@ -104,7 +104,7 @@ module.exports = class AddPlaylistCommand extends Command {
           }
           return msg.say(`Added playlist **${playlist.title}**. `);
         } catch (err) {
-          logger.log('error', err);
+          logger.error(err.stack);
           return msg.say(stripIndents`An error Occured.
             Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all
             Error : \`${err}\`

@@ -62,7 +62,7 @@ module.exports = class BanCommand extends Command {
       } catch (e) {
         // due to missing permissions or role hierarchy
         msg.reply(`I was unable to ban the member`);
-        logger.log('error', e.stack);
+        logger.error(e.stack);
       }
 
     } else { // Otherwise, if no user was mentioned

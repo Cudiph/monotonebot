@@ -24,7 +24,7 @@ module.exports = class CatCommand extends Command {
       const response = await axios.get('https://aws.random.cat/meow');
       msg.say(response.data.file);
     } catch (err) {
-      logger.log('error', err);
+      logger.error(err.stack);
       msg.say(`Something went wrong, please try again later.\n Error : \`${err}\``)
         .then(theMsg => theMsg.delete({ timeout: 7000 }))
         .catch(e => e);

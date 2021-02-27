@@ -24,7 +24,7 @@ module.exports = class MyInfoCommand extends Command {
     try {
       userData = await userDataSchema.findOne({ userId: msg.author.id });
     } catch (err) {
-      logger.log('error', err.stack);
+      logger.error(err.stack);
       return msg.reply(`Can't load the data, please try again later`);
     }
 

@@ -57,7 +57,7 @@ module.exports = class HentaiCommand extends Command {
       const res = await axios.get(`https://nekos.life/api/v2/img/${tag ? tag : getRandomTag}`);
       return msg.say(res.data.url);
     } catch (err) {
-      logger.log('error', err.stack);
+      logger.error(err.stack);
       msg.reply(`There was an error when requesting the image. Please try again later`);
     }
   }

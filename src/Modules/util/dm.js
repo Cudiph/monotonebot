@@ -56,7 +56,7 @@ module.exports = class DmCommand extends Command {
       msg.say('Message sent successfully');
     }).catch(err => {
       msg.say('There was a problem during the delivery');
-      logger.log('error', err);
+      logger.error(err.stack);
     });
 
   }

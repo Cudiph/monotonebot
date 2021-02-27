@@ -55,7 +55,7 @@ module.exports = class UnbanCommand extends Command {
         msg.reply('I was unable to unban the member\n' +
           '**Error name** : ' + err.toString().split(':').slice(1).join());
         // Log the error
-        logger.log('error', err);
+        logger.error(err.stack);
       });
 
   }

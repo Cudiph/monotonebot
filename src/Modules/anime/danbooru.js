@@ -85,7 +85,7 @@ module.exports = class DanbooruCommand extends Command {
         }
       }
     } catch (err) {
-      logger.log('error', err.stack);
+      logger.error(err.stack);
       msg.reply(`There was an error when requesting the image. Please try again later`);
     }
   }

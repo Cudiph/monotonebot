@@ -43,7 +43,7 @@ module.exports = class E621Command extends Command {
       if (err.message.includes('404')) {
         return msg.reply(`Image not found`);
       }
-      logger.log('error', err.stack);
+      logger.error(err.stack);
       msg.reply(`There was an error when requesting the image. Please try again later`);
     }
   }

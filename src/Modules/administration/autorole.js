@@ -37,7 +37,7 @@ module.exports = class AutoRoleCommand extends Command {
     try {
       guildSetting = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
     } catch (err) {
-      logger.log('error', err.stack);
+      logger.error(err.stack);
       return msg.reply(`Can't load the data, please assign a new one if it's not already set`);
     }
 
@@ -78,7 +78,7 @@ module.exports = class AutoRoleCommand extends Command {
       }, { new: true, upsert: true });
       return msg.sendToLogChan({ strMsg: `Assignment successful, new auto role is <@&${newGuildSettings.autoAssignRoleId}>` });
     } catch (err) {
-      logger.log('error', err.stack);
+      logger.error(err.stack);
       return msg.reply(`Can't update new log channel.`);
     }
   }

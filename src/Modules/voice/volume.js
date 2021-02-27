@@ -46,7 +46,7 @@ module.exports = class VolumeCommand extends Command {
       msg.guild.volume = volume;
       msg.say(`Change volume level to ${volume * 100}`);
     } catch (err) {
-      logger.log('error', err);
+      logger.error(err.stack);
       msg.say(`Can't update stream volume, please try again later`);
     }
     if (msg.guild.me.voice.connection.dispatcher) {

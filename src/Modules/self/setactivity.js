@@ -38,7 +38,7 @@ module.exports = class SetActivityCommand extends Command {
         }
       }).catch(err => {
         msg.say('Please check your syntax');
-        logger.log('error', err);
+        logger.error(err.stack);
       });
   }
 

@@ -65,7 +65,7 @@ module.exports = class LoadPlaylistCommand extends Command {
         }
         return msg.say(`Added playlist **${playlist.name}**.`);
       } catch (err) {
-        logger.log('error', err);
+        logger.error(err.stack);
         return msg.reply(`Can't load the playlist`);
       }
     } else {
@@ -102,7 +102,7 @@ module.exports = class LoadPlaylistCommand extends Command {
         }
         return msg.say(`Added playlist **${playlist.name}**.`);
       } catch (err) {
-        logger.log('error', err);
+        logger.error(err.stack);
         if (err.message.includes('regular expression')) {
           return msg.reply(`Please give a valid regular expression`);
         } else {

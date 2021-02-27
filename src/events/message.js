@@ -31,7 +31,7 @@ client.on('message', async msg => {
           msg.guild.isCached = true;
         }
       } catch (err) {
-        logger.log('error', err.stack);
+        logger.error(err.stack);
       }
     }
 

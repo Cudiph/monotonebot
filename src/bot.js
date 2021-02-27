@@ -10,7 +10,7 @@ global.logger = winston.createLogger({
     new winston.transports.Console(),
     new winston.transports.File({ filename: `${__dirname}/data/logs` }),
   ],
-  format: winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`),
+  format: winston.format.printf(log => `[${new Date().toISOString()}]: [${log.level.toUpperCase()}] - ${log.message}`),
   exitOnError: false,
 });
 
@@ -45,11 +45,11 @@ client.registry
 
 // run events folder
 fs.readdir(`${__dirname}/events`, (err, files) => {
-  if (err) logger.error(err);
+  if (err) logger.error(err.stack);
   const jsFiles = files.filter(file => file.endsWith('.js'));
   jsFiles.forEach(file => {
     require(`${__dirname}/events/${file}`);
-    logger.log('info', `${file} events loaded`);
+    logger.info(`${file} events loaded`);
   });
 });
 

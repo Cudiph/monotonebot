@@ -14,7 +14,7 @@ async function writePrefix(newPrefix, msg) {
     }, { upsert: true });
     if (result) return result.prefix; else return msg.client.commandPrefix;
   } catch (err) {
-    logger.log('error', err);
+    logger.error(err.stack);
     msg.reply(`Can't update the prefix.`);
     return 'error';
   }

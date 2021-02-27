@@ -15,10 +15,10 @@ client.once('ready', () => {
     useFindAndModify: false,
     useCreateIndex: true
   });
-  logger.log('info', 'Ready!');
+  logger.info('Ready!');
 
 });
 
-client.on('error', err => logger.log('error', err));
+client.on('error', err => logger.error(err.stack));
 
 client.login(process.env.TOKEN);

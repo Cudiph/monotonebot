@@ -30,7 +30,7 @@ module.exports = class SetUsernameCommand extends Command {
       .then(user => msg.say(`My new username is **${user.username}**`))
       .catch(err => {
         msg.say('Something went wrong');
-        logger.log('error', err);
+        logger.error(err.stack);
       });
   }
 

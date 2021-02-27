@@ -59,7 +59,7 @@ module.exports = class AddPlaylistCommand extends Command {
         return;
       }
     } catch (err) {
-      logger.log('error', err);
+      logger.error(err.stack);
       return msg.say('An error occured. It maybe the API request is blocked or the language id is incorrect. Please try again later')
         .then(errMsg => errMsg.delete({ timeout: 10000 })).catch(e => e);
     }
