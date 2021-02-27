@@ -39,7 +39,7 @@ module.exports = class HelpCommand extends Command {
       color: 0xff548e,
       fields: [
         {
-          name: `:pen_ballpoint: **Format:**`,
+          name: `🖊 **Format:**`,
           value: `${msg.anyUsage(`${commands[0].name}${commands[0].format ? ` ${commands[0].format}` : ''}`)}`
         }
       ]
@@ -54,9 +54,9 @@ module.exports = class HelpCommand extends Command {
           `}
         `;
 
-        if (commands[0].aliases.length > 0) embed.fields.push({ name: `:mag_right: **Aliases:** `, value: `${`**${commands[0].aliases.join('**, **')}**`}`, inline: true });
+        if (commands[0].aliases.length > 0) embed.fields.push({ name: `🔎 **Aliases:** `, value: `${`**${commands[0].aliases.join('**, **')}**`}`, inline: true });
         embed.fields.push({
-          name: `:family_mwgb: **Group:**`,
+          name: `👨‍👩‍👧‍👦 **Group:**`,
           value: oneLine`
             ${commands[0].group.name}
             (\`${commands[0].groupID}:${commands[0].memberName}\`)
@@ -64,10 +64,10 @@ module.exports = class HelpCommand extends Command {
           inline: true,
         });
 
-        if (commands[0].details) embed.fields.push({ name: `:scroll: **Details:**`, value: commands[0].details });
+        if (commands[0].details) embed.fields.push({ name: `📜 **Details:**`, value: commands[0].details });
         if (commands[0].examples) {
           embed.fields.push({
-            name: `:pencil: **Examples:**`,
+            name: `📝 **Examples:**`,
             value: `- **..${commands[0].examples.map(elem => {
               const splitted = elem.split(/\s+/);
               splitted.splice(1, 0, '**');

@@ -30,8 +30,8 @@ module.exports = class EightBallCommand extends Command {
     const answer = answers.response[Math.floor(Math.random() * Math.floor(answers.response.length))];
     const embedMsg = new Discord.MessageEmbed()
       .setColor('#f0568a')
-      .addField(`:question: Question`, question)
-      .addField(':speech_balloon: Answer', answer)
+      .addField(`❓ Question`, question)
+      .addField('💬 Answer', answer)
       .setFooter(`${msg.author.tag}`);
 
     msg.say(embedMsg);
