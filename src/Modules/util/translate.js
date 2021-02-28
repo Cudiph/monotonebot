@@ -1,5 +1,5 @@
 const { oneLine, stripIndents } = require('common-tags');
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const gtrans = require('node-gtrans');
 
 const trim = (str, max) => ((str.length > max) ? `${str.slice(0, max - 3)}...` : str);
@@ -39,7 +39,7 @@ module.exports = class AddPlaylistCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { language, words }) {
     let lang;
     if (language.match(/(?:\w+)>(?:\w+)/)) {
@@ -59,7 +59,7 @@ module.exports = class AddPlaylistCommand extends Command {
         return;
       }
     } catch (err) {
-      logger.log('error', err);
+      logger.error(err.stack);
       return msg.say('An error occured. It maybe the API request is blocked or the language id is incorrect. Please try again later')
         .then(errMsg => errMsg.delete({ timeout: 10000 })).catch(e => e);
     }
@@ -162,15 +162,4 @@ module.exports = class AddPlaylistCommand extends Command {
     return msg.say({ embed });
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

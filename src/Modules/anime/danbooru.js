@@ -1,6 +1,6 @@
 const axios = require('axios').default;
 const { stripIndents } = require('common-tags');
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 
 module.exports = class DanbooruCommand extends Command {
   constructor(client) {
@@ -85,7 +85,7 @@ module.exports = class DanbooruCommand extends Command {
         }
       }
     } catch (err) {
-      logger.log('error', err.stack);
+      logger.error(err.stack);
       msg.reply(`There was an error when requesting the image. Please try again later`);
     }
   }

@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
-const { Command } = require('discord.js-commando');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+const Command = require('../../structures/Command.js');
+
 
 module.exports = class KickCommand extends Command {
   constructor(client) {
@@ -31,7 +31,7 @@ module.exports = class KickCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { member, reason }) {
     // // Manual method
     // let member = await isUserId(args[0], msg);
@@ -44,7 +44,7 @@ module.exports = class KickCommand extends Command {
     // } else {
     //   return msg.say('Invalid Id or Argument');
     // }
-    const kickedName = `${member.user.username}#${member.user.discriminator} <${member.user.id}>`;
+    const kickedName = `${member.user.tag} <${member.user.id}>`;
     const kickedimage = `${member.user.displayAvatarURL()}`;
     try {
       await member.kick(reason);
@@ -54,10 +54,10 @@ module.exports = class KickCommand extends Command {
         .setTitle(`Kicked Successfully`)
         .setDescription(`**Member** : ${kickedName}\n` + `**Reason** : ${reason}\n` +
           `**Time** : ${msg.createdAt.toUTCString()}`)
-        .setFooter(`Kicked by ${msg.author.username}#${msg.author.discriminator}`,
+        .setFooter(`Kicked by ${msg.author.tag}`,
           `${msg.author.displayAvatarURL()}`);
 
-      return sendtoLogChan(msg, { embedMsg: embedMsg });
+      return msg.sendToLogChan({ embedMsg: embedMsg });
 
     } catch (e) {
       // due to missing permissions or role hierarchy
@@ -66,15 +66,4 @@ module.exports = class KickCommand extends Command {
 
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

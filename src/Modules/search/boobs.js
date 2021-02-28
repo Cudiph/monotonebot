@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 
 module.exports = class UrbandictCommand extends Command {
   constructor(client) {
@@ -27,7 +27,7 @@ module.exports = class UrbandictCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { count }) {
     const random = Math.random();
     let res;
@@ -40,7 +40,7 @@ module.exports = class UrbandictCommand extends Command {
           msg.say(url);
         }
       } catch (err) {
-        logger.log('error', err.stack);
+        logger.error(err.stack);
         return msg.say('There was an error when requesting an image, please try again later');
       }
     } else {
@@ -52,22 +52,11 @@ module.exports = class UrbandictCommand extends Command {
           msg.say(url);
         }
       } catch (err) {
-        logger.log('error', err + ' at boobs.js');
+        logger.error(err.stack);
         return msg.say('There was an error when requesting an image, please try again later');
       }
     }
 
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

@@ -1,5 +1,5 @@
 const { oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const axios = require('axios').default;
 
 module.exports = class ShortenCommand extends Command {
@@ -38,7 +38,7 @@ module.exports = class ShortenCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { longUrl, customUrl }) {
     let shortUrl;
     try {
@@ -73,15 +73,4 @@ module.exports = class ShortenCommand extends Command {
 
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

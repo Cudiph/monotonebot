@@ -1,8 +1,8 @@
 // importing some required modules / files
 const fs = require('fs');
-const { CommandoClient } = require('discord.js-commando');
 const path = require('path');
 const winston = require('winston');
+const MonoClient = require('./structures/Client');
 
 // winston logger
 global.logger = winston.createLogger({
@@ -10,12 +10,12 @@ global.logger = winston.createLogger({
     new winston.transports.Console(),
     new winston.transports.File({ filename: `${__dirname}/data/logs` }),
   ],
-  format: winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`),
+  format: winston.format.printf(log => `[${new Date().toISOString()}]: [${log.level.toUpperCase()}] - ${log.message}`),
   exitOnError: false,
 });
 
 // declaring some discord.js function
-const client = new CommandoClient({
+const client = new MonoClient({
   commandPrefix: '..',
   owner: '400240052761788427',
   unknownCommandResponse: false,
@@ -45,11 +45,11 @@ client.registry
 
 // run events folder
 fs.readdir(`${__dirname}/events`, (err, files) => {
-  if (err) logger.error(err);
+  if (err) logger.error(err.stack);
   const jsFiles = files.filter(file => file.endsWith('.js'));
   jsFiles.forEach(file => {
     require(`${__dirname}/events/${file}`);
-    logger.log('info', `${file} events loaded`);
+    logger.info(`${file} events loaded`);
   });
 });
 

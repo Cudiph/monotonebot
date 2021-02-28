@@ -1,7 +1,6 @@
 const { oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando');
-const { userDataSchema } = require('../../library/Database/schema.js');
-const { play } = require('../../library/helper/player.js');
+const Command = require('../../structures/Command.js');
+const { userDataSchema } = require('../../util/schema.js');
 
 module.exports = class LoadPlaylistCommand extends Command {
   constructor(client) {
@@ -9,7 +8,7 @@ module.exports = class LoadPlaylistCommand extends Command {
       name: 'loadplaylist',
       group: 'voice',
       aliases: ['loadpl', 'loadplaylist'],
-      examples: ['loadpl 1', 'loadplaylist 3'],
+      examples: ['loadpl fav_playlist', 'loadplaylist 3'],
       memberName: 'loadplaylist',
       description: 'Load playlist from database',
       details: oneLine`
@@ -57,16 +56,16 @@ module.exports = class LoadPlaylistCommand extends Command {
         if (!msg.guild.queue) {
           msg.guild.queue = playlist.videoList;
           msg.guild.indexQueue = 0;
-          play(msg);
+          msg.guild.play(msg);
         } else {
           const oldLength = msg.guild.queue.length;
           msg.guild.queue.push(...playlist.videoList);
           if (msg.guild.queueTemp) msg.guild.queueTemp.push(...playlist.videoList);
-          if (msg.guild.indexQueue >= oldLength) play(msg);
+          if (msg.guild.indexQueue >= oldLength) msg.guild.play(msg);
         }
         return msg.say(`Added playlist **${playlist.name}**.`);
       } catch (err) {
-        logger.log('error', err);
+        logger.error(err.stack);
         return msg.reply(`Can't load the playlist`);
       }
     } else {
@@ -94,16 +93,16 @@ module.exports = class LoadPlaylistCommand extends Command {
         if (!msg.guild.queue) {
           msg.guild.queue = playlist.videoList;
           msg.guild.indexQueue = 0;
-          play(msg);
+          msg.guild.play(msg);
         } else {
           const oldLength = msg.guild.queue.length;
           msg.guild.queue.push(...playlist.videoList);
           if (msg.guild.queueTemp) msg.guild.queueTemp.push(...playlist.videoList);
-          if (msg.guild.indexQueue >= oldLength) play(msg);
+          if (msg.guild.indexQueue >= oldLength) msg.guild.play(msg);
         }
         return msg.say(`Added playlist **${playlist.name}**.`);
       } catch (err) {
-        logger.log('error', err);
+        logger.error(err.stack);
         if (err.message.includes('regular expression')) {
           return msg.reply(`Please give a valid regular expression`);
         } else {

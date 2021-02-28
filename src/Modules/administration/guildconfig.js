@@ -1,5 +1,6 @@
-const { Command } = require('discord.js-commando');
-const { guildSettingsSchema } = require('../../library/Database/schema.js');
+const Command = require('../../structures/Command.js');
+const { guildSettingsSchema } = require('../../util/schema.js');
+const gtrans = require('node-gtrans');
 
 
 module.exports = class GuildConfigCommand extends Command {
@@ -8,7 +9,7 @@ module.exports = class GuildConfigCommand extends Command {
       name: 'guildconfig',
       group: 'administration',
       memberName: 'guildconfig',
-      aliases: ['guildsettings'],
+      aliases: ['guildsettings', 'gconfig', 'serverconfig'],
       description: 'Show current guild configuration that stored in the database',
       examples: ['guildconfig'],
       guildOnly: true,
@@ -41,8 +42,8 @@ module.exports = class GuildConfigCommand extends Command {
           inline: true,
         },
         {
-          name: 'Volume',
-          value: (guildSettings.volume || 0.5) * 100,
+          name: 'Language',
+          value: gtrans.validateLangId(msg.guild.language),
           inline: true,
         },
         {
@@ -77,15 +78,4 @@ module.exports = class GuildConfigCommand extends Command {
 
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

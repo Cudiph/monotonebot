@@ -1,6 +1,6 @@
 const { stripIndents } = require('common-tags');
-const { Command } = require('discord.js-commando');
-const { guildSettingsSchema } = require('../../library/Database/schema.js');
+const Command = require('../../structures/Command.js');
+const { guildSettingsSchema } = require('../../util/schema.js');
 
 
 module.exports = class WelcomeCommand extends Command {
@@ -13,7 +13,7 @@ module.exports = class WelcomeCommand extends Command {
       details: stripIndents`
         Custom variable are:
         \`{{@user}}\` to mention the user
-        \`{{user}}\` to show user "username#discriminator" without mentioning
+        \`{{user}}\` to show the user tag without mentioning
         \`{{guild}}\` will display guild name
         \`{{members}}\` will display guild member count
         Put the variable in the greeting arg.
@@ -92,15 +92,4 @@ module.exports = class WelcomeCommand extends Command {
 
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

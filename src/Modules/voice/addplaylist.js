@@ -1,8 +1,7 @@
 const ytpl = require('ytpl');
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const { oneLine, stripIndents } = require('common-tags');
-const { player } = require('../../library/helper/player.js');
-const { toSeconds } = require('../../library/helper/discord-item.js');
+const Util = require('../../util/Util.js');
 
 module.exports = class AddPlaylistCommand extends Command {
   constructor(client) {
@@ -36,6 +35,7 @@ module.exports = class AddPlaylistCommand extends Command {
     });
   }
 
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { listId }) {
     // if not in voice channel
     if (!msg.member.voice.channel) {
@@ -54,12 +54,14 @@ module.exports = class AddPlaylistCommand extends Command {
             if (msg.guild.queue && msg.guild.queue.length >= 150) {
               return;
             }
-            player({
+            msg.guild.pushToQueue({
               title: video.title,
-              url: `https://youtube.com/watch?v=${video.id}`,
+              link: `https://youtube.com/watch?v=${video.id}`,
               videoId: video.id,
-              author: video.author,
-              seconds: toSeconds(video.duration),
+              uploader: video.author.name,
+              seconds: Util.toSeconds(video.duration),
+              author: msg.author.tag,
+              isLive: video.isLive,
             }, msg, true);
           });
           if (msg.guild.queue && msg.guild.queue.length >= 150) {
@@ -70,7 +72,7 @@ module.exports = class AddPlaylistCommand extends Command {
           }
           return msg.say(`Added playlist **${playlist.title}**. `);
         } catch (err) {
-          logger.log('error', err);
+          logger.error(err.stack);
           return msg.say(stripIndents`An error Occured.
             Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all
             Error : \`${err}\`
@@ -84,12 +86,14 @@ module.exports = class AddPlaylistCommand extends Command {
             if (msg.guild.queue && msg.guild.queue.length >= 150) {
               return;
             }
-            player({
+            msg.guild.pushToQueue({
               title: video.title,
-              url: `https://youtube.com/watch?v=${video.id}`,
+              link: `https://youtube.com/watch?v=${video.id}`,
               videoId: video.id,
-              author: video.author,
-              seconds: toSeconds(video.duration),
+              uploader: video.author,
+              seconds: Util.toSeconds(video.duration),
+              author: msg.author.tag,
+              isLive: video.isLive,
             }, msg, true);
           });
           if (msg.guild.queue && msg.guild.queue.length >= 150) {
@@ -100,7 +104,7 @@ module.exports = class AddPlaylistCommand extends Command {
           }
           return msg.say(`Added playlist **${playlist.title}**. `);
         } catch (err) {
-          logger.log('error', err);
+          logger.error(err.stack);
           return msg.say(stripIndents`An error Occured.
             Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all
             Error : \`${err}\`
@@ -111,16 +115,5 @@ module.exports = class AddPlaylistCommand extends Command {
 
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };
 

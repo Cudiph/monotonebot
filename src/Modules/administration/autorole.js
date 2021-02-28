@@ -1,6 +1,6 @@
-const { Command } = require('discord.js-commando');
-const { guildSettingsSchema } = require('../../library/Database/schema.js');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+const Command = require('../../structures/Command.js');
+const { guildSettingsSchema } = require('../../util/schema.js');
+
 
 module.exports = class AutoRoleCommand extends Command {
   constructor(client) {
@@ -37,7 +37,7 @@ module.exports = class AutoRoleCommand extends Command {
     try {
       guildSetting = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
     } catch (err) {
-      logger.log('error', err.stack);
+      logger.error(err.stack);
       return msg.reply(`Can't load the data, please assign a new one if it's not already set`);
     }
 
@@ -76,22 +76,11 @@ module.exports = class AutoRoleCommand extends Command {
       const newGuildSettings = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
         autoAssignRoleId: role.id,
       }, { new: true, upsert: true });
-      return sendtoLogChan(msg, { strMsg: `Assignment successful, new auto role is <@&${newGuildSettings.autoAssignRoleId}>` });
+      return msg.sendToLogChan({ strMsg: `Assignment successful, new auto role is <@&${newGuildSettings.autoAssignRoleId}>` });
     } catch (err) {
-      logger.log('error', err.stack);
+      logger.error(err.stack);
       return msg.reply(`Can't update new log channel.`);
     }
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

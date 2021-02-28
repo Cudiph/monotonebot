@@ -1,12 +1,12 @@
 const { oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando');
-const { play } = require('../../library/helper/player.js');
+const Command = require('../../structures/Command.js');
 
 // based on jump.js
 module.exports = class JumpToCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'jumpto',
+      aliases: ['skipto'],
       group: 'voice',
       memberName: 'jumpto',
       description: 'Jump to an index',
@@ -42,13 +42,13 @@ module.exports = class JumpToCommand extends Command {
     else msg.guild.indexQueue = indexToPlay;
 
     if (msg.guild.me.voice.connection.dispatcher && msg.guild.me.voice.connection.dispatcher.paused) {
-      return play(msg);
+      return msg.guild.play(msg);
     } else if (msg.guild.me.voice.connection.dispatcher) {
       msg.guild.indexQueue -= 1;
       msg.guild.me.voice.connection.dispatcher.end();
       return;
     }
-    return play(msg);
+    return msg.guild.play(msg);
 
   }
 

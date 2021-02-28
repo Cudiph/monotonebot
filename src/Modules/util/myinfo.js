@@ -1,6 +1,6 @@
 const { stripIndents } = require('common-tags');
-const { Command } = require('discord.js-commando');
-const { userDataSchema } = require('../../library/Database/schema');
+const Command = require('../../structures/Command.js');
+const { userDataSchema } = require('../../util/schema');
 
 module.exports = class MyInfoCommand extends Command {
   constructor(client) {
@@ -9,12 +9,12 @@ module.exports = class MyInfoCommand extends Command {
       group: 'util',
       memberName: 'myinfo',
       aliases: ['mystats'],
-      description: 'myinfo someone with mentioning in a server',
+      description: 'Your info such as your level in the bot database',
       throttling: {
         usages: 1,
         duration: 30,
       },
-      examples: ['myinfo @epicgamers Hello;Nice too meet you', 'email @0xDeadBeef Title;Desc'],
+      examples: ['myinfo'],
     });
   }
 
@@ -24,7 +24,7 @@ module.exports = class MyInfoCommand extends Command {
     try {
       userData = await userDataSchema.findOne({ userId: msg.author.id });
     } catch (err) {
-      logger.log('error', err.stack);
+      logger.error(err.stack);
       return msg.reply(`Can't load the data, please try again later`);
     }
 
@@ -58,15 +58,4 @@ module.exports = class MyInfoCommand extends Command {
 
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

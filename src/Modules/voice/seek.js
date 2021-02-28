@@ -1,6 +1,5 @@
-const { Command } = require('discord.js-commando');
-const { toSeconds, toTimestamp, randomHex } = require('../../library/helper/discord-item');
-const { play } = require('../../library/helper/player');
+const Command = require('../../structures/Command.js');
+const Util = require('../../util/Util');
 
 
 /**
@@ -12,7 +11,7 @@ const { play } = require('../../library/helper/player');
 function seekEmbed(template, msg) {
   const queue = msg.guild.queue;
   const indexQ = msg.guild.indexQueue;
-  const seekTime = queue[indexQ].seekTime ? queue[indexQ].seekTime : 0;
+  const seekTime = queue[indexQ].seekTime || 0;
   const currentTime = Math.floor(msg.guild.me.voice.connection.dispatcher.streamTime / 1000) + seekTime;
   let totalTime = 0;
   for (let i = 0; i < indexQ + 1; i++) {
@@ -23,13 +22,13 @@ function seekEmbed(template, msg) {
     totalTime += queue[i].seconds;
   }
   const embed = {
-    color: parseInt(randomHex(), 16),
+    color: parseInt(Util.randomHex(), 16),
     title: queue[indexQ].title,
     url: queue[indexQ].link,
-    description: `${template.join('')} ${toTimestamp(currentTime)} / ${toTimestamp(queue[indexQ].seconds)}`,
+    description: `${template.join('')} ${Util.toTimestamp(currentTime)} / ${Util.toTimestamp(queue[indexQ].seconds)}`,
     timestamp: new Date(),
     footer: {
-      text: `Estimated time played is ${toTimestamp(Math.floor(totalTime))}`,
+      text: `Estimated time played is ${Util.toTimestamp(Math.floor(totalTime))}`,
     },
   };
   return embed;
@@ -74,7 +73,7 @@ module.exports = class SeekCommand extends Command {
     if (timestamp) {
       if (timestamp.includes(':')) {
         const timestampOnly = timestamp.replace(/\s+/g, '');
-        timestamp = toSeconds(timestampOnly);
+        timestamp = Util.toSeconds(timestampOnly);
       } else if (timestamp.match(/\d+/)) {
         const secondsOnly = timestamp.match(/\d+/);
         timestamp = parseInt(secondsOnly[0]);
@@ -92,21 +91,19 @@ module.exports = class SeekCommand extends Command {
     if (timestamp) {
       // handler
       if (songLength <= timestamp) {
-        return msg.reply(`Current track length is **${songLength}s** or **${toTimestamp(songLength)}**`);
-      } else if (songLength <= 20) {
-        return msg.reply(`Song under 20 seconds can't be adjusted`);
-      } else if (songLength - 15 <= timestamp || timestamp < 15 && timestamp >= 0) {
-        return msg.reply(`Please provide the time that isn't close to the end or start of the song`);
+        return msg.reply(`Current track length is **${songLength}s** or **${Util.toTimestamp(songLength)}**`);
+      } else if (songLength - 15 <= timestamp) {
+        return msg.reply(`Please provide the time that isn't close to the end of the song`);
       } else if (timestamp < 0) {
         return msg.reply('Please provide a correct format for the timestamp');
       }
 
       if (timestamp > 600) {
-        return msg.reply(`Currenty seeking is support up to 10 minutes due to performance issue`);
+        return msg.reply(`Currently seeking is support up to 10 minutes due to performance issue`);
       }
 
-      play(msg, { seek: timestamp });
-      return msg.say(`Playing ${queue[indexQ].title} at **${toTimestamp(timestamp)}**`);
+      msg.guild.play(msg, { seek: timestamp });
+      return msg.say(`Playing **${queue[indexQ].title}** at **${Util.toTimestamp(timestamp)}**`);
     }
 
     const seekTime = queue[indexQ].seekTime ? queue[indexQ].seekTime : 0;
@@ -124,16 +121,5 @@ module.exports = class SeekCommand extends Command {
     return msg.embed(seekEmbed(template, msg));
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };
 

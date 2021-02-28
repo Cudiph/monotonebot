@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 
 module.exports = class EightBallCommand extends Command {
   constructor(client) {
@@ -21,7 +21,7 @@ module.exports = class EightBallCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { question }) {
     if (!question.length) {
       return msg.reply(`You didn't provide any arguments`);
@@ -30,22 +30,11 @@ module.exports = class EightBallCommand extends Command {
     const answer = answers.response[Math.floor(Math.random() * Math.floor(answers.response.length))];
     const embedMsg = new Discord.MessageEmbed()
       .setColor('#f0568a')
-      .addField(`:question: Question`, question)
-      .addField(':speech_balloon: Answer', answer)
-      .setFooter(`${msg.author.username}#${msg.author.discriminator}`);
+      .addField(`❓ Question`, question)
+      .addField('💬 Answer', answer)
+      .setFooter(`${msg.author.tag}`);
 
     msg.say(embedMsg);
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

@@ -1,6 +1,6 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const Discord = require('discord.js');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+
 
 module.exports = class BanCommand extends Command {
   constructor(client) {
@@ -44,7 +44,7 @@ module.exports = class BanCommand extends Command {
     // }
 
     // get the banned data
-    const bannedName = `${member.user.username}#${member.user.discriminator} <${member.user.id}>`;
+    const bannedName = `${member.user.tag} <${member.user.id}>`;
     const bannedImage = `${member.user.displayAvatarURL()}`;
     if (member) {
       try {
@@ -55,14 +55,14 @@ module.exports = class BanCommand extends Command {
           .setTitle(`Banned Successfully`)
           .setDescription(`**Member** : ${bannedName}\n` + `**Reason** : ${reason}\n` +
             `**Time** : ${msg.createdAt.toUTCString()}`)
-          .setFooter(`Banned by ${msg.author.username}#${msg.author.discriminator}`,
+          .setFooter(`Banned by ${msg.author.tag}`,
             `${msg.author.displayAvatarURL()}`);
 
-        return sendtoLogChan(msg, { embedMsg: embedMsg });
+        return msg.sendToLogChan({ embedMsg: embedMsg });
       } catch (e) {
         // due to missing permissions or role hierarchy
         msg.reply(`I was unable to ban the member`);
-        logger.log('error', e.stack);
+        logger.error(e.stack);
       }
 
     } else { // Otherwise, if no user was mentioned
@@ -70,16 +70,5 @@ module.exports = class BanCommand extends Command {
     }
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };
 

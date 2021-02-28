@@ -23,6 +23,10 @@ const guildSettings = new mongoose.Schema({
     default: '..'
   },
   volume: Number,
+  language: {
+    type: String,
+    default: 'en'
+  }
 }, { timestamps: true });
 
 const userData = new mongoose.Schema({

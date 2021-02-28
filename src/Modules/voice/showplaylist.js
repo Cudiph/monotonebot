@@ -1,17 +1,15 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const { stripIndents, oneLine } = require('common-tags');
-const { userDataSchema } = require('../../library/Database/schema.js');
-const { randomHex } = require('../../library/helper/discord-item.js');
-const { emoji, toTimestamp } = require('../../library/helper/discord-item.js');
-
+const { userDataSchema } = require('../../util/schema.js');
+const Util = require('../../util/Util.js');
 
 // copied from setEmbedQueue
 function setEmbedPlaylist(userPlaylists, indexPage, page, msg, itemsPerPage) {
   const listLength = userPlaylists.length;
   const embed = {
-    color: parseInt(randomHex(), 16),
+    color: parseInt(Util.randomHex(), 16),
     author: {
-      name: `Playlist of ${msg.author.username}#${msg.author.discriminator}`,
+      name: `Playlist of ${msg.author.tag}`,
       icon_url: msg.author.displayAvatarURL(),
     },
     description: '',
@@ -59,8 +57,8 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
   const listLength = playlist.videoList.length;
   const videoList = playlist.videoList;
   const embed = {
-    color: parseInt(randomHex(), 16),
-    title: `Content of **${playlist.name}*** playlist`,
+    color: parseInt(Util.randomHex(), 16),
+    title: `Content of **${playlist.name}** playlist`,
     description: playlist.description,
     fields: [],
     timestamp: new Date(),
@@ -72,33 +70,18 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
   // if page is the last page then exec this code
   if (page === Math.floor(listLength / itemsPerPage)) {
     for (let i = indexPage; i < listLength; i++) {
-      // add => sign to current playing
-      if ((indexPage + i) !== msg.guild.indexQueue) {
-        embed.fields.push({
-          name: `[${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        });
-      } else {
-        embed.fields.push({
-          name: `=> [${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        });
-      }
-
+      embed.fields.push({
+        name: `[${i}] ${videoList[i].title}`,
+        value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
+      });
     }
   } else {
     for (let i = indexPage; i < (indexPage + itemsPerPage); i++) {
-      if ((indexPage) !== msg.guild.indexQueue) {
-        embed.fields.push({
-          name: `[${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        });
-      } else {
-        embed.fields.push({
-          name: `=> [${i}] ${videoList[i].title}`,
-          value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
-        });
-      }
+      embed.fields.push({
+        name: `[${i}] ${videoList[i].title}`,
+        value: `${videoList[i].uploader} ${videoList[i].seconds ? '| ' + Util.toTimestamp(videoList[i].seconds) : ''} | [YouTube](${videoList[i].link})`,
+      });
+
     }
   }
   let qlength = 0;
@@ -112,7 +95,7 @@ function setEmbedPlaylistContent(playlist, indexPage, page, msg, itemsPerPage) {
     },
     {
       name: `Length`,
-      value: `${toTimestamp(qlength)}`,
+      value: `${Util.toTimestamp(qlength)}`,
       inline: true,
     },
     {
@@ -147,7 +130,7 @@ module.exports = class ShowPlaylistCommand extends Command {
       },
       args: [
         {
-          key: 'playlistId',
+          key: 'playlistID',
           prompt: 'Which playlist do you want to show it\'s content?',
           type: 'integer',
           default: '',
@@ -156,8 +139,8 @@ module.exports = class ShowPlaylistCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
-  async run(msg, { playlistId }) {
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
+  async run(msg, { playlistID }) {
     // variabel to store data :)
     let page = 0;
     let index = 0;
@@ -170,7 +153,7 @@ module.exports = class ShowPlaylistCommand extends Command {
       playlist = data.userPlaylists;
       if (!playlist.length) {
         throw 'user playlist is null';
-      } else if (playlistId !== '' && playlistId < 0 || playlistId >= playlist.length) {
+      } else if (playlistID !== '' && playlistID < 0 || playlistID >= playlist.length) {
         return msg.say(`Your current playlist is from 0-${playlist.length - 1}`);
       }
     } catch (e) {
@@ -183,9 +166,9 @@ module.exports = class ShowPlaylistCommand extends Command {
     let embed; // embed to send / update
     let list; // list of playlist or videoList
     let listLength; // length of list
-    if (playlistId !== '') {
+    if (playlistID !== '') {
       itemsPerPage = 9;
-      list = playlist[playlistId];
+      list = playlist[playlistID];
       listLength = list.videoList.length;
       embed = setEmbedPlaylistContent;
     } else {
@@ -206,7 +189,7 @@ module.exports = class ShowPlaylistCommand extends Command {
         const collector = embedMsg.createReactionCollector(filter, { time: 60000, dispose: true });
 
         collector.on('collect', async collected => {
-          if (collected.emoji.name === emoji.x) {
+          if (collected.emoji.name === Util.emoji.x) {
             embedMsg.delete();
           } else if (collected.emoji.name === '⬅') {
             // decrement index for list
@@ -240,7 +223,7 @@ module.exports = class ShowPlaylistCommand extends Command {
             await embedMsg.react(emojiNeeded[i]);
           }
         } else {
-          embedMsg.react(emoji.x);
+          embedMsg.react(Util.emoji.x);
         }
       });
   }

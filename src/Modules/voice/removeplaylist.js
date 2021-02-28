@@ -1,6 +1,6 @@
 const { oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando');
-const { userDataSchema } = require('../../library/Database/schema.js');
+const Command = require('../../structures/Command.js');
+const { userDataSchema } = require('../../util/schema.js');
 
 module.exports = class RemovePlaylistCommand extends Command {
   constructor(client) {
@@ -58,7 +58,7 @@ module.exports = class RemovePlaylistCommand extends Command {
         });
         msg.say(`Deleted playlist **${before.userPlaylists[playlistArg].name}**`);
       } catch (err) {
-        logger.log('error', err.stack);
+        logger.error(err.stack);
         return msg.reply(`Can't remove the playlist`);
       }
     } else {

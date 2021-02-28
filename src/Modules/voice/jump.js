@@ -1,6 +1,5 @@
 const { oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando');
-const { play } = require('../../library/helper/player.js');
+const Command = require('../../structures/Command.js');
 
 
 module.exports = class JumpCommand extends Command {
@@ -43,26 +42,15 @@ module.exports = class JumpCommand extends Command {
 
     if (msg.guild.me.voice.connection.dispatcher && msg.guild.me.voice.connection.dispatcher.paused) {
       msg.guild.indexQueue++;
-      return play(msg);
+      return msg.guild.play(msg);
     } else if (msg.guild.me.voice.connection.dispatcher) {
       msg.guild.me.voice.connection.dispatcher.end();
       return;
     }
 
     msg.guild.indexQueue++;
-    play(msg);
+    msg.guild.play(msg);
 
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

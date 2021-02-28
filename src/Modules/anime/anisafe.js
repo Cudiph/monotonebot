@@ -1,6 +1,6 @@
 const axios = require('axios').default;
 const { oneLine } = require('common-tags');
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 
 module.exports = class AniSafeCommand extends Command {
   constructor(client) {
@@ -48,7 +48,7 @@ module.exports = class AniSafeCommand extends Command {
       const res = await axios.get(`https://nekos.life/api/v2/img/${tag ? tag : getRandomTag}`);
       return msg.say(res.data.url);
     } catch (err) {
-      logger.log('error', err.stack);
+      logger.error(err.stack);
       msg.reply(`There was an error when requesting the image. Please try again later`);
     }
   }

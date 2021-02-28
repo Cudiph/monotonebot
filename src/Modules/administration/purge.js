@@ -1,6 +1,6 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const { stripIndents } = require('common-tags');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+
 
 module.exports = class PurgeCommand extends Command {
   constructor(client) {
@@ -48,30 +48,19 @@ module.exports = class PurgeCommand extends Command {
       const messages = await msg.channel.messages.fetch({ limit: total });
       msg.channel.bulkDelete(messages).then(deletedMessages => {
         const response = `Bulk deleted **${deletedMessages.size}** messages on <#${msg.channel.id}>`;
-        return sendtoLogChan(msg, { strMsg: response });
+        return msg.sendToLogChan({ strMsg: response });
       }).catch(err => {
-        logger.log('error', err);
+        logger.error(err.stack);
         msg.say(stripIndents`
         Unable to delete messages
         It's likely because you are trying to delete messages that are under 14 days old.
       `).then(resMsg => resMsg.delete({ timeout: 7000 }));
       });
     } catch (err) {
-      logger.log('error', err);
+      logger.error(err.stack);
       msg.say(`Unable to delete messages`);
     }
 
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

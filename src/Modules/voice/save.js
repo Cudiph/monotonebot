@@ -1,11 +1,12 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const { oneLine } = require('common-tags');
-const { userDataSchema } = require('../../library/Database/schema.js');
+const { userDataSchema } = require('../../util/schema.js');
 
 module.exports = class SaveCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'save',
+      aliases: ['savepl', 'saveq', 'savequeue', 'saveplaylist'],
       group: 'voice',
       memberName: 'save',
       description: 'Save queue to database',
@@ -68,7 +69,7 @@ module.exports = class SaveCommand extends Command {
       });
       msg.reply('playlist created successfully');
     } catch (err) {
-      logger.log('error', err);
+      logger.error(err.stack);
       return msg.reply(`Can't save the playlist`);
     }
 

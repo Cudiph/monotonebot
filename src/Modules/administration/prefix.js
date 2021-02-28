@@ -1,9 +1,9 @@
 /* eslint-disable no-shadow */
 const Discord = require('discord.js');
-const { Command } = require('discord.js-commando');
-const { guildSettingsSchema } = require('../../library/Database/schema.js');
+const Command = require('../../structures/Command.js');
+const { guildSettingsSchema } = require('../../util/schema.js');
 const { oneLine, stripIndents } = require('common-tags');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+
 
 async function writePrefix(newPrefix, msg) {
   // set new prefix for guild
@@ -14,7 +14,7 @@ async function writePrefix(newPrefix, msg) {
     }, { upsert: true });
     if (result) return result.prefix; else return msg.client.commandPrefix;
   } catch (err) {
-    logger.log('error', err);
+    logger.error(err.stack);
     msg.reply(`Can't update the prefix.`);
     return 'error';
   }
@@ -93,20 +93,9 @@ module.exports = class PrefixCommand extends Command {
         .addField('To', `**${args.prefix}**`, true)
         .addField('Usage', `${msg.anyUsage('command')}`);
       // send embed to log channel if exist
-      sendtoLogChan(msg, { embedMsg: embed });
+      msg.sendToLogChan({ embedMsg: embed });
     }
     return null;
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

@@ -1,6 +1,5 @@
-const { Command } = require('discord.js-commando');
-const { setEmbedQueueCmd } = require('../../library/helper/embed.js');
-const { emoji } = require('../../library/helper/discord-item.js');
+const Command = require('../../structures/Command.js');
+const Util = require('../../util/Util.js');
 
 module.exports = class QueueCommand extends Command {
   constructor(client) {
@@ -36,9 +35,9 @@ module.exports = class QueueCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { toPage, itemsPerPage }) {
-    if (!msg.guild.queue) {
+    if (!msg.guild.queue.length) {
       return msg.say(`There is no queue.`);
     }
 
@@ -54,7 +53,7 @@ module.exports = class QueueCommand extends Command {
     }
 
     // send embed
-    const embedMsg = await msg.say({ embed: setEmbedQueueCmd(msg.guild.queue, index, page, msg, itemsPerPage) });
+    const embedMsg = await msg.embed(msg.createEmbedQueue(index, page, itemsPerPage));
 
     const emojiNeeded = ['⬅', '➡', '🇽'];
 
@@ -65,7 +64,7 @@ module.exports = class QueueCommand extends Command {
     const collector = embedMsg.createReactionCollector(filter, { time: 60000 });
 
     collector.on('collect', async collected => {
-      if (collected.emoji.name === emoji.x) {
+      if (collected.emoji.name === Util.emoji.x) {
         embedMsg.delete();
       } else if (collected.emoji.name === '⬅') {
         // decrement index for list
@@ -88,7 +87,7 @@ module.exports = class QueueCommand extends Command {
         }
       }
       if (collected.emoji.name === '➡' || collected.emoji.name === '⬅') {
-        return embedMsg.edit({ embed: setEmbedQueueCmd(msg.guild.queue, index, page, msg, itemsPerPage) });
+        return embedMsg.edit({ embed: embedMsg.createEmbedQueue(index, page, itemsPerPage) });
       }
 
     });
@@ -99,20 +98,9 @@ module.exports = class QueueCommand extends Command {
         await embedMsg.react(emojiNeeded[i]);
       }
     } else {
-      embedMsg.react(emoji.x);
+      embedMsg.react(Util.emoji.x);
     }
   }
 
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

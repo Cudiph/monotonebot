@@ -1,6 +1,6 @@
 const fs = require('fs');
 const mergeImg = require('merge-img');
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const { oneLine } = require('common-tags');
 
 module.exports = class DiceCommand extends Command {
@@ -33,7 +33,7 @@ module.exports = class DiceCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { numberOfDice }) {
     // set default dice throwed
     // if (!args.length) {
@@ -119,15 +119,4 @@ module.exports = class DiceCommand extends Command {
     }
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

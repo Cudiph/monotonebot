@@ -1,5 +1,5 @@
-const { Command } = require('discord.js-commando');
-const { sendtoLogChan } = require('../../library/helper/embed.js');
+const Command = require('../../structures/Command.js');
+
 
 module.exports = class UnbanCommand extends Command {
   constructor(client) {
@@ -47,28 +47,17 @@ module.exports = class UnbanCommand extends Command {
 
     msg.guild.members.unban(bannedUser, reason)
       .then(user => {
-        const res = `Unbanned **${user.username}#${user.discriminator}** from **${msg.guild.name}**`;
-        return sendtoLogChan(msg, { strMsg: res });
+        const res = `Unbanned **${user.tag}** from **${msg.guild.name}**`;
+        return msg.sendToLogChan({ strMsg: res });
       })
       .catch(err => {
         // due to missing permissions or role hierarchy
         msg.reply('I was unable to unban the member\n' +
           '**Error name** : ' + err.toString().split(':').slice(1).join());
         // Log the error
-        logger.log('error', err);
+        logger.error(err.stack);
       });
 
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

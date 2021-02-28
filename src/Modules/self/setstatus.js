@@ -1,11 +1,11 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 
 module.exports = class SetStatusCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'setstatus',
       group: 'self',
-      memberName: 'status',
+      memberName: 'setstatus',
       description: 'Set bot status',
       examples: ['setstatus idle'],
       details: 'available status are online, idle, invisible, dnd(do not disturb)',
@@ -32,20 +32,9 @@ module.exports = class SetStatusCommand extends Command {
       .then(msg.say(`Change status to \`${status}\``))
       .catch(err => {
         msg.say('Something went wrong');
-        logger.log('error', err);
+        logger.error(err.stack);
       });
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };
 

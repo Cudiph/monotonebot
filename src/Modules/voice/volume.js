@@ -1,5 +1,5 @@
-const { Command } = require('discord.js-commando');
-const { guildSettingsSchema } = require('../../library/Database/schema.js');
+const Command = require('../../structures/Command.js');
+const { guildSettingsSchema } = require('../../util/schema.js');
 
 module.exports = class VolumeCommand extends Command {
   constructor(client) {
@@ -46,7 +46,7 @@ module.exports = class VolumeCommand extends Command {
       msg.guild.volume = volume;
       msg.say(`Change volume level to ${volume * 100}`);
     } catch (err) {
-      logger.log('error', err);
+      logger.error(err.stack);
       msg.say(`Can't update stream volume, please try again later`);
     }
     if (msg.guild.me.voice.connection.dispatcher) {
@@ -54,15 +54,4 @@ module.exports = class VolumeCommand extends Command {
     }
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

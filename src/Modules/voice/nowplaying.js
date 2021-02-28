@@ -1,6 +1,6 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 const ytdl = require('discord-ytdl-core');
-const { randomHex } = require('../../library/helper/discord-item');
+const Util = require('../../util/Util');
 
 module.exports = class NowPlayingCommand extends Command {
   constructor(client) {
@@ -32,7 +32,7 @@ module.exports = class NowPlayingCommand extends Command {
     const trackInfo = await ytdl.getInfo(queue[indexQ].link);
 
     const embed = {
-      color: parseInt(randomHex(), 16),
+      color: parseInt(Util.randomHex(), 16),
       title: trackInfo.videoDetails.title,
       url: trackInfo.videoDetails.video_url,
       author: {
@@ -97,7 +97,7 @@ module.exports = class NowPlayingCommand extends Command {
     let counter = 0;
     const related = [];
     for (const track of trackInfo.related_videos) {
-      related.push(`• ${track.title} by ${track.author.name}`);
+      related.push(`• **${track.title}** by *${track.author.name}*`);
       if (counter > 3) break;
       counter++;
     }
@@ -110,15 +110,4 @@ module.exports = class NowPlayingCommand extends Command {
     return msg.say({ embed: embed });
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };

@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command.js');
 
 module.exports = class CatCommand extends Command {
   constructor(client) {
@@ -17,29 +17,18 @@ module.exports = class CatCommand extends Command {
     });
   }
 
-  /** @param {import('discord.js-commando').CommandoMessage} message */
+  /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg) {
     // get the data
     try {
       const response = await axios.get('https://aws.random.cat/meow');
       msg.say(response.data.file);
     } catch (err) {
-      logger.log('error', err);
+      logger.error(err.stack);
       msg.say(`Something went wrong, please try again later.\n Error : \`${err}\``)
         .then(theMsg => theMsg.delete({ timeout: 7000 }))
         .catch(e => e);
     }
   }
 
-  async onBlock(msg, reason, data) {
-    super.onBlock(msg, reason, data)
-      .then(blockMsg => blockMsg.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
-
-  onError(err, message, args, fromPattern, result) {
-    super.onError(err, message, args, fromPattern, result)
-      .then(msgParent => msgParent.delete({ timeout: 10000 }))
-      .catch(e => e); // do nothing
-  }
 };
