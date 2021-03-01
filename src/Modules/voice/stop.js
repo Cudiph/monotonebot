@@ -40,8 +40,7 @@ module.exports = class StopCommand extends Command {
     }
 
     if (deleteQueue) {
-      delete msg.guild.queue;
-      delete msg.guild.queueTemp;
+      msg.guild.resetPlayer();
     }
   }
 
