@@ -122,7 +122,7 @@ module.exports = Structures.extend('Guild', Guild => {
         const url = `https://www.youtube.com/watch?v=${queue[indexQ].videoId}`;
         const stream = ytdl(queue[indexQ].link || url, {
           filter: queue[indexQ].isLive ? 'audio' : 'audioonly',
-          quality: queue[indexQ].isLive ? [91, 92, 93, 94] : 'highest',
+          quality: queue[indexQ].isLive ? [ 249, 250, 91, 92, 93, 94, 251] : 'highest',
           dlChunkSize: 0,
           opusEncoded: true,
           encoderArgs: ['-af', 'bass=g=10,dynaudnorm=f=200'],
@@ -214,7 +214,7 @@ module.exports = Structures.extend('Guild', Guild => {
         seconds: parseInt(related[randTrack].length_seconds),
         author: `Autoplay`,
         videoId: related[randTrack].id,
-        isLive: related[randTrack].isLive,
+        isLive: parseInt(related[randTrack].length_seconds) == 0 ? true : false,
       };
       this.queue.push(construction);
       this.queueTemp.push(construction);

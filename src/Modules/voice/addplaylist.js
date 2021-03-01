@@ -61,7 +61,7 @@ module.exports = class AddPlaylistCommand extends Command {
               uploader: video.author.name,
               seconds: Util.toSeconds(video.duration),
               author: msg.author.tag,
-              isLive: video.isLive,
+              isLive: Util.toSeconds(video.duration) == 0 ? true : false,
             }, msg, true);
           });
           if (msg.guild.queue && msg.guild.queue.length >= 150) {
@@ -93,7 +93,7 @@ module.exports = class AddPlaylistCommand extends Command {
               uploader: video.author,
               seconds: Util.toSeconds(video.duration),
               author: msg.author.tag,
-              isLive: video.isLive,
+              isLive: Util.toSeconds(video.duration) == 0 ? true : false,
             }, msg, true);
           });
           if (msg.guild.queue && msg.guild.queue.length >= 150) {
