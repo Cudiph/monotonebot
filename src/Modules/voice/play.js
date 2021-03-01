@@ -84,7 +84,7 @@ module.exports = class PlayCommand extends Command {
             videoId: vidId,
             uploader: data.videoDetails.author.name || data.videoDetails.ownerChannelName,
             seconds: data.videoDetails.lengthSeconds,
-            author: embedMsg.author.tag,
+            author: msg.author.tag,
             isLive: data.videoDetails.isLiveContent,
           };
           return msg.guild.pushToQueue(dataConstructor, msg);
