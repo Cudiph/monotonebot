@@ -22,18 +22,18 @@ module.exports = class NowPlayingCommand extends Command {
   /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg) {
     const queue = msg.guild.queue;
-    const indexQ = msg.guild.indexQueue;
+    const indexQ = msg.guild.indexQueue < 0 ? 0 : msg.guild.indexQueue;
     if (!queue || !queue.length) {
       return msg.say(`There is no queue.`);
-    } else if (indexQ >= queue.length) {
+    } else if (indexQ >= queue.length || !msg.guild.me.voice.connection?.dispatcher) {
       return msg.reply(`Currently not playing any track`);
     }
 
-    const trackInfo = await ytdl.getInfo(queue[indexQ].link);
+    const trackInfo = await ytdl.getInfo(queue[indexQ].link || queue[indexQ].videoId);
 
     const embed = {
       color: parseInt(Util.randomHex(), 16),
-      title: trackInfo.videoDetails.title,
+      title: `${trackInfo.videoDetails.title} [#${indexQ}]`,
       url: trackInfo.videoDetails.video_url,
       author: {
         name: `${trackInfo.videoDetails.author.name} ${trackInfo.videoDetails.author.verified ? '✔' : ''}`,
