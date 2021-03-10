@@ -210,9 +210,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/eslintrc@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@eslint/eslintrc@npm:0.3.0"
+"@eslint/eslintrc@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@eslint/eslintrc@npm:0.4.0"
   dependencies:
     ajv: ^6.12.4
     debug: ^4.1.1
@@ -221,10 +221,9 @@ __metadata:
     ignore: ^4.0.6
     import-fresh: ^3.2.1
     js-yaml: ^3.13.1
-    lodash: ^4.17.20
     minimatch: ^3.0.4
     strip-json-comments: ^3.1.1
-  checksum: 00e87c194672eb85dcea22ba749fb3cabdd9768e952e748b2c727940f06691c873369d75cf3bddb239301eca8c38de6e098b0de4839fa7c16a2062e536e8ff5a
+  checksum: d3f51b741997cbf36662d8b5a52985bfa5d2873e48cadccd95c67fcce1706327ec98ebb6f0be79c6ecbc31bdeca32c2b1c4f66fd1cf3934c434d1ac269cbceac
   languageName: node
   linkType: hard
 
@@ -1426,12 +1425,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.20.0":
-  version: 7.20.0
-  resolution: "eslint@npm:7.20.0"
+"eslint@npm:^7.21.0":
+  version: 7.21.0
+  resolution: "eslint@npm:7.21.0"
   dependencies:
     "@babel/code-frame": 7.12.11
-    "@eslint/eslintrc": ^0.3.0
+    "@eslint/eslintrc": ^0.4.0
     ajv: ^6.10.0
     chalk: ^4.0.0
     cross-spawn: ^7.0.2
@@ -1444,7 +1443,7 @@ __metadata:
     espree: ^7.3.1
     esquery: ^1.4.0
     esutils: ^2.0.2
-    file-entry-cache: ^6.0.0
+    file-entry-cache: ^6.0.1
     functional-red-black-tree: ^1.0.1
     glob-parent: ^5.0.0
     globals: ^12.1.0
@@ -1469,7 +1468,7 @@ __metadata:
     v8-compile-cache: ^2.0.3
   bin:
     eslint: bin/eslint.js
-  checksum: 1d56cabc7e21f43b8bb6a1934f2488b27d86b018ce2246bc9b89e52931e26b306c5883f5e4ff5c6e0228e0e8673553a460e98eacc4890f9e5984002df0292123
+  checksum: aa8fd50cddc4ab259e2d0ff8f43f0601060543c12e335d76ee074bf25ad02a885bea9d48a367de736d3bdb871de7eb62e6d67930c0173cc46280ddd0f236e740
   languageName: node
   linkType: hard
 
@@ -1634,12 +1633,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-entry-cache@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "file-entry-cache@npm:6.0.0"
+"file-entry-cache@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "file-entry-cache@npm:6.0.1"
   dependencies:
     flat-cache: ^3.0.4
-  checksum: aec91f60f903a61f6edd8591f574692a36e054a99f7b1e280823316fde7d487aaf9a0b59db59387c6e071c10ce0e40771f8472067ebe746fe3b7f095f0877be0
+  checksum: af83a412143100405a995bb7d9a31982ebcfabe6c545dac2e787fc5580b2da74e253ef62968057fa5bbfaf0811a8b85623aeea776e16c77e3ce4c2488b0e4821
   languageName: node
   linkType: hard
 
@@ -2679,9 +2678,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:5.11.18, mongoose@npm:^5.11.18":
-  version: 5.11.18
-  resolution: "mongoose@npm:5.11.18"
+"mongoose@npm:5.11.19, mongoose@npm:^5.11.19":
+  version: 5.11.19
+  resolution: "mongoose@npm:5.11.19"
   dependencies:
     "@types/mongodb": ^3.5.27
     bson: ^1.1.4
@@ -2695,7 +2694,7 @@ __metadata:
     safe-buffer: 5.2.1
     sift: 7.0.1
     sliced: 1.0.1
-  checksum: f44b5ec4b517705c8837d4d45593f6a82e3df64c3d0cbb3631439e9e0f9779b7e0f9d3b742601409a3e39245751930073a269ff237b044c2eea085e9f4fa19e3
+  checksum: 45b01cb1310ecb27d02c489f170298dc219f0225f98f10318b9d1577f62a42a0c85e0682f17e06a37ab164dcb5d9aedfc8982b30c2ac507f365754c531ca211d
   languageName: node
   linkType: hard
 
@@ -2711,14 +2710,14 @@ __metadata:
     discord.js: ^12.5.1
     discord.js-commando: ^0.12.2
     dotenv: ^8.2.0
-    eslint: ^7.20.0
+    eslint: ^7.21.0
     eslint-plugin-import: ^2.22.1
     ffmpeg-static: ^4.2.7
     merge-img: ^2.1.3
     mongodb: ^3.6.4
-    mongoose: ^5.11.18
+    mongoose: ^5.11.19
     node-fetch: ^2.6.1
-    node-gtrans: ^1.6.0
+    node-gtrans: ^1.6.1
     winston: ^3.3.3
     yt-search: ^2.7.3
     ytdl-core: ^4.5.0
@@ -2833,13 +2832,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gtrans@npm:^1.6.0":
-  version: 1.6.0
-  resolution: "node-gtrans@npm:1.6.0"
+"node-gtrans@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "node-gtrans@npm:1.6.1"
   dependencies:
     axios: ^0.21.1
     query-string: ^6.13.7
-  checksum: 1a4d5e06d2095ae2fd6ed5474e9080e859767a28aee2cf291e5a9f07f4d7fd87575bd266f8751de0dae84939c722973944ce767a9b471892118501caa306dea5
+  checksum: 79d9551b3491d68d79681a29f19f43b510e286624e48edaf68bf9b88ff6053c95ae4b02c97cc4b0ab996297dc579172477b747ab90fcef83a02a138aca7a1af1
   languageName: node
   linkType: hard
 
