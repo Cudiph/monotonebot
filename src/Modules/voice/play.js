@@ -14,13 +14,13 @@ function myGetVidID(link) {
   let id = link.match(/ch?.*v=([a-zA-Z0-9-_]{11})/);
 
   // valid if at least the link has xxx/VIDEO_ID
-  if (!id && link.match(/(embed|v|\.be)\//)) {
+  if (!id && link.match(/(embed|v|\.be|shorts)\//)) {
     const paths = link.split('/');
     id = paths[paths.length - 1].match(/([a-zA-Z0-9-_]{11})/);
   }
-  if (!id) {
-    return false;
-  }
+
+  if (!id) return false;
+
   id = id[1];
   if (!/^[a-zA-Z0-9-_]{11}$/.test(id)) {
     return false;
