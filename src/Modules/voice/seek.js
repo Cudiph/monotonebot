@@ -90,8 +90,6 @@ module.exports = class SeekCommand extends Command {
       // handler
       if (songLength <= timestamp) {
         return msg.reply(`Current track length is **${songLength}s** or **${Util.toTimestamp(songLength)}**`);
-      } else if (songLength - 15 <= timestamp) {
-        return msg.reply(`Please provide the time that isn't close to the end of the song`);
       } else if (timestamp < 0) {
         return msg.reply('Please provide a correct format for the timestamp');
       }
