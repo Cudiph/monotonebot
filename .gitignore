@@ -1,5 +1,6 @@
 # ignoring depedency
 node_modules/
+[Ll]avalink.jar
 
 # yarn v2
 .yarn/cache

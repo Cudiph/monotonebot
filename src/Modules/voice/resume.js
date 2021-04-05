@@ -18,11 +18,11 @@ module.exports = class ResumeCommand extends Command {
 
   /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg) {
-    if (!msg.guild.me.voice.connection) {
-      return msg.say(`I'm not connected to the voice channel`);
-    }
-    if (msg.guild.me.voice.connection.dispatcher) {
-      return msg.guild.me.voice.connection.dispatcher.resume();
+    const player = this.client.lavaku.getPlayer(msg.guild.id);
+    if (player.paused) {
+      player.setPaused(false).catch(e => {
+        msg.said(`Failed to resume the player: ${e.message}`);
+      });
     }
   }
 

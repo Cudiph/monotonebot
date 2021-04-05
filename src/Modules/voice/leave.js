@@ -14,16 +14,13 @@ module.exports = class LeaveCommand extends Command {
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg) {
-    if (!msg.guild.me.voice.channel) {
+    const player = this.client.lavaku.getPlayer(msg.guild.id);
+    if (!player) {
       return;
     }
 
-    if (!msg.member.voice.channel || msg.member.voice.channel.id !== msg.guild.me.voice.channel.id) {
-      // send msg if author not connected to the same voice channel
-      return msg.reply("You must join to my voice channel");
-    }
-
-    return msg.member.voice.channel.leave();
+    this.client.lavaku.getPlayer(msg.guild.id).emit('closed');
+    return player.disconnect();
   }
 
 };

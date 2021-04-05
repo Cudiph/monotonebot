@@ -1,6 +1,5 @@
-const ytdl = require('discord-ytdl-core');
-const yts = require('yt-search');
 const Util = require('../../util/Util.js');
+const ytdl = require('discord-ytdl-core');
 const Command = require('../../structures/Command.js');
 const { oneLine } = require('common-tags');
 
@@ -67,106 +66,126 @@ module.exports = class PlayCommand extends Command {
       return msg.channel.send("You're not connected to any voice channel");
     }
 
-    if (msg.member.voice.channel) {
-      // check if author send a youtube link or video Id
-      if (myGetVidID(queryOrUrl) || ytdl.validateID(queryOrUrl)) {
-        const vidId = myGetVidID(queryOrUrl);
-        let data;
-        try {
-          data = await ytdl.getBasicInfo(vidId);
-        } catch (e) {
-          msg.reply('No video with that URL or ID found.');
-        }
-        if (data) {
-          const dataConstructor = {
-            title: data.videoDetails.title,
-            link: data.videoDetails.video_url,
-            videoId: vidId,
-            uploader: data.videoDetails.author.name || data.videoDetails.ownerChannelName,
-            seconds: data.videoDetails.lengthSeconds,
-            author: msg.author.tag,
-            isLive: data.videoDetails.lengthSeconds == '0' ? true : false,
-          };
-          return msg.guild.pushToQueue(dataConstructor, msg);
-        }
+    /** @type {import('shoukaku').ShoukakuSocket} */
+    const node = this.client.lavaku.getNode();
 
+    // check if author send a youtube link or video Id
+    const isOnlyID = ytdl.validateID(queryOrUrl);
+    if (myGetVidID(queryOrUrl) || isOnlyID) {
+      const vidId = isOnlyID ? queryOrUrl : myGetVidID(queryOrUrl);
+      /** @type {import('shoukaku').ShoukakuTrackList} */
+      let data;
+      try {
+        data = await node.rest.resolve(vidId);
+        if (!data.tracks.length) throw new Error('no track found');
+      } catch (e) {
+        msg.reply('No video with that URL or ID found.');
+      }
+      if (data) {
+        const dataConstructor = {
+          title: data.tracks[0].info.title,
+          link: data.tracks[0].info.uri,
+          videoId: vidId,
+          uploader: data.tracks[0].info.author,
+          seconds: data.tracks[0].info.length / 1000,
+          author: msg.author.tag,
+          isLive: data.tracks[0].info.isStream,
+          track: data.tracks[0].track,
+        };
+        return msg.guild.pushToQueue(dataConstructor, msg);
       }
 
-      msg.channel.startTyping(); // start type indicator cuz it'll be a while
-      const { videos } = await yts(queryOrUrl); // fetch yt vid using yt-search module
-      if (!videos.length) {
-        msg.channel.stopTyping(true); // stop typing indicator
-        return msg.say('No video found');
+    }
+
+    msg.channel.startTyping(); // start type indicator cuz it'll be a while
+
+
+    /** @type {import('shoukaku').ShoukakuTrackList} */
+    let res;
+    try {
+      res = await node.rest.resolve(queryOrUrl, 'youtube');
+      if (!res?.tracks.length) {
+        msg.channel.stopTyping(true);
+        return msg.say('No track found.');
       }
+    } catch (e) {
+      logger.error(e.stack);
+      msg.channel.stopTyping(true);
+      return msg.say('Something went wrong while searching the track.');
+    }
 
-      let page = 0; // for page
-      let selectIndex = 0; // for choosing music index
-      const itemsPerPage = 5; // set items showed per page
+    let page = 0; // for page
+    let selectIndex = 0; // for choosing music index
+    const itemsPerPage = 5; // set items showed per page
 
-      const emojiNeeded = [Util.emoji[1], Util.emoji[2], Util.emoji[3], Util.emoji[4], Util.emoji[5], Util.emoji.leftA, Util.emoji.rightA, Util.emoji.x];
+    const emojiNeeded = [Util.emoji[1], Util.emoji[2], Util.emoji[3], Util.emoji[4], Util.emoji[5], Util.emoji.leftA, Util.emoji.rightA, Util.emoji.x];
 
-      const embedMsg = await msg.embed(msg.createEmbedPlay(videos, selectIndex, page, itemsPerPage));
-      msg.channel.stopTyping(true); // stop typing indicator
+    const embedMsg = await msg.embed(msg.createEmbedPlay(res.tracks, selectIndex, page, itemsPerPage));
+    msg.channel.stopTyping(true); // stop typing indicator
 
-      const filter = (reaction, user) => {
-        return emojiNeeded.includes(reaction.emoji.name) && user.id === msg.author.id;
-      };
-      const collector = embedMsg.createReactionCollector(filter, { time: 60000, dispose: true });
+    const filter = (reaction, user) => {
+      return emojiNeeded.includes(reaction.emoji.name) && user.id === msg.author.id;
+    };
+    const collector = embedMsg.createReactionCollector(filter, { time: 60000, dispose: true });
 
-      collector.on('collect', async collected => {
-        if (collected.emoji.name === Util.emoji.x) {
-          embedMsg.delete();
-        } else if (collected.emoji.name === '⬅') {
-          // decrement index for list
-          page--;
+    collector.on('collect', async collected => {
+      if (collected.emoji.name === Util.emoji.x) {
+        embedMsg.delete();
+      } else if (collected.emoji.name === '⬅') {
+        // decrement index for list
+        page--;
+        selectIndex -= itemsPerPage;
+        if (page < 0) {
+          page = 0;
+          selectIndex = 0;
+          return;
+        }
+      } else if (collected.emoji.name === '➡') {
+        // increment index for list
+        page++;
+        selectIndex += itemsPerPage;
+        // when page exceed the max of video length
+        if (page + 1 > Math.ceil(res.tracks.length / itemsPerPage)) {
+          page = (Math.ceil(res.tracks.length / itemsPerPage)) - 1;
           selectIndex -= itemsPerPage;
-          if (page < 0) {
-            page = 0;
-            selectIndex = 0;
-            return;
-          }
-        } else if (collected.emoji.name === '➡') {
-          // increment index for list
-          page++;
-          selectIndex += itemsPerPage;
-          // when page exceed the max of video length
-          if (page + 1 > Math.ceil(videos.length / itemsPerPage)) {
-            page = (Math.ceil(videos.length / itemsPerPage)) - 1;
-            selectIndex -= itemsPerPage;
-            return;
-          }
+          return;
         }
-        if (collected.emoji.name === '➡' || collected.emoji.name === '⬅') {
-          const editedEmbed = embedMsg.createEmbedPlay(videos, selectIndex, page, itemsPerPage);
-          return embedMsg.edit({ embed: editedEmbed });
-        }
-
-        // user selecting a track
-        if (emojiNeeded.slice(0, 5).includes(collected.emoji.name)) {
-          const reversed = Object.keys(Util.emoji).find(key => Util.emoji[key] === collected.emoji.name);
-          const intEmoji = parseInt(reversed);
-          if ((selectIndex + intEmoji) > videos.length) {
-            // return if user choose more than the available song
-            embedMsg.delete();
-            return msg.reply(`Please choose the correct number.`);
-          }
-          const data = videos[selectIndex + intEmoji - 1];
-          data.link = data.url;
-          data.uploader = data.author.name;
-          data.author = msg.author.tag;
-          data.isLive = data.seconds === 0 ? true : false;
-          embedMsg.delete();
-          return msg.guild.pushToQueue(data, msg);
-        }
-      });
-
-      for (let i = 0; i < emojiNeeded.length; i++) {
-        if (embedMsg) await embedMsg.react(emojiNeeded[i]).catch(e => e);
+      }
+      if (collected.emoji.name === '➡' || collected.emoji.name === '⬅') {
+        const editedEmbed = embedMsg.createEmbedPlay(res.tracks, selectIndex, page, itemsPerPage);
+        return embedMsg.edit({ embed: editedEmbed });
       }
 
+      // user selecting a track
+      if (emojiNeeded.slice(0, 5).includes(collected.emoji.name)) {
+        const reversed = Object.keys(Util.emoji).find(key => Util.emoji[key] === collected.emoji.name);
+        const intEmoji = parseInt(reversed);
+        if ((selectIndex + intEmoji) > res.tracks.length) {
+          // return if user choose more than the available song
+          embedMsg.delete();
+          return msg.reply(`Please choose the correct number.`);
+        }
+        const data = res.tracks[selectIndex + intEmoji - 1];
+        const constructor = {
+          title: data.info.title,
+          link: data.info.uri,
+          videoId: myGetVidID(data.info.uri),
+          uploader: data.info.author,
+          seconds: data.info.length / 1000,
+          author: msg.author.tag,
+          isLive: data.info.isStream,
+          track: data.track,
+        };
+        embedMsg.delete();
+        return msg.guild.pushToQueue(constructor, msg);
+
+      }
+    });
+
+    for (let i = 0; i < emojiNeeded.length; i++) {
+      if (embedMsg) await embedMsg.react(emojiNeeded[i]).catch(e => e);
     }
 
   }
 
 };
-

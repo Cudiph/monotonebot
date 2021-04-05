@@ -5,14 +5,15 @@ const Util = require('../../util/Util');
 /**
  *
  * @param {string[]} template A template of timeline
- * @param {CommandoMessage} msg
+ * @param {import('discord.js-commando').CommandoMessage} msg
  * @returns {Object} embed
  */
 function seekEmbed(template, msg) {
+  const player = msg.client.lavaku.getPlayer(msg.guild.id);
   const queue = msg.guild.queue;
   const indexQ = msg.guild.indexQueue;
   const seekTime = queue[indexQ].seekTime || 0;
-  const currentTime = Math.floor(msg.guild.me.voice.connection.dispatcher.streamTime / 1000) + seekTime;
+  const currentTime = Math.floor(player.position / 1000) + seekTime;
   let totalTime = 0;
   for (let i = 0; i < indexQ + 1; i++) {
     if (i == indexQ) {
@@ -62,10 +63,9 @@ module.exports = class SeekCommand extends Command {
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { timestamp }) {
+    const player = this.client.lavaku.getPlayer(msg.guild.id);
     // handler
-    if (!msg.guild.me.voice.connection) {
-      return;
-    } else if (!msg.guild.me.voice.connection.dispatcher) {
+    if (!player) {
       return msg.say('I\'m currently not playing any track');
     }
 
@@ -82,10 +82,8 @@ module.exports = class SeekCommand extends Command {
       }
     }
 
-
     const queue = msg.guild.queue;
     const indexQ = msg.guild.indexQueue;
-
 
     const songLength = queue[indexQ].seconds;
     if (timestamp) {
@@ -98,16 +96,16 @@ module.exports = class SeekCommand extends Command {
         return msg.reply('Please provide a correct format for the timestamp');
       }
 
-      if (timestamp > 600) {
-        return msg.reply(`Currently seeking is support up to 10 minutes due to performance issue`);
-      }
+      // if (timestamp > 600) {
+      //   return msg.reply(`Currently seeking is support up to 10 minutes due to performance issue`);
+      // }
 
-      msg.guild.play(msg, { seek: timestamp });
+      await player.seekTo(timestamp * 1000);
       return msg.say(`Playing **${queue[indexQ].title}** at **${Util.toTimestamp(timestamp)}**`);
     }
 
     const seekTime = queue[indexQ].seekTime ? queue[indexQ].seekTime : 0;
-    const currentTime = Math.floor(msg.guild.me.voice.connection.dispatcher.streamTime / 1000) + seekTime;
+    const currentTime = Math.floor(player.position / 1000) + seekTime;
     const percentage = currentTime / songLength * 100; // percentage of the time played
     const template = ['**', '**', '❥'];
 

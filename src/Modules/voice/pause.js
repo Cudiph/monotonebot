@@ -13,23 +13,16 @@ module.exports = class PauseCommand extends Command {
         usages: 2,
         duration: 15,
       },
-      args: [
-        {
-          key: 'silencePause',
-          prompt: 'use silencePause?',
-          type: 'boolean',
-          default: false,
-        },
-      ]
     });
   }
 
   /** @param {import('discord.js-commando').CommandoMessage} msg */
-  async run(msg, { silencePause }) {
-    if (!msg.guild.me.voice.connection) {
-      return msg.say(`I'm not connected to the voice channel`);
-    } else if (msg.guild.me.voice.connection.dispatcher) {
-      return msg.guild.me.voice.connection.dispatcher.pause(silencePause);
+  async run(msg) {
+    const player = this.client.lavaku.getPlayer(msg.guild.id);
+    if (!player.paused) {
+      player.setPaused(true).catch(e => {
+        msg.said(`Failed to pause the player: ${e.message}`);
+      });
     }
   }
 

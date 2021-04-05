@@ -1,5 +1,4 @@
 const ytdl = require('discord-ytdl-core');
-const yts = require('yt-search');
 const Command = require('../../structures/Command.js');
 const { oneLine } = require('common-tags');
 
@@ -67,43 +66,64 @@ module.exports = class QuickPlayCommand extends Command {
       return msg.channel.send("You're not connected to any voice channel");
     }
 
-    if (msg.member.voice.channel) {
-      // check if author send a youtube link or video Id
-      if (myGetVidID(queryOrUrl) || ytdl.validateID(queryOrUrl)) {
-        const vidId = myGetVidID(queryOrUrl);
-        let data;
-        try {
-          data = await ytdl.getBasicInfo(vidId);
-        } catch (e) {
-          msg.reply('No video with that URL or ID found.');
-        }
-        if (data) {
-          const dataConstructor = {
-            title: data.videoDetails.title,
-            link: data.videoDetails.video_url,
-            videoId: vidId,
-            uploader: data.videoDetails.author.name || data.videoDetails.ownerChannelName,
-            seconds: data.videoDetails.lengthSeconds,
-            author: msg.author.tag,
-            isLive: data.videoDetails.lengthSeconds == '0' ? true : false,
-          };
-          return msg.guild.pushToQueue(dataConstructor, msg);
-        }
+    /** @type {import('shoukaku').ShoukakuSocket} */
+    const node = this.client.lavaku.getNode();
+
+    // check if author send a youtube link or video Id
+    const isOnlyID = ytdl.validateID(queryOrUrl);
+    if (myGetVidID(queryOrUrl) || isOnlyID) {
+      const vidId = isOnlyID ? queryOrUrl : myGetVidID(queryOrUrl);
+      /** @type {import('shoukaku').ShoukakuTrackList} */
+      let data;
+      try {
+        data = await node.rest.resolve(vidId);
+        if (!data.tracks.length) throw new Error('no track found');
+      } catch (e) {
+        msg.reply('No video with that URL or ID found.');
+      }
+      if (data) {
+        const dataConstructor = {
+          title: data.tracks[0].info.title,
+          link: data.tracks[0].info.uri,
+          videoId: vidId,
+          uploader: data.tracks[0].info.author,
+          seconds: data.tracks[0].info.length / 1000,
+          author: msg.author.tag,
+          isLive: data.tracks[0].info.isStream,
+          track: data.tracks[0].track,
+        };
+        return msg.guild.pushToQueue(dataConstructor, msg);
       }
 
-      const { videos } = await yts(queryOrUrl); // fetch yt vid using yt-search module
-      if (!videos.length) {
-        msg.channel.stopTyping(true); // stop typing indicator
-        return msg.say('No video found');
-      }
-
-      const data = videos[0];
-      data.link = data.url;
-      data.uploader = data.author.name;
-      data.author = msg.author.tag;
-      data.isLive = data.seconds === 0 ? true : false;
-      return msg.guild.pushToQueue(data, msg);
     }
+
+
+    /** @type {import('shoukaku').ShoukakuTrackList} */
+    let res;
+    try {
+      res = await node.rest.resolve(queryOrUrl, 'youtube');
+      if (!res?.tracks.length) {
+        msg.channel.stopTyping(true);
+        return msg.say('No track found.');
+      }
+    } catch (e) {
+      logger.error(e.stack);
+      msg.channel.stopTyping(true);
+      return msg.say('Something went wrong while searching the track.');
+    }
+
+    const data = res.tracks[0];
+    const constructor = {
+      title: data.info.title,
+      link: data.info.uri,
+      videoId: myGetVidID(data.info.uri),
+      uploader: data.info.author,
+      seconds: data.info.length / 1000,
+      author: msg.author.tag,
+      isLive: data.info.isStream,
+      track: data.track,
+    };
+    msg.guild.pushToQueue(constructor, msg);
 
   }
 };

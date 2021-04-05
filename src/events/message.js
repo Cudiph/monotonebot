@@ -6,28 +6,26 @@ client.on('message', async msg => {
   // let now = Date.now(); // performance test
   // fetch prefix from database
   if (msg.guild) {
-    const guildId = msg.guild.id;
+    const guildID = msg.guild.id;
     if (!msg.guild.isCached) {
       try {
-        const check = await guildSettingsSchema.findOne({ guildId: guildId });
-        if (!check) {
-          await guildSettingsSchema.findOneAndUpdate({ guildId: guildId }, {
-            guildId: guildId,
+        const data = await guildSettingsSchema.findOne({ guildId: guildID });
+        if (!data) {
+          await guildSettingsSchema.findOneAndUpdate({ guildId: guildID }, {
+            guildId: guildID,
             guildName: msg.guild.name,
             prefix: client.commandPrefix,
             volume: 1,
           }, { upsert: true });
-          msg.guild.commandPrefix = client.commandPrefix;
-          msg.guild.volume = 1;
           msg.guild.isCached = true;
           // make a sign
         } else {
-          msg.guild.commandPrefix = check.prefix;
-          msg.guild.volume = check.volume;
-          msg.guild.language = check.language;
+          msg.guild.commandPrefix = data.prefix;
+          msg.guild.volume = data.volume;
+          msg.guild.language = data.language;
         }
 
-        if (check) {
+        if (data) {
           msg.guild.isCached = true;
         }
       } catch (err) {

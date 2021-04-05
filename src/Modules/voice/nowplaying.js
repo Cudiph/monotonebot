@@ -21,11 +21,12 @@ module.exports = class NowPlayingCommand extends Command {
 
   /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg) {
+    const player = this.client.lavaku.getPlayer(msg.guild.id);
     const queue = msg.guild.queue;
     const indexQ = msg.guild.indexQueue < 0 ? 0 : msg.guild.indexQueue;
     if (!queue || !queue.length) {
       return msg.say(`There is no queue.`);
-    } else if (indexQ >= queue.length || !msg.guild.me.voice.connection?.dispatcher) {
+    } else if (indexQ >= queue.length || !player?.track) {
       return msg.reply(`Currently not playing any track`);
     }
 
@@ -60,7 +61,7 @@ module.exports = class NowPlayingCommand extends Command {
         },
         {
           name: `Paused?`,
-          value: msg.guild.me.voice.connection.dispatcher.paused ? '✅' : '❌',
+          value: player.paused ? '✅' : '❌',
           inline: true,
         },
         {
@@ -75,7 +76,7 @@ module.exports = class NowPlayingCommand extends Command {
         },
         {
           name: `Volume`,
-          value: msg.guild.me.voice.connection.dispatcher.volume * 100,
+          value: player.filters.volume * 100,
           inline: true,
         },
         {
@@ -84,8 +85,8 @@ module.exports = class NowPlayingCommand extends Command {
           inline: true,
         },
         {
-          name: `Bitrate`,
-          value: `${msg.guild.me.voice.connection.channel.bitrate / 1000} Kbps`,
+          name: `Channel Bitrate`,
+          value: `${msg.guild.channels.cache.get(player.voiceConnection.voiceChannelID).bitrate / 1000} Kbps`,
           inline: true,
         }
       ],

@@ -33,7 +33,7 @@ module.exports = class ShuffleCommand extends Command {
       msg.guild.shuffleQueue();
     } else {
       msg.guild.queue = msg.guild.queueTemp.slice();
-      delete msg.guild.queueTemp;
+      msg.guild.queueTemp = [];
     }
     const embed = {
       color: msg.guild.shuffle ? 0x11ff00 : 0xff1100,

@@ -106,7 +106,7 @@ module.exports = Structures.extend('Message', Message => {
 
     /**
      * Create embed for ..play
-     * @param {import('yt-search').VideoSearchResult[]} videoList - array of music fetched from yt-search
+     * @param {import('shoukaku').ShoukakuTrack[]} videoList - array of music fetched from yt-search
      * @param {number} indexPage - A number from indexes to choose between list of object
      * @param {number} page - current page to show
      * @param {number} itemsPerPage - number of items to be showed in one page of embed
@@ -131,15 +131,15 @@ module.exports = Structures.extend('Message', Message => {
       if ((page + 1) === Math.ceil(listLength / itemsPerPage)) {
         for (let i = indexPage; i < listLength; i++) {
           embed.fields.push({
-            name: `[${i % itemsPerPage + 1}] ${videoList[i].title}`,
-            value: `Uploaded by ${videoList[i].author.name} | ${videoList[i].timestamp}`,
+            name: `[${i % itemsPerPage + 1}] ${videoList[i].info.title}`,
+            value: `Uploaded by ${videoList[i].info.author} | ${Util.toTimestamp(videoList[i].info.length / 1000)}`,
           });
         }
       } else {
         for (let i = indexPage; i < (itemsPerPage + indexPage); i++) {
           embed.fields.push({
-            name: `[${i % itemsPerPage + 1}] ${videoList[i].title}`,
-            value: `Uploaded by ${videoList[i].author.name} | ${videoList[i].timestamp}`,
+            name: `[${i % itemsPerPage + 1}] ${videoList[i].info.title}`,
+            value: `Uploaded by ${videoList[i].info.author} | ${Util.toTimestamp(videoList[i].info.length / 1000)}`,
           });
         }
       }
