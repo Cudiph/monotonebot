@@ -20,9 +20,9 @@ client.on('message', async msg => {
           msg.guild.isCached = true;
           // make a sign
         } else {
-          msg.guild.commandPrefix = data.prefix;
-          msg.guild.volume = data.volume;
-          msg.guild.language = data.language;
+          msg.guild.commandPrefix = data.prefix || '..';
+          msg.guild.volume = data.volume || 1;
+          msg.guild.language = data.language || 'en';
         }
 
         if (data) msg.guild.isCached = true;

@@ -1,7 +1,5 @@
-const ytpl = require('ytpl');
 const Command = require('../../structures/Command.js');
-const { oneLine, stripIndents } = require('common-tags');
-const Util = require('../../util/Util.js');
+const { oneLine } = require('common-tags');
 
 module.exports = class AddPlaylistCommand extends Command {
   constructor(client) {
@@ -27,8 +25,8 @@ module.exports = class AddPlaylistCommand extends Command {
       format: '<VideoId/FullUrl>',
       args: [
         {
-          key: 'listId',
-          prompt: 'What playlist you want to add? (broken url can be tolerated, as long as the argument has playlist Id)',
+          key: 'urlOrlistID',
+          prompt: 'What playlist do you want me to add?',
           type: 'string',
         }
       ]
@@ -36,84 +34,58 @@ module.exports = class AddPlaylistCommand extends Command {
   }
 
   /** @param {import('discord.js-commando').CommandoMessage} msg */
-  async run(msg, { listId }) {
+  async run(msg, { urlOrlistID }) {
     // if not in voice channel
     if (!msg.member.voice.channel) {
       // send msg if author not connected to voice channel
       return msg.reply("You're not connected to any voice channel");
     }
 
-    if (msg.member.voice.channel) {
-      const link = listId.match(/(?:.*)?list=([\w+|-]+)(?:.*)?/);
-      if (link) {
-        try {
-          const playlist = await ytpl(link[1]);
-          // list of videos in the playlist
-          const videos = playlist.items;
-          videos.forEach(async video => {
-            if (msg.guild.queue?.length >= 150) {
-              return;
-            }
-            msg.guild.pushToQueue({
-              title: video.title,
-              link: `https://youtube.com/watch?v=${video.id}`,
-              videoID: video.id,
-              uploader: video.author.name,
-              seconds: Util.toSeconds(video.duration),
-              author: msg.author.tag,
-              isLive: Util.toSeconds(video.duration) == 0 ? true : false,
-            }, msg, true);
-          });
-          if (msg.guild.queue?.length >= 150) {
-            return msg.say(oneLine`
-              You reached maximum number of track.
-              Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
-            `);
-          }
-          return msg.say(`Added playlist **${playlist.title}**. `);
-        } catch (err) {
-          logger.error(err.stack);
-          return msg.say(stripIndents`An error Occured.
-            Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all
-            Error : \`${err}\`
-          `);
-        }
-      } else {
-        try {
-          const playlist = await ytpl(listId);
-          const videos = playlist.items;
-          videos.forEach(video => {
-            if (msg.guild.queue?.length >= 150) {
-              return;
-            }
-            msg.guild.pushToQueue({
-              title: video.title,
-              link: `https://youtube.com/watch?v=${video.id}`,
-              videoID: video.id,
-              uploader: video.author,
-              seconds: Util.toSeconds(video.duration),
-              author: msg.author.tag,
-              isLive: Util.toSeconds(video.duration) == 0 ? true : false,
-            }, msg, true);
-          });
-          if (msg.guild.queue?.length >= 150) {
-            return msg.say(oneLine`
-              You reached maximum number of track.
-              Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
-            `);
-          }
-          return msg.say(`Added playlist **${playlist.title}**. `);
-        } catch (err) {
-          logger.error(err.stack);
-          return msg.say(stripIndents`An error Occured.
-            Maybe it's because the playlist is private or the playlist is from a mix or the playlist doesn't exist at all
-            Error : \`${err}\`
-          `);
-        }
-      }
+    /** @type {import('shoukaku').ShoukakuSocket} */
+    const node = this.client.lavaku.getNode();
+
+    const listID = urlOrlistID.match(/.*list=([a-zA-Z0-9-_]+).*?/);
+    const vidID = urlOrlistID.match(/v=([a-zA-Z0-9-_]{11})/);
+    let strToResolve;
+    if (listID && vidID) {
+      // to get mix playlist lavalink need listiD and vidID
+      strToResolve = `https://www.youtube.com/watch?v=${vidID[1]}&list=${listID[1]}`;
+    } else if (listID) {
+      strToResolve = listID[1]; // take only list ID
+    } else {
+      strToResolve = urlOrlistID;
     }
 
+    /** @type {import('shoukaku').ShoukakuTrackList} */
+    let data;
+    try {
+      data = await node.rest.resolve(strToResolve);
+      if (!data || data?.type !== 'PLAYLIST') return msg.reply(`playlist not found.`);
+    } catch (e) {
+      logger.error(e.stack);
+      msg.reply('Something went wrong when fetching the playlist');
+      return;
+    }
+
+    for (const track of data.tracks) {
+      msg.guild.pushToQueue({
+        title: track.info.title,
+        link: track.info.uri,
+        uploader: track.info.author,
+        seconds: track.info.length / 1000,
+        author: msg.author.tag,
+        videoID: track.info.identifier,
+        isLive: track.info.isStream,
+        track: track.track,
+      }, msg, true);
+    }
+    if (msg.guild.queue && msg.guild.queue.length >= 150) {
+      return msg.say(oneLine`
+        You reached maximum number of track.
+        Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
+      `);
+    }
+    return msg.say(`Added playlist **${data.playlistName}**.`);
   }
 
 };
-
