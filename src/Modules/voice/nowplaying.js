@@ -30,7 +30,7 @@ module.exports = class NowPlayingCommand extends Command {
       return msg.reply(`Currently not playing any track`);
     }
 
-    const trackInfo = await ytdl.getInfo(queue[indexQ].link || queue[indexQ].videoId);
+    const trackInfo = await ytdl.getInfo(queue[indexQ].link || queue[indexQ].videoID);
 
     const embed = {
       color: parseInt(Util.randomHex(), 16),

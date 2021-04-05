@@ -42,7 +42,7 @@ module.exports = class AutoPlayCommand extends Command {
       embed.color = 0xff1100;
     }
 
-    if (msg.guild.queue && msg.guild.queue.length && (msg.guild.indexQueue >= msg.guild.queue.length)) {
+    if (msg.guild.queue?.length && (msg.guild.indexQueue >= msg.guild.queue.length)) {
       msg.guild.play(msg);
     }
     return msg.say({ embed });

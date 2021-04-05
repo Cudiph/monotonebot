@@ -29,7 +29,7 @@ module.exports = Structures.extend('Message', Message => {
 
       // too lazy to make json or whatever it used for i18n
       // A little bit broken when dealing with names because command name and variable name are translated
-      if (content && type !== 'code' && this.guild && this.guild.language !== 'en') {
+      if (content && type !== 'code' && this.guild?.language !== 'en') {
         const langCacheKey = `${this.guild.language}-${splittedContent[0]}-${content.length}`;
         if (!this.client.langCache.has(langCacheKey)) {
           try {
@@ -58,14 +58,14 @@ module.exports = Structures.extend('Message', Message => {
           return this.editCurrentResponse(channelIDOrDM(this.channel), { type, content, options });
         case 'reply':
           if (!shouldEdit) return this._originalReply(content, options);
-          if (options && options.split && !options.split.prepend) options.split.prepend = `${this.author}, `;
+          if (!options?.split?.prepend) options.split.prepend = `${this.author}, `;
           return this.editCurrentResponse(channelIDOrDM(this.channel), { type, content, options });
         case 'direct':
           if (!shouldEdit) return this.author.send(content, options);
           return this.editCurrentResponse('dm', { type, content, options });
         case 'code':
           if (!shouldEdit) return this.channel.send(content, options);
-          if (options && options.split) {
+          if (options?.split) {
             if (!options.split.prepend) options.split.prepend = `\`\`\`${lang || ''}\n`;
             if (!options.split.append) options.split.append = '\n```';
           }
@@ -231,16 +231,16 @@ module.exports = Structures.extend('Message', Message => {
      * @param {Object} [options] - embed or string message
      */
     async sendToLogChan({ embedMsg, strMsg }) {
-      const guildSetting = await guildSettingsSchema.findOne({ guildId: this.guild.id });
+      const guildSetting = await guildSettingsSchema.findOne({ guildID: this.guild.id });
       const logChan = guildSetting ? this.guild.channels.cache.get(guildSetting.logChannelId) : false;
       if (embedMsg) {
-        if (logChan && logChan.permissionsFor(this.guild.me.id).has('SEND_MESSAGES')) {
+        if (logChan?.permissionsFor(this.guild.me.id).has('SEND_MESSAGES')) {
           logChan.send({ embed: embedMsg });
         } else {
           return this.embed(embedMsg);
         }
       } else if (strMsg) {
-        if (logChan && logChan.permissionsFor(this.guild.me.id).has('SEND_MESSAGES')) {
+        if (logChan?.permissionsFor(this.guild.me.id).has('SEND_MESSAGES')) {
           logChan.send(strMsg);
         } else {
           return this.say(strMsg);

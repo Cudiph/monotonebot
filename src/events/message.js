@@ -9,10 +9,10 @@ client.on('message', async msg => {
     const guildID = msg.guild.id;
     if (!msg.guild.isCached) {
       try {
-        const data = await guildSettingsSchema.findOne({ guildId: guildID });
+        const data = await guildSettingsSchema.findOne({ guildID: guildID });
         if (!data) {
-          await guildSettingsSchema.findOneAndUpdate({ guildId: guildID }, {
-            guildId: guildID,
+          await guildSettingsSchema.findOneAndUpdate({ guildID: guildID }, {
+            guildID: guildID,
             guildName: msg.guild.name,
             prefix: client.commandPrefix,
             volume: 1,
@@ -25,9 +25,8 @@ client.on('message', async msg => {
           msg.guild.language = data.language;
         }
 
-        if (data) {
-          msg.guild.isCached = true;
-        }
+        if (data) msg.guild.isCached = true;
+
       } catch (err) {
         logger.error(err.stack);
       }
@@ -49,7 +48,7 @@ client.on('message', async msg => {
  */
 async function updateUser(msg) {
   try {
-    await userDataSchema.findOneAndUpdate({ userId: msg.author.id }, {
+    await userDataSchema.findOneAndUpdate({ userID: msg.author.id }, {
       $inc: { exp: 1, money: msg.content.length * 5 },
     }, { upsert: true, setDefaultsOnInsert: true, new: true });
   } catch (e) {

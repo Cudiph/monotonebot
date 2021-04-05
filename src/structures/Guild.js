@@ -6,7 +6,7 @@ const { oneLine, stripIndents } = require('common-tags');
   * @typedef {Object} QueueObject
   * @property {string} title - Title of the track
   * @property {string} link - Full URL of the track
-  * @property {string} videoId - Youtube unique videoId of the track
+  * @property {string} videoID - Youtube unique videoID of the track
   * @property {string} uploader - Uploader of the track
   * @property {number|string} seconds - Duration of the track
   * @property {string} author - Name of discord account who requested the song
@@ -183,7 +183,7 @@ module.exports = Structures.extend('Guild', Guild => {
     async _fetchAutoplay(msg) {
       const queue = this.queue;
       const indexQ = this.indexQueue;
-      if (queue && queue.length > 150) {
+      if (queue?.length > 150) {
         return msg.say(oneLine`
           You reached maximum number of track.
           Please clear the queue first with **\`${this.commandPrefix}stop 1\`**.
@@ -193,9 +193,9 @@ module.exports = Structures.extend('Guild', Guild => {
       try {
         let url;
         if (indexQ === 0) {
-          url = queue[indexQ].link || queue[indexQ].videoId;
+          url = queue[indexQ].link || queue[indexQ].videoID;
         } else {
-          url = queue[indexQ - 1].link || queue[indexQ - 1].videoId || queue[indexQ - 2].link || queue[indexQ - 2].videoId;
+          url = queue[indexQ - 1].link || queue[indexQ - 1].videoID || queue[indexQ - 2].link || queue[indexQ - 2].videoID;
         }
         related = (await ytdl.getBasicInfo(url)).related_videos
           .filter(video => video.length_seconds < 2000);
@@ -223,7 +223,7 @@ module.exports = Structures.extend('Guild', Guild => {
         uploader: related[randTrack].author.name || 'unknown',
         seconds: parseInt(related[randTrack].length_seconds),
         author: `Autoplay`,
-        videoId: related[randTrack].id,
+        videoID: related[randTrack].id,
         isLive: res.tracks[0].info.isStream,
         track: res.tracks[0].track,
       };
@@ -283,7 +283,7 @@ module.exports = Structures.extend('Guild', Guild => {
      * @returns {play}
      */
     pushToQueue(data = {}, msg, fromPlaylist = false) {
-      if (this.queue && this.queue.length > 150) {
+      if (this.queue?.length > 150) {
         return msg.say(oneLine`
           You reached maximum number of track.
           Please clear the queue first with **\`${this.commandPrefix}stop 1\`**.
@@ -292,7 +292,7 @@ module.exports = Structures.extend('Guild', Guild => {
       const construction = {
         title: data.title,
         link: data.link,
-        videoId: data.videoId,
+        videoID: data.videoID,
         uploader: data.uploader || 'Unknown',
         seconds: parseInt(data.seconds),
         author: data.author,

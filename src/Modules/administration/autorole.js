@@ -35,7 +35,7 @@ module.exports = class AutoRoleCommand extends Command {
     // fetch data
     let guildSetting;
     try {
-      guildSetting = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
+      guildSetting = await guildSettingsSchema.findOne({ guildID: msg.guild.id });
     } catch (err) {
       logger.error(err.stack);
       return msg.reply(`Can't load the data, please assign a new one if it's not already set`);
@@ -45,7 +45,7 @@ module.exports = class AutoRoleCommand extends Command {
     if (typeof role !== 'object') {
       if (role.toLowerCase() === 'unset') {
         try {
-          await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+          await guildSettingsSchema.findOneAndUpdate({ guildID: msg.guild.id }, {
             $unset: { autoAssignRoleId: '' },
           });
           return msg.reply(`Auto assign role is removed successfully.`);
@@ -54,7 +54,7 @@ module.exports = class AutoRoleCommand extends Command {
         }
 
       }
-      if (guildSetting && guildSetting.autoAssignRoleId) {
+      if (guildSetting?.autoAssignRoleId) {
         return msg.reply(`Current auto role is <@&${guildSetting.autoAssignRoleId}>`);
       } else {
         return msg.reply(`Auto role is not yet assigned, use \`${msg.guild.commandPrefix}aar <mentionRole>\` to set a new one`);
@@ -73,7 +73,7 @@ module.exports = class AutoRoleCommand extends Command {
 
     // set a new one
     try {
-      const newGuildSettings = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+      const newGuildSettings = await guildSettingsSchema.findOneAndUpdate({ guildID: msg.guild.id }, {
         autoAssignRoleId: role.id,
       }, { new: true, upsert: true });
       return msg.sendToLogChan({ strMsg: `Assignment successful, new auto role is <@&${newGuildSettings.autoAssignRoleId}>` });

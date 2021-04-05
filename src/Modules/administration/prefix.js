@@ -8,8 +8,8 @@ const { oneLine, stripIndents } = require('common-tags');
 async function writePrefix(newPrefix, msg) {
   // set new prefix for guild
   try {
-    const result = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
-      guildId: msg.guild.id,
+    const result = await guildSettingsSchema.findOneAndUpdate({ guildID: msg.guild.id }, {
+      guildID: msg.guild.id,
       prefix: newPrefix,
     }, { upsert: true });
     if (result) return result.prefix; else return msg.client.commandPrefix;

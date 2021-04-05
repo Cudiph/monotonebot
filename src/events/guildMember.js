@@ -3,7 +3,7 @@ const { guildSettingsSchema } = require('../util/schema.js');
 
 // user join a guild
 client.on('guildMemberAdd', async (member) => {
-  const guildSetting = await guildSettingsSchema.findOne({ guildId: member.guild.id })
+  const guildSetting = await guildSettingsSchema.findOne({ guildID: member.guild.id })
     .catch(e => logger.error(e));
 
   if (guildSetting) {
@@ -12,10 +12,10 @@ client.on('guildMemberAdd', async (member) => {
         .catch(e => logger.error(e));
     }
 
-    if (guildSetting.welcomeMessage && guildSetting.welcomeMessage.channel) {
+    if (guildSetting.welcomeMessage?.channel) {
       const memberLogChan = member.guild.channels.cache.get(guildSetting.welcomeMessage.channel);
       if (guildSetting.welcomeMessage.strMsg) {
-        if (memberLogChan && memberLogChan.permissionsFor(member.guild.me.id).has('SEND_MESSAGES')) {
+        if (memberLogChan?.permissionsFor(member.guild.me.id).has('SEND_MESSAGES')) {
           const logMsg = guildSetting.welcomeMessage.strMsg
             .replace(/{{@user}}/g, member)
             .replace(/{{user}}/g, `${member.user.tag}`)
@@ -37,13 +37,13 @@ client.on('guildMemberAdd', async (member) => {
 });
 
 client.on('guildMemberRemove', async (member) => {
-  const guildSetting = await guildSettingsSchema.findOne({ guildId: member.guild.id });
+  const guildSetting = await guildSettingsSchema.findOne({ guildID: member.guild.id });
 
-  if (guildSetting && guildSetting.goodbyeMessage && guildSetting.goodbyeMessage.channel) {
+  if (guildSetting?.goodbyeMessage?.channel) {
     const memberLogChan = member.guild.channels.cache.get(guildSetting.goodbyeMessage.channel);
 
     if (guildSetting.goodbyeMessage.strMsg) {
-      if (memberLogChan && memberLogChan.permissionsFor(member.guild.me.id).has('SEND_MESSAGES')) {
+      if (memberLogChan?.permissionsFor(member.guild.me.id).has('SEND_MESSAGES')) {
         const logMsg = guildSetting.goodbyeMessage.strMsg
           .replace(/{{@user}}/g, member)
           .replace(/{{user}}/g, `${member.user.tag}`)

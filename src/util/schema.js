@@ -6,7 +6,7 @@ const reqStr = {
 };
 
 const guildSettings = new mongoose.Schema({
-  guildId: reqStr, // guild id
+  guildID: reqStr, // guild id
   guildName: String,
   autoAssignRoleId: String,
   logChannelId: String,
@@ -30,7 +30,7 @@ const guildSettings = new mongoose.Schema({
 }, { timestamps: true });
 
 const userData = new mongoose.Schema({
-  userId: reqStr, // member id
+  userID: reqStr, // member id
   exp: Number,
   money: Number,
   userPlaylists: [{
@@ -39,10 +39,11 @@ const userData = new mongoose.Schema({
     videoList: [{
       title: String,
       link: String,
-      videoId: String,
+      videoID: String,
       uploader: String,
       seconds: Number,
       author: String,
+      track: String,
     }],
     timestamps: { type: Date, default: new Date() },
   }]

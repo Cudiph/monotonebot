@@ -149,7 +149,7 @@ module.exports = class ShowPlaylistCommand extends Command {
     let itemsPerPage = 5;
 
     try {
-      data = await userDataSchema.findOne({ userId: msg.author.id });
+      data = await userDataSchema.findOne({ userID: msg.author.id });
       playlist = data.userPlaylists;
       if (!playlist.length) {
         throw 'user playlist is null';

@@ -51,7 +51,7 @@ module.exports = class PlayCommand extends Command {
       args: [
         {
           key: 'queryOrUrl',
-          prompt: 'What video you want to search or put a videoId or the url?',
+          prompt: 'What video you want to search or put a videoID or the url?',
           type: 'string',
         }
       ]
@@ -72,11 +72,11 @@ module.exports = class PlayCommand extends Command {
     // check if author send a youtube link or video Id
     const isOnlyID = ytdl.validateID(queryOrUrl);
     if (myGetVidID(queryOrUrl) || isOnlyID) {
-      const vidId = isOnlyID ? queryOrUrl : myGetVidID(queryOrUrl);
+      const vidID = isOnlyID ? queryOrUrl : myGetVidID(queryOrUrl);
       /** @type {import('shoukaku').ShoukakuTrackList} */
       let data;
       try {
-        data = await node.rest.resolve(vidId);
+        data = await node.rest.resolve(vidID);
         if (!data.tracks.length) throw new Error('no track found');
       } catch (e) {
         msg.reply('No video with that URL or ID found.');
@@ -85,7 +85,7 @@ module.exports = class PlayCommand extends Command {
         const dataConstructor = {
           title: data.tracks[0].info.title,
           link: data.tracks[0].info.uri,
-          videoId: vidId,
+          videoID: vidID,
           uploader: data.tracks[0].info.author,
           seconds: data.tracks[0].info.length / 1000,
           author: msg.author.tag,
@@ -169,7 +169,7 @@ module.exports = class PlayCommand extends Command {
         const constructor = {
           title: data.info.title,
           link: data.info.uri,
-          videoId: myGetVidID(data.info.uri),
+          videoID: myGetVidID(data.info.uri),
           uploader: data.info.author,
           seconds: data.info.length / 1000,
           author: msg.author.tag,

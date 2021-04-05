@@ -41,7 +41,7 @@ module.exports = class VolumeCommand extends Command {
     }
 
     try {
-      await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+      await guildSettingsSchema.findOneAndUpdate({ guildID: msg.guild.id }, {
         volume: volume,
       });
       await player.setVolume(volume);

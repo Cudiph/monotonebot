@@ -4,8 +4,8 @@ const { guildSettingsSchema } = require('../util/schema.js');
 // event on message
 client.on('guildCreate', async guild => {
   try {
-    await guildSettingsSchema.findOneAndUpdate({ guildId: guild.id }, {
-      guildId: guild.id,
+    await guildSettingsSchema.findOneAndUpdate({ guildID: guild.id }, {
+      guildID: guild.id,
       guildName: guild.name,
       prefix: client.commandPrefix,
       volume: 1,
@@ -17,7 +17,7 @@ client.on('guildCreate', async guild => {
 
 client.on('guildDelete', async guild => {
   try {
-    guildSettingsSchema.findOneAndDelete({ guildId: guild.id });
+    guildSettingsSchema.findOneAndDelete({ guildID: guild.id });
   } catch (err) {
     logger.error(err.stack);
   }

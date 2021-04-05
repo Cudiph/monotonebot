@@ -51,20 +51,20 @@ module.exports = class AddPlaylistCommand extends Command {
           // list of videos in the playlist
           const videos = playlist.items;
           videos.forEach(async video => {
-            if (msg.guild.queue && msg.guild.queue.length >= 150) {
+            if (msg.guild.queue?.length >= 150) {
               return;
             }
             msg.guild.pushToQueue({
               title: video.title,
               link: `https://youtube.com/watch?v=${video.id}`,
-              videoId: video.id,
+              videoID: video.id,
               uploader: video.author.name,
               seconds: Util.toSeconds(video.duration),
               author: msg.author.tag,
               isLive: Util.toSeconds(video.duration) == 0 ? true : false,
             }, msg, true);
           });
-          if (msg.guild.queue && msg.guild.queue.length >= 150) {
+          if (msg.guild.queue?.length >= 150) {
             return msg.say(oneLine`
               You reached maximum number of track.
               Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
@@ -83,20 +83,20 @@ module.exports = class AddPlaylistCommand extends Command {
           const playlist = await ytpl(listId);
           const videos = playlist.items;
           videos.forEach(video => {
-            if (msg.guild.queue && msg.guild.queue.length >= 150) {
+            if (msg.guild.queue?.length >= 150) {
               return;
             }
             msg.guild.pushToQueue({
               title: video.title,
               link: `https://youtube.com/watch?v=${video.id}`,
-              videoId: video.id,
+              videoID: video.id,
               uploader: video.author,
               seconds: Util.toSeconds(video.duration),
               author: msg.author.tag,
               isLive: Util.toSeconds(video.duration) == 0 ? true : false,
             }, msg, true);
           });
-          if (msg.guild.queue && msg.guild.queue.length >= 150) {
+          if (msg.guild.queue?.length >= 150) {
             return msg.say(oneLine`
               You reached maximum number of track.
               Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.

@@ -39,7 +39,7 @@ module.exports = class LogChannelCommand extends Command {
     // fetch data
     let guildSettings;
     try {
-      guildSettings = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
+      guildSettings = await guildSettingsSchema.findOne({ guildID: msg.guild.id });
     } catch (err) {
       logger.error(err.stack);
       return msg.reply(`Can't load the data, please assign a new one if it's not already set`);
@@ -48,7 +48,7 @@ module.exports = class LogChannelCommand extends Command {
     if (typeof channel !== 'object') {
       if (channel.toLowerCase() === 'unset') {
         try {
-          await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+          await guildSettingsSchema.findOneAndUpdate({ guildID: msg.guild.id }, {
             $unset: { logChannelId: '' },
           });
           return msg.reply(`Logchannel is unsetted successfully.`);
@@ -57,7 +57,7 @@ module.exports = class LogChannelCommand extends Command {
         }
 
       }
-      if (guildSettings && guildSettings.logChannelId) {
+      if (guildSettings?.logChannelId) {
         return msg.reply(`Current log channel is <#${guildSettings.logChannelId}>`);
       } else {
         return msg.reply(`Log channel is not yet assigned, use \`${msg.guild.commandPrefix}logchannel <channelName>\` to set a new one`);
@@ -68,7 +68,7 @@ module.exports = class LogChannelCommand extends Command {
     }
     // set a new one
     try {
-      const newGuildSettings = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+      const newGuildSettings = await guildSettingsSchema.findOneAndUpdate({ guildID: msg.guild.id }, {
         logChannelId: channel.id,
       }, { new: true, upsert: true });
       return msg.reply(`Assignment successful, new log channel is <#${newGuildSettings.logChannelId}>`);
