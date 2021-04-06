@@ -101,6 +101,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.10.3":
+  version: 7.13.10
+  resolution: "@babel/runtime@npm:7.13.10"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: 22014226b96a8c8e8d4e8bcdb011f317d1b32881aef424a669dc6ceaee14993d3609172967853cbf9c25c724c25145d45885b6c9df56ba241c12820776607f1f
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.12.13":
   version: 7.12.13
   resolution: "@babel/template@npm:7.12.13"
@@ -457,7 +466,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.21.1":
+"axios@npm:^0.21.0, axios@npm:^0.21.1":
   version: 0.21.1
   resolution: "axios@npm:0.21.1"
   dependencies:
@@ -1960,7 +1969,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"m3u8stream@npm:^0.8.3":
+"m3u8stream@npm:^0.8.0, m3u8stream@npm:^0.8.3":
   version: 0.8.3
   resolution: "m3u8stream@npm:0.8.3"
   dependencies:
@@ -2157,6 +2166,7 @@ __metadata:
     mongoose: ^5.12.3
     node-gtrans: ^1.6.1
     shoukaku: ^1.6.4
+    soundcloud-downloader: ^1.0.0
     winston: ^3.3.3
     ytdl-core: ^4.5.0
   languageName: unknown
@@ -2676,6 +2686,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"regenerator-runtime@npm:^0.13.4":
+  version: 0.13.8
+  resolution: "regenerator-runtime@npm:0.13.8"
+  checksum: 20178f5753f181d59691e5c3b4c59a2769987f75c7ccf325777673b5478acca61a553b10e895585086c222f72f5ee428090acf50320264de4b79f630f7388653
+  languageName: node
+  linkType: hard
+
 "regexp-clone@npm:1.0.0, regexp-clone@npm:^1.0.0":
   version: 1.0.0
   resolution: "regexp-clone@npm:1.0.0"
@@ -2945,6 +2962,26 @@ resolve@^1.12.0:
   version: 1.0.1
   resolution: "sliced@npm:1.0.1"
   checksum: af6bd9d9116298828d84a0c4ad417f941c61b72ed16cc289b97ad3669c2c41d13763b79385f3ac44c40a1e82f8c0774d18587b3b7125034fa6f80d10363a234c
+  languageName: node
+  linkType: hard
+
+"soundcloud-downloader@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "soundcloud-downloader@npm:1.0.0"
+  dependencies:
+    "@babel/runtime": ^7.10.3
+    axios: ^0.21.0
+    dotenv: ^8.2.0
+    m3u8stream: ^0.8.0
+    soundcloud-key-fetch: ^1.0.10
+  checksum: 5dab6fea92506092be0f47730c5c516e8e3552e20f25c48b5a5c3091e4b40ed176b0e8f5f27cf41465ce5b9554af64def5fcae5203b47b544959bc9884d109e6
+  languageName: node
+  linkType: hard
+
+"soundcloud-key-fetch@npm:^1.0.10":
+  version: 1.0.11
+  resolution: "soundcloud-key-fetch@npm:1.0.11"
+  checksum: 4b269990729f8c1cdbf378ca56d3c4a95bd9239620644acb07aad78784b41e231a9f28456c72b1955a33e897fd456c2a5ae8ca3a484bd37f2dab67d41e3351b5
   languageName: node
   linkType: hard
 

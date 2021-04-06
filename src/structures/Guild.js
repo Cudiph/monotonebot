@@ -1,5 +1,6 @@
 const { Structures } = require('discord.js');
 const ytdl = require('ytdl-core');
+const scdl = require('soundcloud-downloader').default;
 const { oneLine, stripIndents } = require('common-tags');
 
 /**
@@ -108,6 +109,9 @@ module.exports = Structures.extend('Guild', Guild => {
       const queue = this.queue;
       const indexQ = this.indexQueue;
 
+      // start typing indicator to notice user
+      msg.channel.startTyping();
+
       try {
         /** @type {import('shoukaku').ShoukakuPlayer} */
         let player; // make a connection
@@ -164,8 +168,6 @@ module.exports = Structures.extend('Guild', Guild => {
           });
         }
 
-        // start typing indicator to notice user
-        msg.channel.startTyping();
         await player.playTrack(queue[indexQ].track);
 
       } catch (err) {
@@ -180,9 +182,31 @@ module.exports = Structures.extend('Guild', Guild => {
     /**
      * Function to fetch related track
      * @param {import("discord.js-commando").CommandoMessage} msg - msg
-     * @returns {any}
      */
     async _fetchAutoplay(msg) {
+      const queue = this.queue;
+      const indexQ = this.indexQueue;
+
+      // start typing indicator to notice user
+      msg.channel.startTyping();
+
+      let link;
+
+      if (indexQ === 0) {
+        link = queue[indexQ].link;
+      } else {
+        link = queue[indexQ - 1].link || queue[indexQ - 2].link;
+      }
+
+      if (link.includes('youtube.com/')) return this._fetchAutoplayYT(msg);
+      else return this._fetchAutoplaySC(msg);
+    }
+
+    /**
+     * Function to fetch related track from youtube
+     * @param {import("discord.js-commando").CommandoMessage} msg - msg
+     */
+    async _fetchAutoplayYT(msg) {
       const queue = this.queue;
       const indexQ = this.indexQueue;
       let related;
@@ -208,23 +232,74 @@ module.exports = Structures.extend('Guild', Guild => {
         this.indexQueue++;
         return;
       }
-      const randTrack = related.length >= 5 ? Math.floor(Math.random() * 5) : Math.floor(Math.random() * related.length);
+      const randIndex = related.length >= 5 ? Math.floor(Math.random() * 5) : Math.floor(Math.random() * related.length);
 
       /** @type {import('shoukaku').ShoukakuTrackList} */
-      const res = await this.client.lavaku.getNode().rest.resolve(related[randTrack].id);
+      const res = await this.client.lavaku.getNode().rest.resolve(related[randIndex].id);
 
       const construction = {
-        title: related[randTrack].title,
+        title: related[randIndex].title,
         link: res.tracks[0].info.uri,
-        uploader: related[randTrack].author.name || 'unknown',
-        seconds: parseInt(related[randTrack].length_seconds),
+        uploader: related[randIndex].author.name || 'unknown',
+        seconds: parseInt(related[randIndex].length_seconds),
         author: `Autoplay`,
-        videoID: related[randTrack].id,
+        videoID: related[randIndex].id,
         isLive: res.tracks[0].info.isStream,
         track: res.tracks[0].track,
       };
       this.pushToQueue(construction, msg, true);
       return this.play(msg);
+    }
+
+    /**
+    * Function to fetch related track from soundcloud
+    * @param {import("discord.js-commando").CommandoMessage} msg - msg
+    */
+    async _fetchAutoplaySC(msg) {
+      const queue = this.queue;
+      const indexQ = this.indexQueue;
+
+      let related;
+      try {
+        let url;
+        if (indexQ === 0) {
+          url = queue[indexQ].link;
+        } else {
+          url = queue[indexQ - 1].link || queue[indexQ - 2].link;
+        }
+        related = (await scdl.related((await scdl.getInfo(url)).id, 5)).collection;
+        // if no related video then stop and give the message
+        if (!related) {
+          return msg.say(stripIndents`
+            No related video were found. You can request again with \`${this.commandPrefix}skip\` command. 
+            Videos with a duration longer than 40 minutes will not be listed.
+          `);
+        }
+      } catch (err) {
+        logger.error(err.stack);
+        msg.say(`Something went wrong. You can try again with \`${this.commandPrefix}skip\` command.`);
+        this.indexQueue++;
+        return;
+      }
+
+      const randIndex = Math.floor(Math.random() * related.length);
+
+      /** @type {import('shoukaku').ShoukakuTrackList} */
+      const res = await this.client.lavaku.getNode().rest.resolve(related[randIndex].permalink_url);
+
+      const construction = {
+        title: related[randIndex].title,
+        link: res.tracks[0].info.uri,
+        uploader: related[randIndex].user.username || 'unknown',
+        seconds: related[randIndex].duration / 1000,
+        author: `Autoplay`,
+        videoID: related[randIndex].id.toString(),
+        isLive: res.tracks[0].info.isStream,
+        track: res.tracks[0].track,
+      };
+      this.pushToQueue(construction, msg, true);
+      return this.play(msg);
+
     }
 
     /**

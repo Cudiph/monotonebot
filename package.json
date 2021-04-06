@@ -34,6 +34,7 @@
     "mongoose": "^5.12.3",
     "node-gtrans": "^1.6.1",
     "shoukaku": "^1.6.4",
+    "soundcloud-downloader": "^1.0.0",
     "winston": "^3.3.3",
     "ytdl-core": "^4.5.0"
   },
