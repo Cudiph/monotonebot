@@ -1,6 +1,27 @@
 const Command = require('../../structures/Command.js');
 const { oneLine } = require('common-tags');
 
+/**
+ * @param {string} link link to validate
+ * @returns {string}
+ */
+function resolve(link) {
+  const listID = link.match(/.*list=([a-zA-Z0-9-_]+).*?/);
+  const vidID = link.match(/v=([a-zA-Z0-9-_]{11})/);
+  const SClink = link.match(/[A-Za-z0-9_-]+\/sets\/[A-Za-z0-9_-]+/);
+
+  if (SClink) {
+    return `https://soundcloud.com/${SClink[0]}`; // scpl
+  } else if (listID && vidID) {
+    // to get mix playlist lavalink need listiD and vidID
+    return `https://www.youtube.com/watch?v=${vidID[1]}&list=${listID[1]}`;
+  } else if (listID) {
+    return listID[1]; // take only list ID
+  } else {
+    return link;
+  }
+}
+
 module.exports = class AddPlaylistCommand extends Command {
   constructor(client) {
     super(client, {
@@ -51,23 +72,11 @@ module.exports = class AddPlaylistCommand extends Command {
     /** @type {import('shoukaku').ShoukakuSocket} */
     const node = this.client.lavaku.getNode();
 
-    const listID = urlOrlistID.match(/.*list=([a-zA-Z0-9-_]+).*?/);
-    const vidID = urlOrlistID.match(/v=([a-zA-Z0-9-_]{11})/);
-    let strToResolve;
-    if (listID && vidID) {
-      // to get mix playlist lavalink need listiD and vidID
-      strToResolve = `https://www.youtube.com/watch?v=${vidID[1]}&list=${listID[1]}`;
-    } else if (listID) {
-      strToResolve = listID[1]; // take only list ID
-    } else {
-      strToResolve = urlOrlistID;
-    }
-
     /** @type {import('shoukaku').ShoukakuTrackList} */
     let data;
     try {
-      data = await node.rest.resolve(strToResolve);
-      if (!data || data?.type !== 'PLAYLIST') return msg.reply(`playlist not found.`);
+      data = await node.rest.resolve(resolve(urlOrlistID));
+      if (data?.type !== 'PLAYLIST') return msg.reply(`playlist not found.`);
     } catch (e) {
       logger.error(e.stack);
       msg.reply('Something went wrong when fetching the playlist');
