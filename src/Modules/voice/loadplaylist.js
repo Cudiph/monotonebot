@@ -37,7 +37,7 @@ module.exports = class LoadPlaylistCommand extends Command {
     if (!msg.member.voice.channel) {
       return msg.reply("You're not connected to any voice channel");
     }
-    if (msg.guild.queue?.length > 150) {
+    if (msg.guild.queue?.length > msg.guild.queueLimit) {
       return msg.say(oneLine`
         You reached maximum number of track.
         Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.

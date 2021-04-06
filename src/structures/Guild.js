@@ -87,6 +87,12 @@ module.exports = Structures.extend('Guild', Guild => {
        * @type {number}
        */
       this.volume = 1;
+
+      /**
+       * Maximum number of track allowed in the queue
+       * @type {number}
+       */
+      this.queueLimit = 300;
     }
 
     resetPlayer() {
@@ -353,11 +359,15 @@ module.exports = Structures.extend('Guild', Guild => {
      * @returns {play}
      */
     pushToQueue(data = {}, msg, fromPlaylist = false) {
-      if (this.queue?.length > 150) {
-        return msg.say(oneLine`
-          You reached maximum number of track.
-          Please clear the queue first with **\`${this.commandPrefix}stop 1\`**.
-        `);
+      if (this.queue?.length > this.queueLimit) {
+        if (fromPlaylist) {
+          return; // prevent massage spamming
+        } else {
+          return msg.say(oneLine`
+            You reached maximum number of track.
+            Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
+          `);
+        }
       }
       const construction = {
         title: data.title,
