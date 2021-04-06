@@ -3,11 +3,16 @@ const Command = require('../../structures/Command.js');
 const { oneLine } = require('common-tags');
 
 /**
- * Modified from ytdl.getURLVideoID to get Video ID from a link
+ * return link or ID to resolve for lavalink return false if can't be resolved
  * @param {string} link
  * @return {string|boolean}
  */
-function myGetVidID(link) {
+function resolve(link) {
+  const scLink = link.match(/soundcloud\.com\/([A-Za-z0-9_-]+\/[A-Za-z0-9_-]+)/);
+  if (scLink) {
+    return `https://soundcloud.com/${scLink[1]}`;
+  }
+
   // valid if at least the link has watch?v=VIDEO_ID
   let id = link.match(/ch?.*v=([a-zA-Z0-9-_]{11})/);
 
@@ -71,21 +76,17 @@ module.exports = class QuickPlayCommand extends Command {
 
     // check if author send a youtube link or video Id
     const isOnlyID = ytdl.validateID(queryOrUrl);
-    if (myGetVidID(queryOrUrl) || isOnlyID) {
-      const vidID = isOnlyID ? queryOrUrl : myGetVidID(queryOrUrl);
+    if (resolve(queryOrUrl) || isOnlyID) {
+      const vidID = isOnlyID ? queryOrUrl : resolve(queryOrUrl);
       /** @type {import('shoukaku').ShoukakuTrackList} */
-      let data;
-      try {
-        data = await node.rest.resolve(vidID);
-        if (!data.tracks.length) throw new Error('no track found');
-      } catch (e) {
-        msg.reply('No video with that URL or ID found.');
-      }
+
+      const data = await node.rest.resolve(vidID).catch(e => e);
+
       if (data) {
         const dataConstructor = {
           title: data.tracks[0].info.title,
           link: data.tracks[0].info.uri,
-          videoID: vidID,
+          videoID: data.tracks[0].info.uri.includes('soundcloud.com') ? '' : data.tracks[0].info.identifier,
           uploader: data.tracks[0].info.author,
           seconds: data.tracks[0].info.length / 1000,
           author: msg.author.tag,
@@ -116,7 +117,7 @@ module.exports = class QuickPlayCommand extends Command {
     const constructor = {
       title: data.info.title,
       link: data.info.uri,
-      videoID: myGetVidID(data.info.uri),
+      videoID: resolve(data.info.uri),
       uploader: data.info.author,
       seconds: data.info.length / 1000,
       author: msg.author.tag,

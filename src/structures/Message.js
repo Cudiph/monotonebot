@@ -1,4 +1,5 @@
 /* eslint-disable indent */
+const { oneLine } = require('common-tags');
 const { Structures, escapeMarkdown, resolveString, APIMessage } = require('discord.js');
 const gtrans = require('node-gtrans');
 const { guildSettingsSchema } = require('../util/schema.js');
@@ -174,14 +175,18 @@ module.exports = Structures.extend('Message', Message => {
           if (i !== this.guild.indexQueue) {
             embed.fields.push({
               name: `[${i}] ${queue[i].title}`,
-              value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+              value: oneLine`
+                ${queue[i].uploader} |
+                ${queue[i].seconds ? Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} |
+                [${queue[i].link.includes('youtube.com/') ? 'Youtube' : 'Soundcloud'}](${queue[i].link})`,
             });
           } else {
             embed.fields.push({
               name: `=> [${i}] ${queue[i].title}`,
-              value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+              value: oneLine`
+                ${queue[i].uploader} |
+                ${queue[i].seconds ? Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} |
+                [${queue[i].link.includes('youtube.com/') ? 'Youtube' : 'Soundcloud'}](${queue[i].link})`,
             });
           }
 
@@ -191,14 +196,18 @@ module.exports = Structures.extend('Message', Message => {
           if (i !== this.guild.indexQueue) {
             embed.fields.push({
               name: `[${i}] ${queue[i].title}`,
-              value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+              value: oneLine`
+                ${queue[i].uploader} |
+                ${queue[i].seconds ? Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} |
+                [${queue[i].link.includes('youtube.com/') ? 'Youtube' : 'Soundcloud'}](${queue[i].link})`,
             });
           } else {
             embed.fields.push({
               name: `=> [${i}] ${queue[i].title}`,
-              value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+              value: oneLine`
+                ${queue[i].uploader} |
+                ${queue[i].seconds ? Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} |
+                [${queue[i].link.includes('youtube.com/') ? 'Youtube' : 'Soundcloud'}](${queue[i].link})`,
             });
           }
         }
