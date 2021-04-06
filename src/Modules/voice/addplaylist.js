@@ -79,12 +79,6 @@ module.exports = class AddPlaylistCommand extends Command {
         track: track.track,
       }, msg, true);
     }
-    if (msg.guild.queue && msg.guild.queue.length >= 150) {
-      return msg.say(oneLine`
-        You reached maximum number of track.
-        Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
-      `);
-    }
     return msg.say(`Added playlist **${data.playlistName}**.`);
   }
 

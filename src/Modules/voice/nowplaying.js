@@ -1,5 +1,5 @@
 const Command = require('../../structures/Command.js');
-const ytdl = require('discord-ytdl-core');
+const ytdl = require('ytdl-core');
 const Util = require('../../util/Util');
 
 module.exports = class NowPlayingCommand extends Command {

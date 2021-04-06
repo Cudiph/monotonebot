@@ -1,5 +1,5 @@
 const { Structures } = require('discord.js');
-const ytdl = require('discord-ytdl-core');
+const ytdl = require('ytdl-core');
 const { oneLine, stripIndents } = require('common-tags');
 
 /**
@@ -121,6 +121,8 @@ module.exports = Structures.extend('Guild', Guild => {
             voiceChannelID: msg.member.voice.channelID,
           });
 
+          player.setVolume(this.volume);
+
           player.on('nodeDisconnect', () => {
             msg.channel.stopTyping(true);
             this.resetPlayer();
@@ -183,12 +185,6 @@ module.exports = Structures.extend('Guild', Guild => {
     async _fetchAutoplay(msg) {
       const queue = this.queue;
       const indexQ = this.indexQueue;
-      if (queue?.length > 150) {
-        return msg.say(oneLine`
-          You reached maximum number of track.
-          Please clear the queue first with **\`${this.commandPrefix}stop 1\`**.
-        `);
-      }
       let related;
       try {
         let url;
@@ -227,8 +223,7 @@ module.exports = Structures.extend('Guild', Guild => {
         isLive: res.tracks[0].info.isStream,
         track: res.tracks[0].track,
       };
-      this.queue.push(construction);
-      this.queueTemp.push(construction);
+      this.pushToQueue(construction, msg, true);
       return this.play(msg);
     }
 
@@ -277,7 +272,7 @@ module.exports = Structures.extend('Guild', Guild => {
     /**
      * Processing data before something pushed to the guild queue
      * @async
-     * @param {QueueObject} data - data of music fetched from yt-search
+     * @param {QueueObject} data - track data to push to the queue
      * @param {import("discord.js-commando").CommandoMessage} msg - message from textchannel
      * @param {boolean} fromPlaylist - whether player is called from playlist.js or called multiple times
      * @returns {play}
@@ -305,7 +300,7 @@ module.exports = Structures.extend('Guild', Guild => {
           return this.play(msg);
         } catch (err) {
           msg.say('Something went wrong');
-          delete this.queue;
+          this.queue = [];
           logger.error(err.stack);
         }
       } else {

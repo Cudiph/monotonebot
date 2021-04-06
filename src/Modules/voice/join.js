@@ -29,6 +29,8 @@ module.exports = class JoinCommand extends Command {
       voiceChannelID: msg.member.voice.channelID,
     });
 
+    player.setVolume(msg.guild.volume);
+
     // give data when dispatcher start
     player.on('start', async () => {
       const nowPlaying = await msg.sendEmbedPlaying().catch(e => e);

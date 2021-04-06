@@ -106,7 +106,7 @@ module.exports = Structures.extend('Message', Message => {
 
     /**
      * Create embed for ..play
-     * @param {import('shoukaku').ShoukakuTrack[]} videoList - array of music fetched from yt-search
+     * @param {import('shoukaku').ShoukakuTrack[]} videoList - List of shoukakuTrack
      * @param {number} indexPage - A number from indexes to choose between list of object
      * @param {number} page - current page to show
      * @param {number} itemsPerPage - number of items to be showed in one page of embed

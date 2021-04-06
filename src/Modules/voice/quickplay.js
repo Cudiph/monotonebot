@@ -1,4 +1,4 @@
-const ytdl = require('discord-ytdl-core');
+const ytdl = require('ytdl-core');
 const Command = require('../../structures/Command.js');
 const { oneLine } = require('common-tags');
 
