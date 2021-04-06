@@ -6,15 +6,15 @@ lavalink:
     password: "youshallnotpass"
     sources:
       youtube: true
-      bandcamp: true
+      bandcamp: false
       soundcloud: true
-      twitch: true
-      vimeo: true
+      twitch: false
+      vimeo: false
       http: true
       local: false
     bufferDurationMs: 400
-    youtubePlaylistLoadLimit: 6 # Number of pages at 100 each
-    playerUpdateInterval: 5 # How frequently to send player updates to clients, in seconds
+    youtubePlaylistLoadLimit: 5 # Number of pages at 100 each
+    playerUpdateInterval: 3 # How frequently to send player updates to clients, in seconds
     youtubeSearchEnabled: true
     soundcloudSearchEnabled: true
     gc-warnings: true
@@ -41,7 +41,7 @@ logging:
   file:
     max-history: 30
     max-size: 8MB
-  path: ./logs/
+  path: ./src/data
 
   level:
     root: INFO
