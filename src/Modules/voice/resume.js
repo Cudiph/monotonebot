@@ -19,7 +19,7 @@ module.exports = class ResumeCommand extends Command {
   /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg) {
     const player = this.client.lavaku.getPlayer(msg.guild.id);
-    if (player.paused) {
+    if (player?.paused) {
       player.setPaused(false).catch(e => {
         msg.said(`Failed to resume the player: ${e.message}`);
       });

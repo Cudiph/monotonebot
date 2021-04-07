@@ -19,7 +19,7 @@ module.exports = class PauseCommand extends Command {
   /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg) {
     const player = this.client.lavaku.getPlayer(msg.guild.id);
-    if (!player.paused) {
+    if (!player?.paused) {
       player.setPaused(true).catch(e => {
         msg.said(`Failed to pause the player: ${e.message}`);
       });

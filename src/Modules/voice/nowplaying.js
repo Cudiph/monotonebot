@@ -27,7 +27,7 @@ module.exports = class NowPlayingCommand extends Command {
     const indexQ = msg.guild.indexQueue < 0 ? 0 : msg.guild.indexQueue;
     if (!queue || !queue.length) {
       return msg.say(`There is no queue.`);
-    } else if (indexQ >= queue.length || !player?.track) {
+    } else if (indexQ >= queue.length || indexQ < 0) {
       return msg.reply(`Currently not playing any track`);
     }
 

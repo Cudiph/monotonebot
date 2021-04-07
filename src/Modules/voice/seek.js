@@ -85,6 +85,8 @@ module.exports = class SeekCommand extends Command {
     const queue = msg.guild.queue;
     const indexQ = msg.guild.indexQueue;
 
+    if (!queue?.[indexQ]?.seconds) return;
+
     const songLength = queue[indexQ].seconds;
     if (timestamp) {
       // handler
@@ -118,4 +120,3 @@ module.exports = class SeekCommand extends Command {
   }
 
 };
-
