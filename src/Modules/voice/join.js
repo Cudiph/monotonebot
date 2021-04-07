@@ -23,6 +23,9 @@ module.exports = class JoinCommand extends Command {
       // send message if author not connected to voice channel
       return msg.reply("You're not connected to any voice channel");
     }
+    const existPlayer = this.client.lavaku.getPlayer(msg.guild.id);
+    if (existPlayer) return;
+
     const node = this.client.lavaku.getNode();
     const player = await node.joinVoiceChannel({
       guildID: msg.guild.id,
