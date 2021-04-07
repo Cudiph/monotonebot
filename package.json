@@ -1,6 +1,6 @@
 {
   "name": "monotone",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "An EPIC discord bot",
   "main": "./src/shard.js",
   "scripts": {
