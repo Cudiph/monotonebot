@@ -62,7 +62,7 @@ module.exports = class WelcomeCommand extends Command {
 
     if (channel === 'unset') {
       try {
-        await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+        await guildSettingsSchema.findOneAndUpdate({ guildID: msg.guild.id }, {
           $unset: {
             welcomeMessage: '',
           }
@@ -77,7 +77,7 @@ module.exports = class WelcomeCommand extends Command {
 
     let guildSetting;
     try {
-      guildSetting = await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+      guildSetting = await guildSettingsSchema.findOneAndUpdate({ guildID: msg.guild.id }, {
         welcomeMessage: {
           channel: channel.id,
           strMsg: greeting

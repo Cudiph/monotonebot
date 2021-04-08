@@ -32,7 +32,8 @@ module.exports = class JumpToCommand extends Command {
 
   /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { indexToPlay }) {
-    if (!msg.guild.me.voice.connection) return;
+    const player = this.client.lavaku.getPlayer(msg.guild.id);
+    if (!player) return;
 
     if (indexToPlay < 0 || indexToPlay >= msg.guild.queue.length) {
       return msg.say(`Current total queue is 0-${msg.guild.queue.length - 1}`);
@@ -41,14 +42,9 @@ module.exports = class JumpToCommand extends Command {
     if (msg.guild.loop) msg.guild.indexQueue = ++indexToPlay;
     else msg.guild.indexQueue = indexToPlay;
 
-    if (msg.guild.me.voice.connection.dispatcher && msg.guild.me.voice.connection.dispatcher.paused) {
-      return msg.guild.play(msg);
-    } else if (msg.guild.me.voice.connection.dispatcher) {
-      msg.guild.indexQueue -= 1;
-      msg.guild.me.voice.connection.dispatcher.end();
-      return;
-    }
-    return msg.guild.play(msg);
+    msg.guild.indexQueue -= 1;
+    player.stopTrack();
+    return;
 
   }
 

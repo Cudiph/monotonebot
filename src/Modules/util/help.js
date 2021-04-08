@@ -34,7 +34,7 @@ module.exports = class HelpCommand extends Command {
   async run(msg, args) { // eslint-disable-line complexity
     const groups = this.client.registry.groups;
     const commands = this.client.registry.findCommands(args.command, false, msg);
-    const showAll = args.command && args.command.toLowerCase() === 'all';
+    const showAll = args.command?.toLowerCase() === 'all';
     const embed = {
       color: 0xff548e,
       fields: [

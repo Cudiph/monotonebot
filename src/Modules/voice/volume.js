@@ -22,7 +22,7 @@ module.exports = class VolumeCommand extends Command {
           prompt: 'How many volume do you want to play?',
           type: 'integer',
           min: 0,
-          max: 130,
+          max: 150,
           default: '',
         }
       ]
@@ -31,26 +31,25 @@ module.exports = class VolumeCommand extends Command {
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { volume }) {
+    const player = this.client.lavaku.getPlayer(msg.guild.id);
     volume /= 100;
     if (!volume) {
       return msg.say(`Current volume level is ${msg.guild.volume * 100}`);
     }
-    if (!msg.guild.me.voice.connection) {
-      return msg.say(`I'm not connected to the voice channel`);
+    if (!player) {
+      return msg.say(`I'm not connected to any voice channel`);
     }
 
     try {
-      await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+      await guildSettingsSchema.findOneAndUpdate({ guildID: msg.guild.id }, {
         volume: volume,
       });
+      await player.setVolume(volume);
       msg.guild.volume = volume;
       msg.say(`Change volume level to ${volume * 100}`);
     } catch (err) {
       logger.error(err.stack);
       msg.say(`Can't update stream volume, please try again later`);
-    }
-    if (msg.guild.me.voice.connection.dispatcher) {
-      msg.guild.me.voice.connection.dispatcher.setVolume(volume);
     }
   }
 

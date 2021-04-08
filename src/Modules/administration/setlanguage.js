@@ -43,7 +43,7 @@ module.exports = class SetLanguageCommand extends Command {
     if (msg.guild.language === language) return msg.said(`I already speak ${currentLang}`);
 
     msg.guild.language = language;
-    await guildSettingsSchema.findOneAndUpdate({ guildId: msg.guild.id }, {
+    await guildSettingsSchema.findOneAndUpdate({ guildID: msg.guild.id }, {
       language
     }, { upsert: true });
     msg.sendToLogChan({

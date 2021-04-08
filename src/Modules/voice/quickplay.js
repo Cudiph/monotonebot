@@ -1,14 +1,18 @@
-const ytdl = require('discord-ytdl-core');
-const yts = require('yt-search');
+const ytdl = require('ytdl-core');
 const Command = require('../../structures/Command.js');
 const { oneLine } = require('common-tags');
 
 /**
- * Modified from ytdl.getURLVideoID to get Video ID from a link
+ * return link or ID to resolve for lavalink return false if can't be resolved
  * @param {string} link
  * @return {string|boolean}
  */
-function myGetVidID(link) {
+function resolve(link) {
+  const scLink = link.match(/soundcloud\.com\/([A-Za-z0-9_-]+\/[A-Za-z0-9_-]+)/);
+  if (scLink) {
+    return `https://soundcloud.com/${scLink[1]}`;
+  }
+
   // valid if at least the link has watch?v=VIDEO_ID
   let id = link.match(/ch?.*v=([a-zA-Z0-9-_]{11})/);
 
@@ -52,7 +56,7 @@ module.exports = class QuickPlayCommand extends Command {
       args: [
         {
           key: 'queryOrUrl',
-          prompt: 'What video you want to search or put a videoId or the url?',
+          prompt: 'What video you want to search or put a videoID or the url?',
           type: 'string',
         }
       ]
@@ -67,43 +71,60 @@ module.exports = class QuickPlayCommand extends Command {
       return msg.channel.send("You're not connected to any voice channel");
     }
 
-    if (msg.member.voice.channel) {
-      // check if author send a youtube link or video Id
-      if (myGetVidID(queryOrUrl) || ytdl.validateID(queryOrUrl)) {
-        const vidId = myGetVidID(queryOrUrl);
-        let data;
-        try {
-          data = await ytdl.getBasicInfo(vidId);
-        } catch (e) {
-          msg.reply('No video with that URL or ID found.');
-        }
-        if (data) {
-          const dataConstructor = {
-            title: data.videoDetails.title,
-            link: data.videoDetails.video_url,
-            videoId: vidId,
-            uploader: data.videoDetails.author.name || data.videoDetails.ownerChannelName,
-            seconds: data.videoDetails.lengthSeconds,
-            author: msg.author.tag,
-            isLive: data.videoDetails.lengthSeconds == '0' ? true : false,
-          };
-          return msg.guild.pushToQueue(dataConstructor, msg);
-        }
+    /** @type {import('shoukaku').ShoukakuSocket} */
+    const node = this.client.lavaku.getNode();
+
+    // check if author send a youtube link or video Id
+    const isOnlyID = ytdl.validateID(queryOrUrl);
+    if (resolve(queryOrUrl) || isOnlyID) {
+      const vidID = isOnlyID ? queryOrUrl : resolve(queryOrUrl);
+      /** @type {import('shoukaku').ShoukakuTrackList} */
+
+      const data = await node.rest.resolve(vidID).catch(e => e);
+
+      if (data) {
+        const dataConstructor = {
+          title: data.tracks[0].info.title,
+          link: data.tracks[0].info.uri,
+          videoID: data.tracks[0].info.uri.includes('soundcloud.com') ? '' : data.tracks[0].info.identifier,
+          uploader: data.tracks[0].info.author,
+          seconds: data.tracks[0].info.length / 1000,
+          author: msg.author.tag,
+          isLive: data.tracks[0].info.isStream,
+          track: data.tracks[0].track,
+        };
+        return msg.guild.pushToQueue(dataConstructor, msg);
       }
 
-      const { videos } = await yts(queryOrUrl); // fetch yt vid using yt-search module
-      if (!videos.length) {
-        msg.channel.stopTyping(true); // stop typing indicator
-        return msg.say('No video found');
-      }
-
-      const data = videos[0];
-      data.link = data.url;
-      data.uploader = data.author.name;
-      data.author = msg.author.tag;
-      data.isLive = data.seconds === 0 ? true : false;
-      return msg.guild.pushToQueue(data, msg);
     }
+
+
+    /** @type {import('shoukaku').ShoukakuTrackList} */
+    let res;
+    try {
+      res = await node.rest.resolve(queryOrUrl, 'youtube');
+      if (!res?.tracks.length) {
+        msg.channel.stopTyping(true);
+        return msg.say('No track found.');
+      }
+    } catch (e) {
+      logger.error(e.stack);
+      msg.channel.stopTyping(true);
+      return msg.say('Something went wrong while searching the track.');
+    }
+
+    const data = res.tracks[0];
+    const constructor = {
+      title: data.info.title,
+      link: data.info.uri,
+      videoID: resolve(data.info.uri),
+      uploader: data.info.author,
+      seconds: data.info.length / 1000,
+      author: msg.author.tag,
+      isLive: data.info.isStream,
+      track: data.track,
+    };
+    msg.guild.pushToQueue(constructor, msg);
 
   }
 };

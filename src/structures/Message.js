@@ -1,4 +1,5 @@
 /* eslint-disable indent */
+const { oneLine } = require('common-tags');
 const { Structures, escapeMarkdown, resolveString, APIMessage } = require('discord.js');
 const gtrans = require('node-gtrans');
 const { guildSettingsSchema } = require('../util/schema.js');
@@ -29,7 +30,7 @@ module.exports = Structures.extend('Message', Message => {
 
       // too lazy to make json or whatever it used for i18n
       // A little bit broken when dealing with names because command name and variable name are translated
-      if (content && type !== 'code' && this.guild && this.guild.language !== 'en') {
+      if (content && type !== 'code' && this.guild?.language !== 'en') {
         const langCacheKey = `${this.guild.language}-${splittedContent[0]}-${content.length}`;
         if (!this.client.langCache.has(langCacheKey)) {
           try {
@@ -58,14 +59,14 @@ module.exports = Structures.extend('Message', Message => {
           return this.editCurrentResponse(channelIDOrDM(this.channel), { type, content, options });
         case 'reply':
           if (!shouldEdit) return this._originalReply(content, options);
-          if (options && options.split && !options.split.prepend) options.split.prepend = `${this.author}, `;
+          if (!options?.split?.prepend) options.split.prepend = `${this.author}, `;
           return this.editCurrentResponse(channelIDOrDM(this.channel), { type, content, options });
         case 'direct':
           if (!shouldEdit) return this.author.send(content, options);
           return this.editCurrentResponse('dm', { type, content, options });
         case 'code':
           if (!shouldEdit) return this.channel.send(content, options);
-          if (options && options.split) {
+          if (options?.split) {
             if (!options.split.prepend) options.split.prepend = `\`\`\`${lang || ''}\n`;
             if (!options.split.append) options.split.append = '\n```';
           }
@@ -106,7 +107,7 @@ module.exports = Structures.extend('Message', Message => {
 
     /**
      * Create embed for ..play
-     * @param {import('yt-search').VideoSearchResult[]} videoList - array of music fetched from yt-search
+     * @param {import('shoukaku').ShoukakuTrack[]} videoList - List of shoukakuTrack
      * @param {number} indexPage - A number from indexes to choose between list of object
      * @param {number} page - current page to show
      * @param {number} itemsPerPage - number of items to be showed in one page of embed
@@ -131,15 +132,15 @@ module.exports = Structures.extend('Message', Message => {
       if ((page + 1) === Math.ceil(listLength / itemsPerPage)) {
         for (let i = indexPage; i < listLength; i++) {
           embed.fields.push({
-            name: `[${i % itemsPerPage + 1}] ${videoList[i].title}`,
-            value: `Uploaded by ${videoList[i].author.name} | ${videoList[i].timestamp}`,
+            name: `[${i % itemsPerPage + 1}] ${videoList[i].info.title}`,
+            value: `Uploaded by ${videoList[i].info.author} | ${Util.toTimestamp(videoList[i].info.length / 1000)}`,
           });
         }
       } else {
         for (let i = indexPage; i < (itemsPerPage + indexPage); i++) {
           embed.fields.push({
-            name: `[${i % itemsPerPage + 1}] ${videoList[i].title}`,
-            value: `Uploaded by ${videoList[i].author.name} | ${videoList[i].timestamp}`,
+            name: `[${i % itemsPerPage + 1}] ${videoList[i].info.title}`,
+            value: `Uploaded by ${videoList[i].info.author} | ${Util.toTimestamp(videoList[i].info.length / 1000)}`,
           });
         }
       }
@@ -174,14 +175,18 @@ module.exports = Structures.extend('Message', Message => {
           if (i !== this.guild.indexQueue) {
             embed.fields.push({
               name: `[${i}] ${queue[i].title}`,
-              value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+              value: oneLine`
+                ${queue[i].uploader} |
+                ${queue[i].seconds ? Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} |
+                [${queue[i].link.includes('youtube.com/') ? 'Youtube' : 'Soundcloud'}](${queue[i].link})`,
             });
           } else {
             embed.fields.push({
               name: `=> [${i}] ${queue[i].title}`,
-              value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+              value: oneLine`
+                ${queue[i].uploader} |
+                ${queue[i].seconds ? Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} |
+                [${queue[i].link.includes('youtube.com/') ? 'Youtube' : 'Soundcloud'}](${queue[i].link})`,
             });
           }
 
@@ -191,14 +196,18 @@ module.exports = Structures.extend('Message', Message => {
           if (i !== this.guild.indexQueue) {
             embed.fields.push({
               name: `[${i}] ${queue[i].title}`,
-              value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+              value: oneLine`
+                ${queue[i].uploader} |
+                ${queue[i].seconds ? Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} |
+                [${queue[i].link.includes('youtube.com/') ? 'Youtube' : 'Soundcloud'}](${queue[i].link})`,
             });
           } else {
             embed.fields.push({
               name: `=> [${i}] ${queue[i].title}`,
-              value: `${queue[i].uploader} ${queue[i].seconds ?
-                '| ' + Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} | [YouTube](${queue[i].link})`,
+              value: oneLine`
+                ${queue[i].uploader} |
+                ${queue[i].seconds ? Util.toTimestamp(queue[i].seconds) : queue[i].isLive ? '| • Live' : ''} |
+                [${queue[i].link.includes('youtube.com/') ? 'Youtube' : 'Soundcloud'}](${queue[i].link})`,
             });
           }
         }
@@ -231,16 +240,16 @@ module.exports = Structures.extend('Message', Message => {
      * @param {Object} [options] - embed or string message
      */
     async sendToLogChan({ embedMsg, strMsg }) {
-      const guildSetting = await guildSettingsSchema.findOne({ guildId: this.guild.id });
+      const guildSetting = await guildSettingsSchema.findOne({ guildID: this.guild.id });
       const logChan = guildSetting ? this.guild.channels.cache.get(guildSetting.logChannelId) : false;
       if (embedMsg) {
-        if (logChan && logChan.permissionsFor(this.guild.me.id).has('SEND_MESSAGES')) {
+        if (logChan?.permissionsFor(this.guild.me.id).has('SEND_MESSAGES')) {
           logChan.send({ embed: embedMsg });
         } else {
           return this.embed(embedMsg);
         }
       } else if (strMsg) {
-        if (logChan && logChan.permissionsFor(this.guild.me.id).has('SEND_MESSAGES')) {
+        if (logChan?.permissionsFor(this.guild.me.id).has('SEND_MESSAGES')) {
           logChan.send(strMsg);
         } else {
           return this.say(strMsg);

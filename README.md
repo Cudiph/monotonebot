@@ -14,17 +14,24 @@ The invite link should look like this:
 You can try this bot by inviting the public bot with the link above
 
 ## Prerequisites
-* [git](https://git-scm.com/downloads)
-* [nodejs](https://nodejs.org/en/download/)
-* [mongoDB](https://docs.mongodb.com/manual/administration/install-community/)
-* [npm](https://nodejs.org/en/download/) (bundled with nodejs)
-* [yarn 2](https://yarnpkg.com/getting-started/install)
+* [git][git]
+* [nodejs][nodejs]
+* [mongoDB][mongodb]
+* [yarn 2][yarn]
+* [java 13][java] and [lavalink][lavalink] (dev branch)
 
 ## `.env` File
 .env is file that stored super secret information like your bot token.  
 Here is the list of variable you should put in .env file :
 - `TOKEN` = Token from the application in [discord developer portal](https://discord.com/developers/).
 - `MONGO_URL` = Full URL of the MongoDB cluster if you're using a remote database
+- `LAVA_HOST` = Address of your lavalink server
+- `LAVA_PASS` = Password of your lavalink server
+
+## Lavalink
+Download lavalink binaries from [the CI server][lavalink] and put the jar file
+in the root directory of this project and start lavalink server with
+`$ java -jar ./Lavalink.jar`.
 
 ## Running the bot
 After [prerequisites](#prerequisites) are installed and your bot is already in your server,  
@@ -51,3 +58,11 @@ Create a suggestion such as new commands or features in the issues tab.
 
 ### My discord profile
 Made with ❤ by [Cudiph#7298](https://discordapp.com/users/400240052761788427)
+
+
+[git]: https://git-scm.com/downloads
+[nodejs]: https://nodejs.org/en/download/
+[mongodb]: https://docs.mongodb.com/manual/administration/install-community/
+[yarn]: https://yarnpkg.com/getting-started/install
+[java]: https://www.azul.com/downloads/zulu-community/?version=java-13-mts&package=jdk
+[lavalink]: https://ci.fredboat.com/viewType.html?buildTypeId=Lavalink_Build&branch_Lavalink=refs%2Fheads%2Fdev&tab=buildTypeStatusDiv

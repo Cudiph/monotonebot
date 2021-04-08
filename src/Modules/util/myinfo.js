@@ -22,7 +22,7 @@ module.exports = class MyInfoCommand extends Command {
   async run(msg) {
     let userData;
     try {
-      userData = await userDataSchema.findOne({ userId: msg.author.id });
+      userData = await userDataSchema.findOne({ userID: msg.author.id });
     } catch (err) {
       logger.error(err.stack);
       return msg.reply(`Can't load the data, please try again later`);

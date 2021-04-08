@@ -34,22 +34,16 @@ module.exports = class JumpCommand extends Command {
 
   /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { numberToJump }) {
+    const player = this.client.lavaku.getPlayer(msg.guild.id);
     // return if not connected
-    if (!msg.guild.me.voice.connection) return;
+    if (!player) return;
 
     if (msg.guild.loop) msg.guild.indexQueue += numberToJump;
     else msg.guild.indexQueue += numberToJump - 1;
 
-    if (msg.guild.me.voice.connection.dispatcher && msg.guild.me.voice.connection.dispatcher.paused) {
-      msg.guild.indexQueue++;
-      return msg.guild.play(msg);
-    } else if (msg.guild.me.voice.connection.dispatcher) {
-      msg.guild.me.voice.connection.dispatcher.end();
-      return;
+    if (player) {
+      player.stopTrack();
     }
-
-    msg.guild.indexQueue++;
-    msg.guild.play(msg);
 
   }
 

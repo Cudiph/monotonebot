@@ -1,17 +1,19 @@
 const { Structures } = require('discord.js');
-const ytdl = require('discord-ytdl-core');
+const ytdl = require('ytdl-core');
+const scdl = require('soundcloud-downloader').default;
 const { oneLine, stripIndents } = require('common-tags');
 
 /**
   * @typedef {Object} QueueObject
   * @property {string} title - Title of the track
   * @property {string} link - Full URL of the track
-  * @property {string} videoId - Youtube unique videoId of the track
+  * @property {string} videoID - Youtube unique videoID of the track
   * @property {string} uploader - Uploader of the track
   * @property {number|string} seconds - Duration of the track
   * @property {string} author - Name of discord account who requested the song
   * @property {boolean} isLive - Whether the video is in livestream or not
   * @property {?number} seekTime - seek value to use in seek command
+  * @property {string} track - The base64 track from the lavalink Rest API
  */
 
 module.exports = Structures.extend('Guild', Guild => {
@@ -79,6 +81,18 @@ module.exports = Structures.extend('Guild', Guild => {
        * @type {boolean}
        */
       this.isCached = false;
+
+      /**
+       * Player volume
+       * @type {number}
+       */
+      this.volume = 1;
+
+      /**
+       * Maximum number of track allowed in the queue
+       * @type {number}
+       */
+      this.queueLimit = 300;
     }
 
     resetPlayer() {
@@ -97,69 +111,71 @@ module.exports = Structures.extend('Guild', Guild => {
      * @param {number} [seek=0] - a number in seconds to seek
      * @returns {void}
      */
-    async _playStream(msg, seek = 0) {
+    async _playStream(msg) {
       const queue = this.queue;
       const indexQ = this.indexQueue;
 
+      // start typing indicator to notice user
+      msg.channel.startTyping();
+
       try {
-        let connection; // make a connection
-        if (this.me.voice.connection) {
-          connection = this.me.voice.connection;
+        /** @type {import('shoukaku').ShoukakuPlayer} */
+        let player; // make a connection
+
+        if (this.client.lavaku.getPlayer(msg.guild.id)) {
+          player = this.client.lavaku.getPlayer(msg.guild.id);
         } else {
-          connection = await msg.member.voice.channel.join();
-          // delete queue cache when disconnected
-          connection.on('disconnect', () => {
+          const node = this.client.lavaku.getNode();
+          player = await node.joinVoiceChannel({
+            guildID: msg.guild.id,
+            voiceChannelID: msg.member.voice.channelID,
+          });
+
+          player.setVolume(this.volume);
+
+          player.on('nodeDisconnect', () => {
             msg.channel.stopTyping(true);
             this.resetPlayer();
+          });
+
+          // give data when dispatcher start
+          player.on('start', async () => {
+            const nowPlaying = await msg.sendEmbedPlaying().catch(e => e);
+            // assign now playing embed message id to the queue object
+            this.playingEmbedID = nowPlaying.id;
+            msg.channel.stopTyping(true);
+          });
+
+          // play next song when current song is finished
+          player.on('end', async (reason) => {
+            if (reason.type !== 'TrackEndEvent') {
+              msg.say(`An error occured. **Track #${this.indexQueue}** will be skipped`);
+            }
+            // delete the now playing embed when the track is finished
+            await msg.channel.messages.delete(this.playingEmbedID).catch(e => e);
+            this.indexQueue++;
+            return this.play(msg);
+          });
+
+          // skip current track if error occured
+          player.on('error', err => {
+            msg.channel.stopTyping(true);
+            logger.error(err);
+            msg.say(`An error occured. **Track #${this.indexQueue}** will be skipped`);
+            this.indexQueue++;
+            return this.play(msg);
+          });
+
+          player.on('closed', () => {
             msg.channel.messages.delete(this.playingEmbedID).catch(e => e);
+            msg.channel.stopTyping(true);
+            this.resetPlayer();
+            player.disconnect();
           });
         }
-        if (seek) {
-          this.queue[indexQ].seekTime = seek;
-        }
-        // start typing indicator to notice user
-        msg.channel.startTyping();
-        const url = `https://www.youtube.com/watch?v=${queue[indexQ].videoId}`;
-        const stream = ytdl(queue[indexQ].link || url, {
-          filter: queue[indexQ].isLive ? 'audio' : 'audioonly',
-          quality: queue[indexQ].isLive ? [ 249, 250, 91, 92, 93, 94, 251] : 'highest',
-          dlChunkSize: 0,
-          opusEncoded: true,
-          encoderArgs: ['-af', 'bass=g=10,dynaudnorm=f=200'],
-          seek: seek,
-        });
-        const dispatcher = connection.play(stream, {
-          type: 'opus',
-          volume: this.volume || 0.5,
-          highWaterMark: 200,
-          bitrate: 'auto'
-        });
-        msg.channel.stopTyping(true);
 
-        // give data when dispatcher start
-        dispatcher.on('start', async () => {
-          const nowPlaying = await msg.sendEmbedPlaying().catch(e => e);
-          // assign now playing embed message id to the queue object
-          this.playingEmbedID = nowPlaying.id;
-          msg.channel.stopTyping(true);
-        });
+        await player.playTrack(queue[indexQ].track);
 
-        // play next song when current song is finished
-        dispatcher.on('finish', () => {
-          // delete the now playing embed when the track is finished
-          msg.channel.messages.delete(this.playingEmbedID).catch(e => e);
-          this.indexQueue++;
-          return this.play(msg);
-        });
-
-        // skip current track if error occured
-        dispatcher.on('error', err => {
-          msg.channel.stopTyping(true);
-          logger.error(err.stack);
-          msg.say(`An error occured. **Track #${this.indexQueue}** will be skipped`);
-          this.indexQueue++;
-          return this.play(msg);
-        });
       } catch (err) {
         msg.channel.stopTyping(true);
         logger.error(err.stack);
@@ -172,24 +188,40 @@ module.exports = Structures.extend('Guild', Guild => {
     /**
      * Function to fetch related track
      * @param {import("discord.js-commando").CommandoMessage} msg - msg
-     * @returns {any}
      */
     async _fetchAutoplay(msg) {
       const queue = this.queue;
       const indexQ = this.indexQueue;
-      if (queue && queue.length > 150) {
-        return msg.say(oneLine`
-          You reached maximum number of track.
-          Please clear the queue first with **\`${this.commandPrefix}stop 1\`**.
-        `);
+
+      // start typing indicator to notice user
+      msg.channel.startTyping();
+
+      let link;
+
+      if (indexQ === 0) {
+        link = queue[indexQ].link;
+      } else {
+        link = queue[indexQ - 1].link || queue[indexQ - 2].link;
       }
+
+      if (link.includes('youtube.com/')) return this._fetchAutoplayYT(msg);
+      else return this._fetchAutoplaySC(msg);
+    }
+
+    /**
+     * Function to fetch related track from youtube
+     * @param {import("discord.js-commando").CommandoMessage} msg - msg
+     */
+    async _fetchAutoplayYT(msg) {
+      const queue = this.queue;
+      const indexQ = this.indexQueue;
       let related;
       try {
         let url;
         if (indexQ === 0) {
-          url = queue[indexQ].link || queue[indexQ].videoId;
+          url = queue[indexQ].link || queue[indexQ].videoID;
         } else {
-          url = queue[indexQ - 1].link || queue[indexQ - 1].videoId || queue[indexQ - 2].link || queue[indexQ - 2].videoId;
+          url = queue[indexQ - 1].link || queue[indexQ - 1].videoID || queue[indexQ - 2].link || queue[indexQ - 2].videoID;
         }
         related = (await ytdl.getBasicInfo(url)).related_videos
           .filter(video => video.length_seconds < 2000);
@@ -206,32 +238,82 @@ module.exports = Structures.extend('Guild', Guild => {
         this.indexQueue++;
         return;
       }
-      const randTrack = related.length >= 5 ? Math.floor(Math.random() * 5) : Math.floor(Math.random() * related.length);
+      const randIndex = related.length >= 5 ? Math.floor(Math.random() * 5) : Math.floor(Math.random() * related.length);
+
+      /** @type {import('shoukaku').ShoukakuTrackList} */
+      const res = await this.client.lavaku.getNode().rest.resolve(related[randIndex].id);
+
       const construction = {
-        title: related[randTrack].title,
-        link: `https://youtube.com/watch?v=${related[randTrack].id}`,
-        uploader: related[randTrack].author.name || 'unknown',
-        seconds: parseInt(related[randTrack].length_seconds),
+        title: related[randIndex].title,
+        link: res.tracks[0].info.uri,
+        uploader: related[randIndex].author.name || 'unknown',
+        seconds: parseInt(related[randIndex].length_seconds),
         author: `Autoplay`,
-        videoId: related[randTrack].id,
-        isLive: parseInt(related[randTrack].length_seconds) == 0 ? true : false,
+        videoID: related[randIndex].id,
+        isLive: res.tracks[0].info.isStream,
+        track: res.tracks[0].track,
       };
-      this.queue.push(construction);
-      this.queueTemp.push(construction);
+      this.pushToQueue(construction, msg, true);
       return this.play(msg);
+    }
+
+    /**
+    * Function to fetch related track from soundcloud
+    * @param {import("discord.js-commando").CommandoMessage} msg - msg
+    */
+    async _fetchAutoplaySC(msg) {
+      const queue = this.queue;
+      const indexQ = this.indexQueue;
+
+      let related;
+      try {
+        let url;
+        if (indexQ === 0) {
+          url = queue[indexQ].link;
+        } else {
+          url = queue[indexQ - 1].link || queue[indexQ - 2].link;
+        }
+        related = (await scdl.related((await scdl.getInfo(url)).id, 5)).collection;
+        // if no related video then stop and give the message
+        if (!related) {
+          return msg.say(stripIndents`
+            No related video were found. You can request again with \`${this.commandPrefix}skip\` command. 
+            Videos with a duration longer than 40 minutes will not be listed.
+          `);
+        }
+      } catch (err) {
+        logger.error(err.stack);
+        msg.say(`Something went wrong. You can try again with \`${this.commandPrefix}skip\` command.`);
+        this.indexQueue++;
+        return;
+      }
+
+      const randIndex = Math.floor(Math.random() * related.length);
+
+      /** @type {import('shoukaku').ShoukakuTrackList} */
+      const res = await this.client.lavaku.getNode().rest.resolve(related[randIndex].permalink_url);
+
+      const construction = {
+        title: related[randIndex].title,
+        link: res.tracks[0].info.uri,
+        uploader: related[randIndex].user.username || 'unknown',
+        seconds: related[randIndex].duration / 1000,
+        author: `Autoplay`,
+        videoID: related[randIndex].id.toString(),
+        isLive: res.tracks[0].info.isStream,
+        track: res.tracks[0].track,
+      };
+      this.pushToQueue(construction, msg, true);
+      return this.play(msg);
+
     }
 
     /**
      * Handler before a track is played
      * @async
      * @param {import("discord.js-commando").CommandoMessage} msg
-     * @param {Object} [options]
-     * @param {number} [options.seek=0] - a number in seconds to seek
      */
-    async play(msg, options = {}) {
-      if (typeof options !== 'object') throw new TypeError('INVALID_TYPE');
-      const { seek = 0 } = options;
-
+    async play(msg) {
       const queue = this.queue;
       let indexQ = this.indexQueue;
 
@@ -243,20 +325,17 @@ module.exports = Structures.extend('Guild', Guild => {
       }
 
       // check if the queue is empty
-      if (!queue || !queue.length) {
+      if (!queue?.length) {
         return msg.say('Stopped Playing...');
       }
 
       // loop
       if (this.loop) {
-        if (seek) {
-          return this._playStream(msg, seek);
-        }
         if (this.indexQueue === 0) {
-          return this._playStream(msg, seek);
+          return this._playStream(msg);
         }
         this.indexQueue--;
-        return this._playStream(msg, seek);
+        return this._playStream(msg);
       }
 
       // autoplay
@@ -267,33 +346,38 @@ module.exports = Structures.extend('Guild', Guild => {
         else return msg.say(`Stopped Playing...`);
       }
 
-      return this._playStream(msg, seek);
+      return this._playStream(msg);
 
     }
 
     /**
      * Processing data before something pushed to the guild queue
      * @async
-     * @param {QueueObject} data - data of music fetched from yt-search
+     * @param {QueueObject} data - track data to push to the queue
      * @param {import("discord.js-commando").CommandoMessage} msg - message from textchannel
      * @param {boolean} fromPlaylist - whether player is called from playlist.js or called multiple times
      * @returns {play}
      */
     pushToQueue(data = {}, msg, fromPlaylist = false) {
-      if (this.queue && this.queue.length > 150) {
-        return msg.say(oneLine`
-          You reached maximum number of track.
-          Please clear the queue first with **\`${this.commandPrefix}stop 1\`**.
-        `);
+      if (this.queue?.length > this.queueLimit) {
+        if (fromPlaylist) {
+          return; // prevent massage spamming
+        } else {
+          return msg.say(oneLine`
+            You reached maximum number of track.
+            Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
+          `);
+        }
       }
       const construction = {
         title: data.title,
         link: data.link,
-        videoId: data.videoId,
+        videoID: data.videoID,
         uploader: data.uploader || 'Unknown',
         seconds: parseInt(data.seconds),
         author: data.author,
         isLive: data.isLive,
+        track: data.track,
       };
       if (!this.queue.length) {
         try {
@@ -301,7 +385,7 @@ module.exports = Structures.extend('Guild', Guild => {
           return this.play(msg);
         } catch (err) {
           msg.say('Something went wrong');
-          delete this.queue;
+          this.queue = [];
           logger.error(err.stack);
         }
       } else {

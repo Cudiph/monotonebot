@@ -21,7 +21,7 @@ module.exports = class GuildConfigCommand extends Command {
   async run(msg) {
     let guildSettings;
     try {
-      guildSettings = await guildSettingsSchema.findOne({ guildId: msg.guild.id });
+      guildSettings = await guildSettingsSchema.findOne({ guildID: msg.guild.id });
       if (!guildSettings) {
         return msg.say(`No configuration found.`);
       }
@@ -60,14 +60,14 @@ module.exports = class GuildConfigCommand extends Command {
     };
 
     const trim = (str, max) => ((str.length > max) ? `${str.slice(0, max - 3)}...` : str);
-    if (guildSettings.welcomeMessage && guildSettings.welcomeMessage.channel) {
+    if (guildSettings.welcomeMessage?.channel) {
       embed.fields.push({
         name: 'Welcome Message',
         value: trim(`\`\`\`\n${guildSettings.welcomeMessage.strMsg.replace(/```/g, `'''`)}\`\`\`\nat <#${guildSettings.welcomeMessage.channel}> channel`, 1024)
       });
     }
 
-    if (guildSettings.goodbyeMessage && guildSettings.goodbyeMessage.channel) {
+    if (guildSettings.goodbyeMessage?.channel) {
       embed.fields.push({
         name: 'Goodbye Message',
         value: trim(`\`\`\`\n${guildSettings.goodbyeMessage.strMsg.replace(/```/g, `'''`)}\`\`\`\nat <#${guildSettings.goodbyeMessage.channel}> channel`, 1024)

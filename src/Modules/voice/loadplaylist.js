@@ -37,7 +37,7 @@ module.exports = class LoadPlaylistCommand extends Command {
     if (!msg.member.voice.channel) {
       return msg.reply("You're not connected to any voice channel");
     }
-    if (msg.guild.queue && msg.guild.queue.length > 150) {
+    if (msg.guild.queue?.length > msg.guild.queueLimit) {
       return msg.say(oneLine`
         You reached maximum number of track.
         Please clear the queue first with **\`${msg.guild.commandPrefix}stop 1\`**.
@@ -46,7 +46,7 @@ module.exports = class LoadPlaylistCommand extends Command {
 
     if (typeof playlistArg === 'number') {
       try {
-        const data = await userDataSchema.findOne({ userId: msg.author.id });
+        const data = await userDataSchema.findOne({ userID: msg.author.id });
         if (!data || !data.userPlaylists.length) {
           return msg.say('You don\'t have any playlist');
         } else if (playlistArg < 0 && playlistArg > data.userPlaylists.length) {
@@ -72,7 +72,7 @@ module.exports = class LoadPlaylistCommand extends Command {
       const secureStr = playlistArg.replace(/(\\|\(|\{|\$)/gi, '');
       try {
         const data = await userDataSchema.aggregate([
-          { $match: { userId: msg.author.id } },
+          { $match: { userID: msg.author.id } },
           {
             $project: {
               userPlaylists: {

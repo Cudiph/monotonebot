@@ -32,7 +32,7 @@ module.exports = class RemovePlaylistCommand extends Command {
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { playlistArg }) {
-    const data = await userDataSchema.findOne({ userId: msg.author.id });
+    const data = await userDataSchema.findOne({ userID: msg.author.id });
 
     if (!data || !data.userPlaylists.length) {
       return msg.say('You don\'t have any playlist');
@@ -47,9 +47,9 @@ module.exports = class RemovePlaylistCommand extends Command {
         const update = {
           $set: { [template]: 'deletethis' }
         };
-        const before = await userDataSchema.findOneAndUpdate({ userId: msg.author.id, }, update);
+        const before = await userDataSchema.findOneAndUpdate({ userID: msg.author.id, }, update);
         // finally delete the renamed playlist
-        await userDataSchema.findOneAndUpdate({ userId: msg.author.id, }, {
+        await userDataSchema.findOneAndUpdate({ userID: msg.author.id, }, {
           $pull: {
             userPlaylists: {
               name: 'deletethis'
@@ -62,7 +62,7 @@ module.exports = class RemovePlaylistCommand extends Command {
         return msg.reply(`Can't remove the playlist`);
       }
     } else {
-      const data2 = await userDataSchema.findOneAndUpdate({ userId: msg.author.id }, {
+      const data2 = await userDataSchema.findOneAndUpdate({ userID: msg.author.id }, {
         $pull: { userPlaylists: { name: playlistArg } }
       });
       let counter = 0;

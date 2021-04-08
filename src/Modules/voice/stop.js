@@ -27,17 +27,15 @@ module.exports = class StopCommand extends Command {
 
   /** @param {import("discord.js-commando").CommandoMessage} msg */
   async run(msg, { deleteQueue }) {
-    if (!msg.guild.me.voice.connection) {
-      return msg.say(`I'm not connected to the voice channel`);
-    }
+    const player = this.client.lavaku.getPlayer(msg.guild.id);
 
-    if (msg.guild.me.voice.connection.dispatcher) {
-      msg.guild.indexQueue = msg.guild.queue.length;
-      msg.guild.autoplay = false;
-      msg.guild.loop = false;
-      msg.guild.loopQueue = false;
-      msg.guild.me.voice.connection.dispatcher.end();
-    }
+    if (!player) return;
+
+    msg.guild.indexQueue = msg.guild.queue.length;
+    msg.guild.autoplay = false;
+    msg.guild.loop = false;
+    msg.guild.loopQueue = false;
+    player.stopTrack();
 
     if (deleteQueue) {
       msg.guild.resetPlayer();
