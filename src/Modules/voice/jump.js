@@ -41,9 +41,13 @@ module.exports = class JumpCommand extends Command {
     if (msg.guild.loop) msg.guild.indexQueue += numberToJump;
     else msg.guild.indexQueue += numberToJump - 1;
 
-    if (player) {
+    if (player.position === 0) {
+      msg.guild.indexQueue++;
+      msg.guild.play(msg);
+    } else {
       player.stopTrack();
     }
+
 
   }
 

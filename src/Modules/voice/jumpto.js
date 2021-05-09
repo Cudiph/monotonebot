@@ -32,6 +32,7 @@ module.exports = class JumpToCommand extends Command {
 
   /** @param {import('discord.js-commando').CommandoMessage} msg */
   async run(msg, { indexToPlay }) {
+    /** @type {import("shoukaku").ShoukakuPlayer} */
     const player = this.client.lavaku.getPlayer(msg.guild.id);
     if (!player) return;
 
@@ -42,8 +43,13 @@ module.exports = class JumpToCommand extends Command {
     if (msg.guild.loop) msg.guild.indexQueue = ++indexToPlay;
     else msg.guild.indexQueue = indexToPlay;
 
-    msg.guild.indexQueue -= 1;
-    player.stopTrack();
+    if (player.position === 0) {
+      msg.guild.play(msg);
+    } else {
+      msg.guild.indexQueue -= 1;
+      player.stopTrack();
+    }
+
     return;
 
   }
