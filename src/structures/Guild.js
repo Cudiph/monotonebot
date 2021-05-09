@@ -93,6 +93,12 @@ module.exports = Structures.extend('Guild', Guild => {
        * @type {number}
        */
       this.queueLimit = 300;
+
+      /**
+       * Channel where the now playing message is sent
+       * @type {?import("discord.js").TextChannel}
+       */
+      this.playingChannel = null;
     }
 
     resetPlayer() {
@@ -115,9 +121,6 @@ module.exports = Structures.extend('Guild', Guild => {
       const queue = this.queue;
       const indexQ = this.indexQueue;
 
-      // start typing indicator to notice user
-      msg.channel.startTyping();
-
       try {
         /** @type {import('shoukaku').ShoukakuPlayer} */
         let player; // make a connection
@@ -125,6 +128,8 @@ module.exports = Structures.extend('Guild', Guild => {
         if (this.client.lavaku.getPlayer(msg.guild.id)) {
           player = this.client.lavaku.getPlayer(msg.guild.id);
         } else {
+          this.playingChannel = msg.channel;
+
           const node = this.client.lavaku.getNode();
           player = await node.joinVoiceChannel({
             guildID: msg.guild.id,
@@ -134,7 +139,7 @@ module.exports = Structures.extend('Guild', Guild => {
           player.setVolume(this.volume);
 
           player.on('nodeDisconnect', () => {
-            msg.channel.stopTyping(true);
+            this.playingChannel?.stopTyping(true);
             this.resetPlayer();
           });
 
@@ -143,7 +148,7 @@ module.exports = Structures.extend('Guild', Guild => {
             const nowPlaying = await msg.sendEmbedPlaying().catch(e => e);
             // assign now playing embed message id to the queue object
             this.playingEmbedID = nowPlaying.id;
-            msg.channel.stopTyping(true);
+            this.playingChannel?.stopTyping(true);
           });
 
           // play next song when current song is finished
@@ -159,7 +164,7 @@ module.exports = Structures.extend('Guild', Guild => {
 
           // skip current track if error occured
           player.on('error', err => {
-            msg.channel.stopTyping(true);
+            this.playingChannel?.stopTyping(true);
             logger.error(err);
             msg.say(`An error occured. **Track #${this.indexQueue}** will be skipped`);
             this.indexQueue++;
@@ -168,16 +173,19 @@ module.exports = Structures.extend('Guild', Guild => {
 
           player.on('closed', () => {
             msg.channel.messages.delete(this.playingEmbedID).catch(e => e);
-            msg.channel.stopTyping(true);
+            this.playingChannel?.stopTyping(true);
             this.resetPlayer();
             player.disconnect();
           });
         }
 
+        // start typing indicator to notice user
+        this.playingChannel?.startTyping();
+
         await player.playTrack(queue[indexQ].track);
 
       } catch (err) {
-        msg.channel.stopTyping(true);
+        this.playingChannel?.stopTyping(true);
         logger.error(err.stack);
         msg.say(`Something went wrong. **Track #${this.indexQueue}** will be skipped`);
         this.indexQueue++;
@@ -194,7 +202,7 @@ module.exports = Structures.extend('Guild', Guild => {
       const indexQ = this.indexQueue;
 
       // start typing indicator to notice user
-      msg.channel.startTyping();
+      this.playingChannel?.startTyping();
 
       let link;
 

@@ -26,6 +26,8 @@ module.exports = class JoinCommand extends Command {
     const existPlayer = this.client.lavaku.getPlayer(msg.guild.id);
     if (existPlayer) return;
 
+    msg.guild.playingChannel = msg.channel;
+
     const node = this.client.lavaku.getNode();
     const player = await node.joinVoiceChannel({
       guildID: msg.guild.id,
@@ -39,7 +41,7 @@ module.exports = class JoinCommand extends Command {
       const nowPlaying = await msg.sendEmbedPlaying().catch(e => e);
       // assign now playing embed message id to the queue object
       msg.guild.playingEmbedID = nowPlaying.id;
-      msg.channel.stopTyping(true);
+      msg.guild.playingChannel.stopTyping(true);
     });
 
     // play next song when current song is finished
@@ -55,7 +57,7 @@ module.exports = class JoinCommand extends Command {
 
     // skip current track if error occured
     player.on('error', err => {
-      msg.channel.stopTyping(true);
+      msg.guild.playingChannel.stopTyping(true);
       logger.error(err);
       msg.say(`An error occured. **Track #${msg.guild.indexQueue}** will be skipped`);
       msg.guild.indexQueue++;
@@ -64,7 +66,7 @@ module.exports = class JoinCommand extends Command {
 
     player.on('closed', () => {
       msg.channel.messages.delete(msg.guild.playingEmbedID).catch(e => e);
-      msg.channel.stopTyping(true);
+      msg.guild.playingChannel.stopTyping(true);
       msg.guild.resetPlayer();
       player.disconnect();
     });
